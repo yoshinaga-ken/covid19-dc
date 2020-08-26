@@ -8,7 +8,7 @@
 
 ワンクリックでチャートの切り替えと比較が可能な為多次元での分析がしやすくなっています。
 
-![image](https://sakanaclub.xsrv.jp/img/hlp/covid19-dc-demo-v1.gif)
+![image](img/hlp/covid19-dc-demo-v1.gif)
 
  
 ### デモページ

@@ -1,0 +1,12 @@
+# tmp files
+*~
+
+# local files
+node_modules
+bower_components
+
+/data/*
+
+/jslib/*
+!/jslib/phpjs.js
+!/jslib/commons.js

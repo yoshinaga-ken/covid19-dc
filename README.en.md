@@ -8,7 +8,7 @@ You can filter the chart by any item by clicking the item in the graph such as p
 
 The charts can be switched and compared with one click, making it easy to analyze in multiple dimensions.
 
-![image](https://sakanaclub.xsrv.jp/img/hlp/covid19-dc-demo-v1.gif)
+![image](img/hlp/covid19-dc-demo-v1.gif)
 
  
 ### Demo page
