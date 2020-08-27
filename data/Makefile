@@ -492,5 +492,5 @@ covid19-world.js: covid19-world.json
 	echo "const g_covid19_world = " > $@
 	cat $< >> $@
 
-data_all:covid19-assets.js covid19-data.js
+data_all:covid19-assets.js covid19-data.js covid19-world.js
 
