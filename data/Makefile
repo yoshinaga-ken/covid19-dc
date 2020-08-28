@@ -1,4 +1,4 @@
-#===========================================================================
+.#===========================================================================
 # covid19 Data make Utility
 # USAGE: 
 # 	make <tareget_file>
@@ -19,7 +19,7 @@ dbhttpdpass=`cut -f2 -d: ${HOME}/../dbauth/httpd`
 MYSQL=mysql --default-character-set=utf8 --auto-rehash -u$(dbhttpd) -p$(dbhttpdpass) -h $(DBHOST) $(DBSCHM)
 MYSQLD=mysqldump --default-character-set=utf8 --skip-opt --create-options --add-drop-table --complete-insert -u$(dbadm) -p$(dbadmpass) -h $(DBHOST) $(DBSCHM)
 
-
+XLS2CSV=/usr/bin/xlsx2csv
 XMLLINT=xmllint --html --format --encode SJIS
 WGET=wget
 
@@ -92,8 +92,8 @@ dwn_pdf: \
 		dwn_okinawa
 
 clean:
-	rm $(DWN_PRE)*
-	rm tmp
+	-rm $(DWN_PRE)*
+	-rm tmp
 
 
 #北海道
@@ -125,6 +125,7 @@ dwn_miyagi:
 	@echo "■miyagi"
 	-mv "$(DWN_DATA_DIR)/$(DWN_PRE)宮城県.xlsx" "$(DWN_DATA_DIR)/$(DWN_PRE)宮城県-bak.xlsx"
 	-$(WGET) -O "$(DWN_DATA_DIR)/$(DWN_PRE)宮城県.xlsx" "https://www.pref.miyagi.jp/uploaded/attachment/808206.xlsx"
+	make "$(DWN_DATA_DIR)/$(DWN_PRE)宮城県.csv"
 
 #秋田県
 #TAG:data_none
@@ -163,6 +164,7 @@ dwn_tochigi:
 	@echo "■tochigi"
 	-mv "$(DWN_DATA_DIR)/$(DWN_PRE)栃木県.xlsx" "$(DWN_DATA_DIR)/$(DWN_PRE)栃木県-bak.xlsx"
 	-$(WGET) -O "$(DWN_DATA_DIR)/$(DWN_PRE)栃木県.xlsx" "http://www.pref.tochigi.lg.jp/e04/welfare/hoken-eisei/kansen/hp/documents/20200816hasseijoukyou.xlsx"
+	make "$(DWN_DATA_DIR)/$(DWN_PRE)栃木県.csv"
 
 
 #群馬県
@@ -223,6 +225,7 @@ dwn_toyama:
 	@echo "■toyama"
 	-mv -b "$(DWN_DATA_DIR)/$(DWN_PRE)富山県.xlsx" "$(DWN_DATA_DIR)/$(DWN_PRE)富山県-bak.xlsx"
 	$(WGET) -O "$(DWN_DATA_DIR)/$(DWN_PRE)富山県.xlsx" "http://www.pref.toyama.jp/cms_pfile/00021798/01451364.xlsx"
+	make "$(DWN_DATA_DIR)/$(DWN_PRE)富山県.csv"
 
 
 #石川県
@@ -322,6 +325,7 @@ dwn_osaka:
 	@echo "■osaka"
 	-mv "$(DWN_DATA_DIR)/$(DWN_PRE)大阪府.xlsx" "$(DWN_DATA_DIR)/$(DWN_PRE)大阪府-bak.xlsx"
 	$(WGET) -O "$(DWN_DATA_DIR)/$(DWN_PRE)大阪府.xlsx" "http://www.pref.osaka.lg.jp/attach/23711/00346644/youseisyajyouhou.xlsx"
+	make "$(DWN_DATA_DIR)/$(DWN_PRE)大阪府.csv"
 
 
 #兵庫県
@@ -331,6 +335,7 @@ dwn_hyogo:
 	@echo "■hyogo"
 	-mv "$(DWN_DATA_DIR)/$(DWN_PRE)兵庫県.xlsx" "$(DWN_DATA_DIR)/$(DWN_PRE)兵庫県-bak.xlsx"
 	$(WGET) -O "$(DWN_DATA_DIR)/$(DWN_PRE)兵庫県.xlsx" "https://web.pref.hyogo.lg.jp/kk03/documents/corona_kanjyajyokyo.xlsx"
+	make "$(DWN_DATA_DIR)/$(DWN_PRE)兵庫県.csv"
 
 
 #奈良県
@@ -340,6 +345,7 @@ dwn_nara:
 	@echo "■nara"
 	-mv "$(DWN_DATA_DIR)/$(DWN_PRE)奈良県.xlsx" "$(DWN_DATA_DIR)/$(DWN_PRE)奈良県-bak.xlsx"
 	$(WGET) -O "$(DWN_DATA_DIR)/$(DWN_PRE)奈良県.xlsx" "http://www.pref.nara.jp/secure/227193/%E5%A5%88%E8%89%AF%E7%9C%8C_01%E6%96%B0%E5%9E%8B%E3%82%B3%E3%83%AD%E3%83%8A%E3%82%A6%E3%82%A4%E3%83%AB%E3%82%B9%E6%84%9F%E6%9F%93%E8%80%85_%E6%82%A3%E8%80%85%E3%83%AA%E3%82%B9%E3%83%88.xlsx"
+	make "$(DWN_DATA_DIR)/$(DWN_PRE)奈良県.csv"
 
 #和歌山県
 #TAG:data_xls
@@ -348,6 +354,7 @@ dwn_wakayama:
 	@echo "■wakayama"
 	-mv "$(DWN_DATA_DIR)/$(DWN_PRE)和歌山県.xlsx" "$(DWN_DATA_DIR)/$(DWN_PRE)和歌山県-bak.xlsx"
 	$(WGET) -O "$(DWN_DATA_DIR)/$(DWN_PRE)和歌山県.xlsx" "https://www.pref.wakayama.lg.jp/prefg/000200/covid19_d/fil/kansensuii.xlsx"
+	make "$(DWN_DATA_DIR)/$(DWN_PRE)和歌山県.csv"
 
 #鳥取県
 #TAG:data_none
@@ -479,7 +486,11 @@ dwn_okinawa:
 covid19.csv:
 	@echo "TODO: make $@"
 
-.SUFFIXES: .csv .json
+.SUFFIXES: .xlsx .csv .json
+
+#XLSXをCSVに変換
+%.csv : %.xlsx
+	$(XLS2CSV) $^ | tee $@
 
 #CSVをJSONに変換
 %.json: %.csv
