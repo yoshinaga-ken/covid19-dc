@@ -132,10 +132,13 @@ dwn_akita:
 	@echo "■akita"
 
 #山形県
-#TAG:data_none
+#TAG:data_csv
+#https://www.pref.yamagata.jp/ou/kenkofukushi/090001/20130425/shingata_corona.html
 dwn_yamagata:
 	@echo "■yamagata"
-
+	-mv "$(DWN_DATA_DIR)/$(DWN_PRE)山形県.csv" "$(DWN_DATA_DIR)/$(DWN_PRE)山形県-bak.csv"
+	-$(WGET) -O$(DWN_DATA_DIR)/tmp "https://www.pref.yamagata.jp/ou/kenkofukushi/090001/20130425/siryou/060003_yamagata_covid19_patients_0821.csv"
+	iconv -f SJIS -t UTF-8 $(DWN_DATA_DIR)/tmp > "$(DWN_DATA_DIR)/$(DWN_PRE)山形県.csv"
 
 YYMMDD=$(shell date +20%m%d)
 #福島県
@@ -210,6 +213,8 @@ dwn_kanagawa:
 #https://www.pref.niigata.lg.jp/site/shingata-corona/256362836.html
 dwn_niigata:
 	@echo "■niigata"
+	$(NODE) dom_parse.js niigata | tee $@
+
 
 #富山県
 #TAG:data_xls,url_change

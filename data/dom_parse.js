@@ -13,6 +13,9 @@ const pref = process.argv[2];
 let url;
 
 switch (pref) {
+	case 'niigata':
+		url = 'https://www.pref.niigata.lg.jp/site/shingata-corona/256362836.html';
+		break;
 	case 'osaka':
 		url = 'https://covid19-osaka.info/'; //阪府の最新感染動
 		break;
@@ -33,6 +36,9 @@ request(url, (err, response, body) => {
 		let ret = NG;
 
 		switch (pref) {
+			case 'niigata':
+				//TODO:
+				break;
 			case 'kyoto':
 				//<table> 入院・療養中
 				//<head>No,発表日,年代,性別,居住地等,
