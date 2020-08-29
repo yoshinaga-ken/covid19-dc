@@ -8,33 +8,33 @@
   <meta name="keywords" content="新型コロナウイルス,コロナ,感染,感染者数,可視化,グラフ,チャート,多次元,CSVダウンロード,coronavirus,Japan,covid19,Visualization,graph,chart,dc.js,csvdownload">
   <meta name="description" content="新型コロナウイルスの感染状況を次元チャートで可視化。都道府県、感染者数、年齢、症状、職業といったグラフ上の項目のクリックやキーワードを入力によって、任意の項目でのチャートのフィルタリングが行えます。">
   <!-- Bootstrap -->
-  <link href="jslib/bootstrap3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="bower_components/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
   <link href="jslib/font-awesome-5.3.1/css/all.min.css" rel="stylesheet" />
   <link href="jslib/font-awesome-5.3.1/css/v4-shims.min.css" rel="stylesheet" />
-  <!-- jqery-ui -->
-  <link rel="stylesheet" href="jslib/jquery-ui-1.12.1.custom/css/blitzer/jquery-ui.min.css">
-  <link rel="stylesheet" href="jslib/jquery-ui-iconfont/jquery-ui-1.12.icon-font.min.css">
-  <link rel="stylesheet" type="text/css" href="jslib/dc.js/dist/style/dc.min.css" />
-  <!-- jQuery -->
-  <script src="jslib/jquery-3.5.1.min.js"></script>
-  <!-- Bootstrap -->
-  <script src="jslib/bootstrap3/dist/js/bootstrap.min.js"></script>
   <!-- jquery-ui -->
-  <script src="jslib/jquery-ui-1.12.1.custom/jquery-ui.min.js"></script>
+  <link rel="stylesheet" href="bower_components/jquery-ui/themes/blitzer/jquery-ui.min.css">
+  <link rel="stylesheet" href="jslib/jquery-ui-iconfont/jquery-ui-1.12.icon-font.min.css">
+  <link rel="stylesheet" type="text/css" href="bower_components/dc.js/dist/style/dc.min.css" />
+  <!-- jQuery -->
+  <script src="bower_components/jquery/dist/jquery.min.js"></script>
+  <!-- Bootstrap -->
+  <script src="bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+  <!-- jquery-ui -->
+  <script src="bower_components/jquery-ui/jquery-ui.min.js"></script>
   <script src="jslib/jquery-ui-1.12.1.custom/ui/i18n/jquery.ui.datepicker-ja.js" charset="UTF-8"></script>
   <script type="text/javascript" language="javascript">
   $.datepicker.setDefaults($.datepicker.regional["ja"]);
   </script>
-  <script src="jslib/jquery-sparkline/jquery.sparkline.min.js"></script>
+  <script src="bower_components/jquery-sparkline/dist/jquery.sparkline.min.js"></script>
   <style type="text/css">
   .jqstooltip {
     font-size: 1em !important;
   }
   </style>
-  <script type="text/javascript" src="jslib/d3/d3.min.js"></script>
+  <script type="text/javascript" src="bower_components/d3/d3.min.js"></script>
   <script type="text/javascript" src="jslib/d3/d3.tip.js"></script>
-  <script type="text/javascript" src="jslib/crossfilter/crossfilter.min.js"></script>
-  <script type="text/javascript" src="jslib/dc.js/dist/dc.min.js"></script>
+  <script type="text/javascript" src="bower_components/crossfilter2/crossfilter.min.js"></script>
+  <script type="text/javascript" src="bower_components/dc.js/dist/dc.min.js"></script>
   <script type="text/javascript" src="jslib/colorbrewer.js"></script>
   <script type="text/javascript" src="jslib/jquery.ui.touch-punch.min.js"></script>
   <!-- DataTables [for jqui]-->
@@ -56,7 +56,7 @@
   <script type="text/javascript" language="javascript" src="jslib/DataTables/extensions/Select/js/dataTables.select.min.js"></script>
   <script type="text/javascript" language="javascript" src="jslib/DataTables/extensions/Scroller/js/dataTables.scroller.min.js"></script>
   <script type="text/javascript" language="javascript" src="jslib/DataTables/extensions/RowReorder/js/dataTables.rowReorder.min.js"></script>
-  <script type="text/javascript" charset="UTF-8" src="jslib//mark.js/dist/jquery.mark.min.js"></script>
+  <script type="text/javascript" charset="UTF-8" src="bower_components/mark.js/dist/jquery.mark.min.js"></script>
   <script type="text/javascript" language="javascript" src="jslib/DataTables/vendor/datatables.mark.js/dist/datatables.mark.min.js"></script>
   <script>
   $.extend($.fn.dataTable.defaults, {
@@ -65,14 +65,14 @@
     }
   });
   </script>
-  <script type="text/javascript" charset="UTF-8" src="jslib/lodash.min.js"></script>
-  <script type="text/javascript" charset="UTF-8" src="jslib/moment.min.js"></script>
-  <script type="text/javascript" charset="UTF-8" src="jslib/moment-with-locales.min.js"></script>
+  <script type="text/javascript" charset="UTF-8" src="bower_components/lodash/dist/lodash.min.js"></script>
+  <script type="text/javascript" charset="UTF-8" src="bower_components/moment/min/moment.min.js"></script>
+  <script type="text/javascript" charset="UTF-8" src="bower_components/moment/min/moment-with-locales.min.js"></script>
   <script type="text/javascript">
   moment.locale('ja');
   </script>
-  <!-- <script type="text/javascript" charset="UTF-8" src="jslib/vue/dist/vue.min.js"></script> -->
-  <link rel="stylesheet" href="jslib/jquery-jvectormap/jquery-jvectormap-2.0.5.css?c=10">
+  <!-- <script type="text/javascript" charset="UTF-8" src="bower_components/vue/dist/vue.min.js"></script> -->
+  <link rel="stylesheet" href="jslib/jquery-jvectormap/jquery-jvectormap-2.0.5.css">
   <style type="text/css">
   .jvectormap-container svg {
     background: #EEEEFF;
@@ -101,10 +101,10 @@
     top: auto;
   }
   </style>
-  <script src="jslib/jquery-jvectormap/jquery-jvectormap-2.0.5.min.js?c=10"></script>
+  <script src="jslib/jquery-jvectormap/jquery-jvectormap-2.0.5.min.js"></script>
   <script src="jslib/jquery-jvectormap/data/jquery-jvectormap-jp-merc.js"></script>
-  <link href="jslib/keyboard/css/keyboard.css" rel="stylesheet">
-  <script src="jslib/keyboard/js/jquery.keyboard.js"></script>
+  <link href="bower_components/keyboard/css/keyboard.css" rel="stylesheet">
+  <script src="bower_components/keyboard/js/jquery.keyboard.js"></script>
   <style type="text/css">
   #chart_name_flt_keyboard {
     background-color: #00bfff;
@@ -116,8 +116,8 @@
     background-color: #00bfff;
   }
   </style>
-  <script type="text/javascript" src="jslib/phpjs.js?c=10" charset="UTF-8"></script>
-  <script type="text/javascript" src="jslib/commons.js?c=10" charset="UTF-8"></script>
+  <script type="text/javascript" src="jslib/phpjs.js" charset="UTF-8"></script>
+  <script type="text/javascript" src="jslib/commons.js" charset="UTF-8"></script>
   <script type="text/javascript" src="data/covid19-assets.js" charset="UTF-8" defer></script>
   <script type="text/javascript" src="data/covid19-data.js" charset="UTF-8" defer></script>
   <link href="css/covid19.min.css" rel="stylesheet">

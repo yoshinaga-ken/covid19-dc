@@ -1,0 +1,42 @@
+{
+  "name": "covid19-dc",
+  "version": "1.0.0",
+  "description": "Visualize the situation of domestic and overseas infected people of the coronavirus with dc.js",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/yoshinaga-ken/covid19-dc.git"
+  },
+  "keywords": [
+    "covid-19",
+    "visualization",
+    "charting",
+    "crossfilter",
+    "dc"
+  ],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/yoshinaga-ken/covid19-dc/issues"
+  },
+  "homepage": "https://github.com/yoshinaga-ken/covid19-dc#readme",
+  "devDependencies": {
+    "bower": "^1.8.8",
+    "xlsx2csv": "^1.0.12"
+  },
+  "dependencies": {
+    "crossfilter2": "^1.5.3",
+    "d3": "^6.0.0",
+    "datatables": "^1.10.18",
+    "dc": "^4.0.5",
+    "jquery": "^3.5.1",
+    "jquery-sparkline": "^2.4.0",
+    "jquery-ui": "^1.12.1",
+    "lodash": "^4.17.20",
+    "mark.js": "^8.11.1",
+    "moment": "^2.27.0"
+  }
+}
