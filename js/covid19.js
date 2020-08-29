@@ -108,7 +108,7 @@ const m_ = {
         }
     },
     get: location_get_query(),
-    url_data: { "path": "\/data\/", "assets": "covid19-assets.json?1711", "data": "covid19-data.json?1711" },
+    url_data: { "path": "\/data\/", "assets": "covid19-assets.json", "data": "covid19-data.json" },
     url_name: 'https://ja.wikipedia.org/wiki',
 
     ndx: {},
@@ -1047,8 +1047,27 @@ const m_ = {
 
             m_.init();
 
-            let url = m_.get.data ? m_.get.data : m_.url_data.data
-            if (!is_local_html) d3.json(m_.url_data.path + url).then(initDc);
+            if (!is_local_html) {
+                let path, is_csv = 0;
+                if (m_.get.data) {
+                    const get_ext = (s) => s.substr(s.lastIndexOf('.') + 1);
+                    is_csv = get_ext(m_.get.data).toLowerCase() === 'csv';
+                    let is_http = m_.get.data.indexOf('http') !== -1;
+                    path = is_http ? m_.get.data : m_.url_data.path + m_.get.data
+                } else {
+                    path = m_.url_data.path + m_.url_data.data;
+                }
+                if (is_csv) {
+                    d3.csv(path, function(data, i) {
+                        return _.values(data);
+                    }).then(function(data) {
+                        data.unshift(data.columns);
+                        initDc(data);
+                    });
+                } else {//json
+                    d3.json(path).then(initDc);
+                }
+            }
         }
 
         if (is_local_html) {
@@ -2463,7 +2482,7 @@ $(document).ready(function() {
         document.querySelector('#chart_city').scrollTop = 0;
 
         if ($('#ui-datepicker-div').is(':visible')) m_.datePick.datepicker('show');
-        if(!IS_SP) $('#btn_search').focus();
+        if (!IS_SP) $('#btn_search').focus();
     });
 
     $('#btn_search')
@@ -2840,7 +2859,7 @@ const PREF_DATA = [
     ['https://www.pref.iwate.jp/kurashikankyou/iryou/covid19/index.html', ''],//岩手県
     ['https://www.pref.miyagi.jp/site/covid-19/02.html', ''],//宮城県
     ['https://www.pref.akita.lg.jp/pages/archive/47957', ''],//秋田県
-    ['https://www.pref.yamagata.jp/ou/bosai/020072/kochibou/coronavirus/coronavirus.html', ''],//山形県
+    ['https://www.pref.yamagata.jp/ou/kenkofukushi/090001/20130425/shingata_corona.html', 'ホーム > 組織で探す > 健康福祉部 > 健康福祉企画課（薬務・感染症対策室） > 感染症対策担当 > 新型コロナウイルス感染症（COVID-19）について'],//山形県
     ['https://www.pref.fukushima.lg.jp/sec/21045c/covid19-opendata.html', ''],//福島県
     [],//関東
     ['https://www.pref.ibaraki.jp/hokenfukushi/yobo/kiki/yobo/kansen/idwr/information/other/documents/20200130-corona.html', ''],//茨城県
@@ -2851,7 +2870,7 @@ const PREF_DATA = [
     ['https://stopcovid19.metro.tokyo.lg.jp/', '新型コロナウイルス感染症対策サイト - 東京都'],//東京都
     ['http://www.pref.kanagawa.jp/docs/t3u/dst/s0060925.html', 'ホーム > 健康・福祉・子育て > 医療 > 感染症・病気 > 感染症・病気の随時提供情報 > 新型コロナウイルス感染症について > 新型コロナウイルス感染症対策　陽性患者数及び陽性患者の属性データ - 神奈川県'],//神奈川県
     [],//中部
-    ['https://www.pref.niigata.lg.jp/sec/kenko/covid19.html', ''],//新潟県
+    ['https://www.pref.niigata.lg.jp/site/shingata-corona/256362836.html', 'トップページ > 分類でさがす > くらし・安全・環境 > 防災 > 新型コロナウイルス感染症 > 県内の発生状況'],//新潟県
     ['http://www.pref.toyama.jp/cms_sec/1205/kj00021798.html', 'ホーム > 組織別案内 > 厚生部 健康課 > 新型コロナウイルス感染症の県内の患者等発生状況 - 富山県'],//富山県
     ['https://stopcovid19.pref.ishikawa.jp/', '新型コロナウイルス感染症対策サイト - 石川県'],//石川県
     ['https://covid19-fukui.com/', '新型コロナウイルス感染症対策サイト - 福井県'],//福井県
@@ -2875,7 +2894,7 @@ const PREF_DATA = [
     ['https://www.pref.hiroshima.lg.jp/soshiki/57/bukan-coronavirus.html', 'トップページ 組織でさがす 健康福祉局 健康対策課 コロナウイルス感染症について - 広島県'],//広島県
     ['https://yamaguchi-opendata.jp/ckan/dataset/f6e5cff9-ae43-4cd9-a398-085187277edf', ''],//山口県
     [],//四国
-    ['https://ouropendata.jp/dataset/2192.html', ''],//徳島県
+    ['https://covid19-tokushima.netlify.app/', '徳島県新型コロナウイルス感染症 非公式対策サイト'],//徳島県
     ['https://www.mhlw.go.jp/stf/newpage_10264.html', ''],//香川県
     ['https://www.pref.ehime.jp/opendata-catalog/dataset/2174.html', ''],//愛媛県
     ['http://www.pref.kochi.lg.jp/soshiki/111301/2020041300141.html', ''],//高知県

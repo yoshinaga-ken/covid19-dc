@@ -39,7 +39,8 @@ The main parameters are as follows.
 ||q|Search keyword|q=北九州市 |City|
 |||               |q=看護師　 |Occupation|
 |||               |q=入院　　 |state|
-|Data|data|Infector information file name|data=covid19-usa.json|
+|Data|data|Infector information file name|data=covid19-usa.json|JSON Format
+|||                                      |data=covid19-usa.csv|CSV Format
 
 | Example ||
 |:---|:---|

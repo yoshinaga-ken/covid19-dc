@@ -39,7 +39,9 @@ URLに以下のパラメタを指定して起動するとチャートがフィ�
 ||q|検索キーワード|q=北九州市 |市区町村|
 |||               |q=看護師　 |職業|
 |||               |q=入院　　 |状態|
-|データ|data|感染者情報ファイル名|data=covid19-usa.json|
+|データ|data|感染者情報ファイル名|data=covid19-usa.json| JSON形式
+|||                        |data=covid19-usa.csv| CSV形式
+
 
 |例||
 |:---|:---|
@@ -49,7 +51,8 @@ URLに以下のパラメタを指定して起動するとチャートがフィ�
 |https://sakanaclub.xsrv.jp/dc/covid19/name=東京都+神奈川県+埼玉県+千葉県|
 |福岡県 4/4(月)～5/2(土) 職業:看護師 の状況の場合|
 |https://sakanaclub.xsrv.jp/dc/covid19/name=福岡県&date=4-4+5-2&q=看護師|
-
+|福岡県 4/4(月)～5/2(土) 職業:看護師 の状況の場合|
+|https://sakanaclub.xsrv.jp/dc/covid19/name=福岡県&date=4-4+5-2&q=看護師|
 　
 
 ### 表示されているチャートのデータを変更する方法は？
