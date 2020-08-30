@@ -34,6 +34,7 @@ function location_get_query() {
 	let q;
 	if (location.search === "") {
 		let s = location.pathname.split('/');
+		if (s.length === 2) return {};
 		q = s[s.length - 1];
 	} else {
 		q = php_trim(location.search, "?");

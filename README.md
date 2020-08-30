@@ -39,9 +39,10 @@ URLに以下のパラメタを指定して起動するとチャートがフィ�
 ||q|検索キーワード|q=北九州市 |市区町村|
 |||               |q=看護師　 |職業|
 |||               |q=入院　　 |状態|
-|データ|data|感染者情報ファイル名|data=covid19-usa.json| JSON形式
+|データ|data ※1|感染者情報ファイル名|data=covid19-usa.json| JSON形式
 |||                        |data=covid19-usa.csv| CSV形式
 
+※1 WEBサーバー上で動かしている場合のみ使用可能なパラメタ
 
 |例||
 |:---|:---|
@@ -54,15 +55,23 @@ URLに以下のパラメタを指定して起動するとチャートがフィ�
 　
 
 ### 表示されているチャートのデータを変更する方法は？
-感染者の属性に関して言えばの元データは[CSVファイル(covid19-data.csv)](data/covid19-data.csv)です。
-
+感染者の属性関しての元データは[CSVファイル(covid19-data.csv)](data/covid19-data.csv)です。
+このファイルの内容を変更すれば他のタイプのデータの視覚化にも利用できます。
 おおよそ以下のようなフォーマットになっています。
 
 ![image](https://sakanaclub.xsrv.jp/img/hlp/csv_format.gif)
 
-このファイルの内容を変更すれば他のタイプのデータの視覚化にも利用できます。
+このファイルの内容を変更した後は、
 
-ファイルを修正した後は以下のコマンドで使用されるデータを更新して下さい。
+- **WEBサーバー上で動かしている場合**
+
+URLパラメタのdataを以下のように変更して下さい。
+
+[https://sakanaclub.xsrv.jp/dc/covid19/**data=covid19-data.csv**](https://sakanaclub.xsrv.jp/dc/covid19/data=covid19-data.csv)
+
+- **ローカルで動かしている場合**
+
+以下のコマンドで使用されるデータを更新して下さい。
 ```
 $ cd data
 $ make covid19-data.js
@@ -70,7 +79,9 @@ $ make covid19-data.js
 　
 ### 各自治体の感染者情報のデータを取得する方法は？
 dataディレクトリの[Makefile](data/Makefile)には、各自治体が公開している感染者情報(CSVやHTMLやPDF形式)を、ダウンロードやパースしてCSVを生成する機能がいくつか含まれています。
-これを利用して取得する方法もあります。
+これを利用して取得する事もできます。
+
+**例:**
 ```
 $ cd data
 

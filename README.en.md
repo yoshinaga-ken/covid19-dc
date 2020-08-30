@@ -39,8 +39,10 @@ The main parameters are as follows.
 ||q|Search keyword|q=北九州市 |City|
 |||               |q=看護師　 |Occupation|
 |||               |q=入院　　 |state|
-|Data|data|Infector information file name|data=covid19-usa.json|JSON Format
+|Data|data *1|Infector information file name|data=covid19-usa.json|JSON Format
 |||                                      |data=covid19-usa.csv|CSV Format
+
+*1 Parameters that can be used only when running on a WEB server
 
 | Example ||
 |:---|:---|
@@ -55,14 +57,22 @@ The main parameters are as follows.
 
 ### How to change the data of the displayed chart?
 Regarding the attributes of the infected person, the original data is [CSV file (covid19-data.csv)](data/covid19-data.csv).
-
+You can modify the contents of this file to visualize other types of data.
 The format is roughly as follows.
 
 ![image](https://sakanaclub.xsrv.jp/img/hlp/csv_format.gif)
 
-You can modify the contents of this file to visualize other types of data.
+After changing the contents of this file,
 
-After modifying the file, update the data used by the following commands.
+-**If running on a web server**
+
+Change the data of URL parameter as follows.
+
+[https://sakanaclub.xsrv.jp/dc/covid19/**data=covid19-data.csv**](https://sakanaclub.xsrv.jp/dc/covid19/data=covid19-data.csv)
+
+-**If running locally**
+
+Update the data used in the commands below.
 ```
 $ cd data
 $ make covid19-data.js
@@ -70,7 +80,9 @@ $ make covid19-data.js
 　
 ### How to get data of infected person information of each local government?
  [Makefile](data/Makefile) in the data directory contains some functions to download or parse the infected person information (CSV, HTML or PDF format) published by each local government and generate CSV. I will.
-There is also a way to get it.
+You can also get it by using this.
+
+**Example**
 ```
 $ cd data
 

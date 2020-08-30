@@ -99,7 +99,7 @@ colorbrewer.Set2[8][7] = colorbrewer.Set1[8][6];//Set3[12][8]:gray-> light gold
 
 const m_ = {
     config: {
-        cDateYm: {
+        url_param_data_replace: 1, cDateYm: {
             is_elasticY: 1
         },
         cJob: {
@@ -108,7 +108,7 @@ const m_ = {
         }
     },
     get: location_get_query(),
-    url_data: { "path": "\/data\/", "assets": "covid19-assets.json", "data": "covid19-data.json" },
+    url_data: { "path": "data\/", "assets": "covid19-assets.json", "data": "covid19-data.json" },
     url_name: 'https://ja.wikipedia.org/wiki',
 
     ndx: {},
@@ -1031,10 +1031,46 @@ const m_ = {
         }
         return pref_cnt_tbl;
     },
-    loadData: function() {
+    loadDcData: (name) => {
+        m_.get.data = name
+
+        const get_ext = (s) => { s = s.replace(/\?.*$/, ''); return s.substr(s.lastIndexOf('.') + 1); }
+        const url_query_replace = () => {
+            let copy = Object.assign({}, m_.get);
+            delete copy.data;
+            if (copy.date) copy.date = copy.date.replace(' ', '+');
+            let query = 'data=' + m_.get.data.replace(/\?.*$/, '') + (_.size(m_.get) > 1 ? '&' + php_http_build_query(copy) : '');
+            if (location.href.indexOf('?') !== -1 || location.href.toLowerCase().indexOf('.html') !== -1) {
+                query = location.pathname + '?' + query;
+            }
+            history.replaceState(null, null, query);
+        }
+        let is_csv = get_ext(m_.get.data).toLowerCase() === 'csv';
+        let is_http = m_.get.data.indexOf('http') !== -1; let path = is_http ? m_.get.data : m_.url_data.path + m_.get.data
+
+        if (is_csv) {
+            d3.csv(path, (data) => {
+                return Object.values(data);
+            })
+                .then((data) => {
+                    data.unshift(data.columns);
+                    initDc(data);
+                })
+                .then(() => {
+                    if (m_.config.url_param_data_replace) url_query_replace();
+                });
+        } else {//json
+            d3.json(path)
+                .then(initDc)
+                .then(() => {
+                    if (m_.config.url_param_data_replace) url_query_replace();
+                });
+        }
+    },
+    loadAllData: () => {
         const is_local_html = location.protocol === 'file:';
 
-        function load(d) {
+        const load = (d) => {
             m_.data3 = d.data3;
             m_.jobcates = d.jobcates;
             m_.pref_tbl_last_m1 = d.pref_tbl_last_m1;
@@ -1048,25 +1084,7 @@ const m_ = {
             m_.init();
 
             if (!is_local_html) {
-                let path, is_csv = 0;
-                if (m_.get.data) {
-                    const get_ext = (s) => s.substr(s.lastIndexOf('.') + 1);
-                    is_csv = get_ext(m_.get.data).toLowerCase() === 'csv';
-                    let is_http = m_.get.data.indexOf('http') !== -1;
-                    path = is_http ? m_.get.data : m_.url_data.path + m_.get.data
-                } else {
-                    path = m_.url_data.path + m_.url_data.data;
-                }
-                if (is_csv) {
-                    d3.csv(path, function(data, i) {
-                        return _.values(data);
-                    }).then(function(data) {
-                        data.unshift(data.columns);
-                        initDc(data);
-                    });
-                } else {//json
-                    d3.json(path).then(initDc);
-                }
+                let name = m_.get.data || m_.url_data.data; m_.loadDcData(name);
             }
         }
 
@@ -1077,7 +1095,7 @@ const m_ = {
             d3.json(m_.url_data.path + m_.url_data.assets).then(load);
         }
     },
-    reLoadData: function(url) {
+    reLoadDcData: function(name) {
         //Free memory
         m_.ndx.remove();
         m_.nd = null;
@@ -1087,7 +1105,7 @@ const m_ = {
         $('#ch_pnl_week').prop('checked', true).trigger('ch_pnl_update');
         $('#div_div_date2').hide();
 
-        d3.json(url).then(initDc);
+        m_.loadDcData(name);
 
         m_.on_after_initDc = () => {
             if (m_.data_type) {
@@ -3342,6 +3360,6 @@ $(document).ready(function() {
 });
 
 $(document).ready(function() {
-    m_.loadData();
+    m_.loadAllData();
 });
 
