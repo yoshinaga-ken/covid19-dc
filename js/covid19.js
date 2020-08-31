@@ -1040,8 +1040,19 @@ const m_ = {
             delete copy.data;
             if (copy.date) copy.date = copy.date.replace(' ', '+');
             let query = 'data=' + m_.get.data.replace(/\?.*$/, '') + (_.size(m_.get) > 1 ? '&' + php_http_build_query(copy) : '');
+
             if (location.href.indexOf('?') !== -1 || location.href.toLowerCase().indexOf('.html') !== -1) {
                 query = location.pathname + '?' + query;
+            } else {
+                const get_ci_pathname = (pathname) => {
+                    if (location.pathname.indexOf('=') === -1) {
+                        pathname = pathname + (_.last(pathname) === '/' ? '' : '/');
+                    } else {
+                        pathname = pathname.substr(0, pathname.lastIndexOf('/') + 1);
+                    }
+                    return pathname;
+                }
+                query = get_ci_pathname(location.pathname) + query;
             }
             history.replaceState(null, null, query);
         }

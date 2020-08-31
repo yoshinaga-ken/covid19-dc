@@ -33,8 +33,8 @@ function printf02d(i) {
 function location_get_query() {
 	let q;
 	if (location.search === "") {
+		if (location.pathname.indexOf('=') === -1) return {};
 		let s = location.pathname.split('/');
-		if (s.length === 2) return {};
 		q = s[s.length - 1];
 	} else {
 		q = php_trim(location.search, "?");
