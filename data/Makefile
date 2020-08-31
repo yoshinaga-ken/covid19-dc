@@ -148,8 +148,8 @@ YYMMDD=$(shell date +20%m%d)
 dwn_fukushima:
 	@echo "■fukushima"
 	-mv "$(DWN_DATA_DIR)/$(DWN_PRE)福島県.csv" "$(DWN_DATA_DIR)/$(DWN_PRE)福島県-bak.csv"
-	#$(WGET) -O$(DWN_DATA_DIR)/tmp "http://www.pref.fukushima.lg.jp/w4/covid19/patients/070009_fukushima_covid19_patients_$(YYMMDD)all.csv"
-	$(WGET) -O$(DWN_DATA_DIR)/tmp "http://www.pref.fukushima.lg.jp/w4/covid19/patients/070009_fukushima_covid19_patients_200830all.csv"
+	#$(WGET) -O$(DWN_DATA_DIR)/tmp "http://www.pref.fukushima.lg.jp/w4/covid19/patients/070009_fukushima_covid19_patients_$(YYMMDD).csv"
+	$(WGET) -O$(DWN_DATA_DIR)/tmp "http://www.pref.fukushima.lg.jp/w4/covid19/patients/070009_fukushima_covid19_patients_200831.csv"
 	iconv -f SJIS -t UTF-8 $(DWN_DATA_DIR)/tmp > "$(DWN_DATA_DIR)/$(DWN_PRE)福島県.csv"
 
 #茨城県
