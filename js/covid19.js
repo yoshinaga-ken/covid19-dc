@@ -1,14 +1,19 @@
 const IS_SP = ('ontouchstart' in window) || window.innerWidth <= 768;
 
+//感染者情報のデータタイプ
+const DTYPE_NORMAL = 0;    //それ以外
+const DTYPE_COVID_JP = 1;  //感染者情報(JAPAN)
+const DTYPE_COVID_US = 2;  //感染者情報(USA)
+
 const D_YMD = 0;    // 日付。 例:2020-01-30
-const D_SEX = 1;    // 性別ID。
-const D_AGE = 2;    // 年齢。
+const D_SEX = 1;    // 性別ID。INT。
+const D_AGE = 2;    // 年齢。INT。
 const D_LV = 3;     // 状態。 例:無症,退院,感染
 const D_PL1 = 4;    // 都道府県。 例:福岡県
 const D_PL2 = 5;    // 市区町村。 例:福岡市
 const D_JOB = 6;    // 職業。 例:会社員
-const D_JOBCAT = 7; // ジョブカテゴリID。 例:'教職員'=>['教職員','大学職員','小学校教諭','専門学校職員...]
-const D_CNT = 8;    // カウント(未必須:ない場合:1)
+const D_JOBCAT = 7; // ジョブカテゴリID。 INT。例:'教職員'=>['教職員','大学職員','小学校教諭','専門学校職員...]
+const D_CNT = 8;    // カウント。INT。(未必須:ない場合:1)
 const D_OPT = 9;    // CSVデータタイプオプション(未必須,ヘッダのみ,ユーザー定義)
 
 const D3_YMD = 0;
@@ -99,7 +104,7 @@ colorbrewer.Set2[8][7] = colorbrewer.Set1[8][6];//Set3[12][8]:gray-> light gold
 
 const m_ = {
     config: {
-        url_param_data_replace: 1, cDateYm: {
+        url_param_data_replace: !IS_SP, cDateYm: {
             is_elasticY: 1
         },
         cJob: {
@@ -112,7 +117,7 @@ const m_ = {
     url_name: 'https://ja.wikipedia.org/wiki',
 
     ndx: {},
-    data_type: 1,     //感染者情報のデータタイプ。1:感染者情報
+    data_type: DTYPE_COVID_JP,     //感染者情報のデータタイプ
     data_hdr: [],
     data: [],         //感染者情報のデータ
     names: {},
@@ -136,7 +141,7 @@ const m_ = {
     dimName2: null,
 
     //gpCity_all:{},     
-    domainDate: [],
+    domainDate: null,
     gpDate: null,
     gpDate2: null,
 
@@ -498,11 +503,7 @@ const m_ = {
             chartName.filterAll().filter(names.length === 1 ? names[0] : [names]);
             chartCity.filterAll();
             m_.renderAllChart();
-            if (!IS_SP) {
-                m_.chartScroll('#div_name', names[0], 300);
-            } else {
-                _.delay(() => { m_.chartScroll('#div_name', names[0], 300); }, 300);
-            }
+            m_.chartScroll('#div_name', names[0], 300);
             return 1;
         }
 
@@ -522,7 +523,7 @@ const m_ = {
             chartCity.filterAll().filter([citys]);
             m_.renderAllChart();
             $('#ch_pnl_city').prop('checked', true).trigger('ch_pnl_update');
-            _.delay(() => { m_.chartScroll('#div_city', city, 300); }, 300);
+            m_.chartScroll('#div_city', city, 300);
             return 1;
         }
         return 0;
@@ -698,7 +699,7 @@ const m_ = {
             }
         }
 
-        if (m_.data_type) {
+        if (m_.data_type === DTYPE_COVID_JP) {
             m_.renderVLine(chart, [
                 { cls: ['s1'], x: new Date(YMD_ED_F[0][0]) },
                 { cls: ['s2'], x: new Date(YMD_ED_F[1][0]) },
@@ -944,12 +945,11 @@ const m_ = {
     },
     chartScroll: function(sel, name, duration) {
         name = name || '';
-        duration = duration || 300;
+        duration = duration === undefined ? 300 : duration;
         let o = $(sel);
         if (name == '') {
             o.scrollTop(0); return;
         }
-
         let pl = o.find('g.row:contains("' + name + '")');
         if (pl.length) {
             let top;
@@ -961,8 +961,8 @@ const m_ = {
                 let p1 = pl.position();
                 top = p1.top - p0.top - 40;
             }
-            //o.scrollTop(top);
-            o.animate({ scrollTop: top }, duration, 'swing');
+            if (duration === 0) o.scrollTop(top);
+            else o.animate({ scrollTop: top }, duration, 'swing');
         }
     },
     createFilteredBarStacksData: function() {
@@ -999,7 +999,7 @@ const m_ = {
 
         //rollback
         dimName.filterAll();
-        chartDate.x(d3.scaleTime().domain(m_.domainDate));
+        if (m_.domainDate) chartDate.x(d3.scaleTime().domain(m_.domainDate));
 
         return stacks2;
     },
@@ -1059,9 +1059,16 @@ const m_ = {
         let is_csv = get_ext(m_.get.data).toLowerCase() === 'csv';
         let is_http = m_.get.data.indexOf('http') !== -1; let path = is_http ? m_.get.data : m_.url_data.path + m_.get.data
 
+        path += '';
+        let def;
         if (is_csv) {
-            d3.csv(path, (data) => {
-                return Object.values(data);
+            def = d3.csv(path, (data) => {
+                let row = Object.values(data);
+                row[D_SEX] = parseInt(row[D_SEX]);
+                row[D_AGE] = parseInt(row[D_AGE]);
+                row[D_JOBCAT] = parseInt(row[D_JOBCAT]);
+                row[D_CNT] = parseInt(row[D_CNT]);
+                return row;
             })
                 .then((data) => {
                     data.unshift(data.columns);
@@ -1071,12 +1078,13 @@ const m_ = {
                     if (m_.config.url_param_data_replace) url_query_replace();
                 });
         } else {//json
-            d3.json(path)
+            def = d3.json(path)
                 .then(initDc)
                 .then(() => {
                     if (m_.config.url_param_data_replace) url_query_replace();
                 });
         }
+        return def;
     },
     loadAllData: () => {
         const is_local_html = location.protocol === 'file:';
@@ -1109,39 +1117,13 @@ const m_ = {
     reLoadDcData: function(name) {
         //Free memory
         m_.ndx.remove();
-        m_.nd = null;
+        m_.ndx = null;
 
-        m_.sel_tab = 'tabs_c';
-        $('#ch_pnl_city').prop('checked', true).trigger('ch_pnl_update');
-        $('#ch_pnl_week').prop('checked', true).trigger('ch_pnl_update');
-        $('#div_div_date2').hide();
+        m_.get = {};
 
-        m_.loadDcData(name);
-
-        m_.on_after_initDc = () => {
-            if (m_.data_type) {
-                $('#chart_map_title').show();
-                chartCity.addFilterHandler(m_.addFilterHandlerSingleR);
-                chartCond.addFilterHandler(m_.addFilterHandlerSingleR)
-            } else {
-                $('#chart_map_title').hide();
-                chartCity.addFilterHandler(m_.addFilterHandlerSingle);
-                chartCond.addFilterHandler(m_.addFilterHandlerSingle);
-            }
-            //タイトル変更
-            $('#panel_city .chart-title').text(m_.data_hdr[D_PL2]);
-            $('#panel_date .chart-title').html(m_.data_type ? '<i class="fa fa-procedures"></i>感染者数' : m_.data_hdr[D_YMD]);
-            //$('#chart_sex .chart-title').text(m_.data_hdr[D_LV]);
-            //$('#chart_age .chart-title').text(m_.data_hdr[D_LV]);
-            $('#panel_cond .chart-title').text(m_.data_hdr[D_LV]);
-            $('#panel_job .chart-title').text(m_.data_hdr[D_JOB]);
+        m_.loadDcData(name).then(() => {
             $('.btn_clear_all').trigger('click');
-            if (m_.data_type) {
-                $('#stack_type_con').prop('checked', true).trigger('change');
-            } else {
-                $('#stack_type_age').prop('checked', true).trigger('change');
-            }
-        }
+        });
     },
     init: function() {
         if (IS_SP) {
@@ -1193,9 +1175,20 @@ const initDc = (data) => {
     m_.data_hdr = data.shift();
     m_.data = data;
 
-    m_.data_type = m_.data_hdr[D_YMD] === '日付';
+    if (m_.data_hdr[D_OPT]) {
+        let opt = {};
+        php_parse_str(m_.data_hdr[D_OPT], opt);
+        m_.data_type = parseInt(opt.data_type);
+    } else {
+        m_.data_type = DTYPE_NORMAL;
+    }
 
-    m_.domainDate = [moment('2020-03-20').subtract(1, 'days').toDate(), moment(m_.spk.max_ymd).add(3, 'days').toDate()];
+    if (m_.data_type === DTYPE_COVID_JP) {
+        m_.domainDate = [moment('2020-03-20').subtract(1, 'days').toDate(), moment(m_.spk.max_ymd).add(3, 'days').toDate()];
+    } else {
+        let ymds = _.uniq(_.map(m_.data, D_YMD));
+        m_.domainDate = [moment(_.min(ymds)).subtract(1, 'days').toDate(), moment(_.max(ymds)).add(3, 'days').toDate()];
+    }
 
     const pl1 = _.map(data, D_PL1);
     const names_length = _.uniq(pl1).length
@@ -1468,7 +1461,8 @@ const initDc = (data) => {
             let sel_no = d.name.split(':');
             return sel_no.length === 2 ? m_.date_stk_nm[sel_no[1]] : d.name;
         }))
-        .x(d3.scaleTime().domain(m_.domainDate))
+        .x(m_.domainDate ? d3.scaleTime().domain(m_.domainDate) : d3.scaleTime())
+        .elasticX(false)
         //.round(d3.timeDay.round)        
         .mouseZoomable(false)
         .xUnits(d3.timeDay)
@@ -1693,7 +1687,8 @@ const initDc = (data) => {
         //右
         .margins({ top: 0, right: 0, bottom: 20, left: 30 })
         .legend(dc.legend().x(IS_SP ? chartDateW - 350 : 60).y(0))
-        .x(d3.scaleTime().domain(m_.domainDate))
+        .x(m_.domainDate ? d3.scaleTime().domain(m_.domainDate) : d3.scaleTime())
+        .elasticX(false)
         //.round(d3.timeDay.round)        
         .mouseZoomable(false)
         .xUnits(d3.timeDay)
@@ -1998,7 +1993,7 @@ const initDc = (data) => {
         })
         //.legend(dc.legend())
         ;
-    if (m_.data_type) {
+    if (m_.data_type === DTYPE_COVID_JP) {
         chartCond
             .colorAccessor(function(d) {
                 let is1 = d.key.indexOf('無症状') !== -1;
@@ -2048,6 +2043,7 @@ const initDc = (data) => {
     let j = _.uniq(_.map(m_.data, D_JOBCAT));
     m_.is_job_cate = !(j.length === 1 && j[0] === DN_JOBCAT);
 
+    let chartJobW
     if (m_.is_job_cate) {
         m_.dimJobCat = ndx.dimension(function(d) {
             return m_.jobcates[d[D_JOBCAT]];
@@ -2056,9 +2052,10 @@ const initDc = (data) => {
             return d[D_JOBCAT] === DN_JOBCAT ? 0 : d[D_CNT] || 1;
         });
         m_.gpJobCat = m_.groupRemoveEmpty(m_.gpJobCat);//xAxis0件は表示しない
+        chartJobW = m_.gpJobCat.all().length * m_.config.cJob.barWidth;
+    } else {
+        chartJobW = m_.gpJob.all().length * m_.config.cJob.barWidth;
     }
-
-    let chartJobW = m_.gpJobCat.all().length * m_.config.cJob.barWidth;
 
     chartJob
         .width(chartJobW)
@@ -2146,14 +2143,40 @@ const initDc = (data) => {
     $('#div_date').scrollLeft(800);
 
 
-    if (m_.get['tab']) {
-        m_.tab.tabs("option", "activate").call(null, null, null, 'tabs_' + m_.get['tab']);
+
+    if (m_.data_type === DTYPE_COVID_JP) {
+        $('#chart_map_title').show();
+        chartCity.addFilterHandler(m_.addFilterHandlerSingleR);
+        chartCond.addFilterHandler(m_.addFilterHandlerSingleR)
+
+        if (m_.get['tab']) {
+            m_.tab.tabs("option", "activate").call(null, null, null, 'tabs_' + m_.get['tab']);
+        }
+    } else {
+        m_.sel_tab = 'tabs_c';
+        $('#div_div_date2').hide();
+        $('#ch_pnl_city').prop('checked', true).trigger('ch_pnl_update');
+        $('#ch_pnl_week').prop('checked', true).trigger('ch_pnl_update');
+
+        $('#chart_map_title').hide();
+        chartCity.addFilterHandler(m_.addFilterHandlerSingle);
+        chartCond.addFilterHandler(m_.addFilterHandlerSingle);
+    }
+    //タイトル変更
+    $('#panel_name .chart-title').text(m_.data_hdr[D_PL1]);
+    $('#panel_city .chart-title').text(m_.data_hdr[D_PL2]);
+    $('#panel_date .chart-title').html(m_.data_type !== DTYPE_NORMAL ? '<i class="fa fa-procedures"></i>感染者数' : m_.data_hdr[D_YMD]);
+    //$('#chart_sex .chart-title').text(m_.data_hdr[D_LV]);
+    //$('#chart_age .chart-title').text(m_.data_hdr[D_LV]);
+    $('#panel_cond .chart-title').text(m_.data_hdr[D_LV]);
+    $('#panel_job .chart-title').text(m_.data_hdr[D_JOB]);
+    if (m_.data_type === DTYPE_COVID_JP) {
+        $('#stack_type_con').prop('checked', true).trigger('change');
+    } else {
+        $('#stack_type_age').prop('checked', true).trigger('change');
     }
 
     if (!IS_SP) $('#btn_search').focus(); //.select();
-
-    if (m_.on_after_initDc) m_.on_after_initDc();
-
 }//initDc
 
 const initTabs = () => {
@@ -2379,10 +2402,11 @@ const initAutoComplete = () => {
     });
 }
 
-var map;
+var map = null;
 
 //vectorMap
 const drawJapanMap = () => {
+    if (m_.data_type === DTYPE_COVID_US) return;
     $("#japan-map").empty();
 
     let series_scale = m_.sel_tab === 'tabs_pc' ? { "0.4%以上": "#8c0a00", "0.2%以上": "#ea5432", "0.1%以上": "#ff781d", "0.05%以上": "#ff9d57", "0.01%以上": "#ffceab", "0%以上": "#ffffe0", "0%": "#dadada", "選択中": "#ffffff" } : { "1000人以上": "#8c0a00", "500人以上": "#ea5432", "100人以上": "#ff781d", "50人以上": "#ff9d57", "10人以上": "#ffceab", "1人以上": "#f5deb3", "0人": "#dadada", "選択中": "#ffffff" };
@@ -2408,6 +2432,7 @@ const drawJapanMap = () => {
     map = new jvm.Map({
         container: $('#japan-map'),
         map: 'jp_merc',
+        //map: 'us_aea_en',
         panOnDrag: !IS_SP,
         focusOn: {
             x: 0.45, y: 0.48,
@@ -2498,6 +2523,7 @@ $(document).ready(function() {
 
     $('.btn_clear_all').on('click', function(e) {
         e.preventDefault();
+
         $('#btn_search').val('');
         $('.filter_txt').val('');
         $('.btn_brush').trigger('my_update', 1);//off
@@ -2507,8 +2533,9 @@ $(document).ready(function() {
 
         m_.is_drawJapanMap = 1;
         m_.renderAllChart();
-        document.querySelector('#chart_name').scrollTop = 0;
-        document.querySelector('#chart_city').scrollTop = 0;
+
+        document.querySelector('#div_name').scrollTop = 0;
+        document.querySelector('#div_city').scrollTop = 0;
 
         if ($('#ui-datepicker-div').is(':visible')) m_.datePick.datepicker('show');
         if (!IS_SP) $('#btn_search').focus();
@@ -2677,7 +2704,7 @@ $(document).ready(function() {
 
         let flt_name = $('.hdr_flt').text().replace('の状況', '');
         const bom = new Uint8Array([0xEF, 0xBB, 0xBF]);
-        const filename = (m_.data_type ? "covid19" : "data") + " - [" + flt_name + "].csv";
+        const filename = (m_.data_type !== DTYPE_NORMAL ? "covid19" : "data") + " - [" + flt_name + "].csv";
         const blob = new Blob([bom, csv], { type: "text/csv" });
 
         //IE10/11用

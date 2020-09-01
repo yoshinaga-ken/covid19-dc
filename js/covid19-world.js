@@ -59,7 +59,7 @@ const m_ = {
         }
     },
     get: location_get_query(),
-    url_data: '/data/covid19-world.json?7312',
+    url_data: '/data/covid19-world.json',
     url_name: 'https://ja.wikipedia.org/wiki',
 
     lv_type: 0, // 0b00:感染 0b01:1:死亡 0b11::3:感染|死亡
@@ -361,11 +361,7 @@ const m_ = {
         if (is_pre_find) {
             chartWorld.filterAll().filter(names.length === 1 ? names[0] : [names]);
             m_.renderAllChart();
-            if (!IS_SP) {
-                m_.chartScroll('#div_world', names[0], 300);
-            } else {
-                _.delay(() => { m_.chartScroll('#div_world', names[0], 300); }, 300);
-            }
+            m_.chartScroll('#div_world', names[0], 300);
             return 1;
         }
         return 0;
@@ -633,11 +629,12 @@ const m_ = {
         }
     },
     chartScroll: function(sel, name, duration) {
+        name = name || '';
+        duration = duration === undefined ? 300 : duration;
         let o = $(sel);
         if (name == '') {
             o.scrollTop(0); return;
         }
-
         let pl = o.find('g.row:contains("' + name + '")');
         if (pl.length) {
             let top;
@@ -649,8 +646,8 @@ const m_ = {
                 let p1 = pl.position();
                 top = p1.top - p0.top - 40;
             }
-            //o.scrollTop(top);
-            o.animate({ scrollTop: top }, duration, 'swing');
+            if (duration === 0) o.scrollTop(top);
+            else o.animate({ scrollTop: top }, duration, 'swing');
         }
     },
     remove_empty: function(source_group) {
@@ -1552,7 +1549,7 @@ $(document).ready(function() {
         dc.filterAll('chartGroup2');
         chartCondSel.filter(m_.lv_type ? '死亡' : '感染');
         dc.renderAll("chartGroup2");
-        if(!IS_SP) $('#btn_search').focus();
+        if (!IS_SP) $('#btn_search').focus();
     });
 
     $('#btn_search')
