@@ -510,3 +510,7 @@ covid19-world.js: covid19-world.json
 
 data_all:covid19-assets.js covid19-data.js covid19-world.js
 
+
+start:
+	@echo "Open 'http://localhost:8080/covid19.html' in your browser."
+	php -S localhost:8080 -t ../
