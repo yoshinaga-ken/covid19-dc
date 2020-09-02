@@ -157,12 +157,14 @@ dwn_fukushima:
 dwn_ibaraki:
 	@echo "■ibaraki"
 
+YYYYMMDD=$(shell date +%Y%m%d)
 #栃木県
 #TAG:data_xls,url_change
 #http://www.pref.tochigi.lg.jp/e04/welfare/hoken-eisei/kansen/hp/coronakensahasseijyoukyou.html
 dwn_tochigi:
 	@echo "■tochigi"
 	-mv "$(DWN_DATA_DIR)/$(DWN_PRE)栃木県.xlsx" "$(DWN_DATA_DIR)/$(DWN_PRE)栃木県-bak.xlsx"
+	#-$(WGET) -O "$(DWN_DATA_DIR)/$(DWN_PRE)栃木県.xlsx" "http://www.pref.tochigi.lg.jp/e04/welfare/hoken-eisei/kansen/hp/documents/${YYYYMMDD}hasseijoukyou.xlsx"
 	-$(WGET) -O "$(DWN_DATA_DIR)/$(DWN_PRE)栃木県.xlsx" "http://www.pref.tochigi.lg.jp/e04/welfare/hoken-eisei/kansen/hp/documents/20200816hasseijoukyou.xlsx"
 	make "$(DWN_DATA_DIR)/$(DWN_PRE)栃木県.csv"
 
