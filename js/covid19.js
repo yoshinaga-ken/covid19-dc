@@ -1,10 +1,5 @@
 const IS_SP = ('ontouchstart' in window) || window.innerWidth <= 768;
 
-//感染者情報のデータタイプ
-const DTYPE_NORMAL = 0;    //それ以外
-const DTYPE_COVID_JP = 1;  //感染者情報(JAPAN)
-const DTYPE_COVID_US = 2;  //感染者情報(USA)
-
 const D_YMD = 0;    // 日付。 例:2020-01-30
 const D_SEX = 1;    // 性別ID。INT。
 const D_AGE = 2;    // 年齢。INT。
@@ -82,23 +77,6 @@ const LV_HIRA = { "退院": "たいいん", "無症状": "むしょうじょう"
 const SPARK_SX = IS_SP ? 60 : 25;
 const MAP_COL_TBL = [["1000人以上", "#8c0a00"], ["500人以上", "#ea5432"], ["100人以上", "#ff781d"], ["50人以上", "#ff9d57"], ["10人以上", "#ffceab"], ["1人以上", "#f5deb3"], ["0人", "#dadada"], ["選択中", "#ffffff"]];
 
-//charts
-const composite = new dc.CompositeChart("#chart_date", "chartGroup");
-const chartDate = new dc.BarChart(composite);
-const chartLine = new dc.LineChart(composite);
-
-const composite2 = new dc.CompositeChart("#chart_date2", "chartGroup");
-const chartDate2 = new dc.BarChart(composite2);
-const chartLine2 = new dc.LineChart(composite2);
-
-const chartName = new dc.RowChart("#chart_name", "chartGroup");
-const chartCity = new dc.RowChart("#chart_city", "chartGroup");
-const chartSex = new dc.PieChart('#chart_sex', 'chartGroup');
-const chartWeek = new dc.BarChart("#chart_week", "chartGroup");
-const chartAge = new dc.BarChart("#chart_age", "chartGroup");
-const chartCond = new dc.BarChart('#chart_cond', 'chartGroup');
-const chartJob = new dc.BarChart('#chart_job', 'chartGroup');
-
 colorbrewer.Set3[12][8] = colorbrewer.Set2[8][6];//Set3[12][8]:gray-> light gold
 colorbrewer.Set2[8][7] = colorbrewer.Set1[8][6];//Set3[12][8]:gray-> light gold
 
@@ -116,8 +94,27 @@ const m_ = {
     url_data: { "path": "data\/", "assets": "covid19-assets.json", "data": "covid19-data.json" },
     url_name: 'https://ja.wikipedia.org/wiki',
 
+    //
+    //charts
+    //
+    composite: null,
+    chartDate: null,
+    chartLine: null,
+
+    composite2: null,
+    chartDate2: null,
+    chartLine2: null,
+
+    chartName: null,
+    chartCity: null,
+    chartSex: null,
+    chartWeek: null,
+    chartAge: null,
+    chartCond: null,
+    chartJob: null,
+
     ndx: {},
-    data_type: DTYPE_COVID_JP,     //感染者情報のデータタイプ
+    data_type: 1,     //感染者情報のデータタイプ。1:感染者情報 0:それ以外
     data_hdr: [],
     data: [],         //感染者情報のデータ
     names: {},
@@ -162,6 +159,55 @@ const m_ = {
     sel_tab: 'tabs_c',
     sel_stack: 'con',
 
+    tip: null,
+    tipRow: null,
+
+    tbl_pref: null,
+    tbl_pref_isearch: null,
+    //gpDateYMMax:{},
+
+    settings_name: '',
+    settings: null,
+    chartAllFilterByKW_render: 0,
+    line: d3.line().curve(d3.curveLinear),
+    last_fth: '',
+    is_drawJapanMap: 1,
+    is_filter_region_sel: 0,
+    group_reduce: {
+        add: function(p, v, dir) {
+            const c = dir * (v[D_CNT] || 1);
+            p = m_.group_reduce_lv_set(p, v[D_LV], c);
+
+            let nm = v[D_PL1]
+            if (p.nmcnt[nm] === undefined) p.nmcnt[nm] = 0; p.nmcnt[nm] += c;
+
+            p = m_.group_reduce_age_set(p, v[D_AGE], c);
+
+            p.total += c;
+            return p;
+        },
+        append: (p, v) => m_.group_reduce.add(p, v, 1),
+        remove: (p, v) => m_.group_reduce.add(p, v, -1),
+        init: (p, v) => {
+            return { lv_a: 0, lv_b: 0, lv_c: 0, lv_d: 0, lv_e: 0, nmcnt: {}, agcnt: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], total: 0 };
+        }
+    },
+    group_reduce_light: {
+        add: function(p, v, dir) {
+            const c = dir * (v[D_CNT] || 1);
+            const l = v[D_LV];
+            p = m_.group_reduce_lv_set(p, l, c);
+            p.total += c;
+            return p;
+        },
+        append: (p, v) => m_.group_reduce_light.add(p, v, 1),
+        remove: (p, v) => m_.group_reduce_light.add(p, v, -1),
+        init: function(p, v) {
+            return { lv_a: 0, lv_b: 0, lv_c: 0, lv_d: 0, lv_e: 0, total: 0 };
+        }
+    },
+    date_stk_nm: [],
+
     dateCntCreate: function() {
         m_.dateCnt = {};
         m_.dateCntMax = -1;
@@ -173,16 +219,6 @@ const m_ = {
             if (d.value > 0 && ymd > m_.dateCntTo) m_.dateCntTo = ymd;
         });
     },
-
-    tip: null,
-    tipRow: null,
-
-    tbl_pref: null,
-    tbl_pref_isearch: null,
-    //gpDateYMMax:{},
-
-    settings_name: '',
-    settings: null,
     settingsLoad: function() {
         function get_pathname_trimr(pn) {
             let a = pn.split('/');
@@ -196,161 +232,6 @@ const m_ = {
             $('#ch_pnl_week').prop('checked', true);
         }
     },
-
-    //
-    //search keybord
-    //
-    keyboard: null,
-    keyboard_target: 'name', //'name',
-    keyboard_selector: '#name_flt', //=='#'+keyboard_target+'_flt'
-    initSearchKeybord: function() {
-        //キーボードカスタムボタン
-        $.extend($.keyboard.keyaction, {
-            cmd_search: function(base) {
-                var o = $(m_.keyboard_selector);
-                var e = $.Event("change");
-                e.keyCode = $.ui.keyCode.ENTER;
-                o.trigger(e);
-            }
-            , cmd_clear: function(base) {
-                $(m_.keyboard_selector).val('').trigger('change');
-            }
-            , cmd_close: function(base) {
-                base.close(true); // same as base.accept();
-                $('#' + m_.keyboard_target + '_flt_div').hide();
-                return false; // return false prevents further processing
-            }
-        });
-
-        $(m_.keyboard_selector).on('change keyup', function(e) {
-            //WORDで表示をフィルタ
-            let w = $(this).val().trim();
-            let div_sel = '#div_' + m_.keyboard_target;
-            let items = $(div_sel + ' g.row');
-            let n = 0;
-            for (var i = 0; i < items.length; i++) {
-                let it = items.eq(i)
-                let name = it.find('text:eq(0)').text(); //よし(男)D
-                let nm = name.split('(')[0];
-                if (nm.indexOf(w) !== -1) {//部分一致
-                    it.show(); n++;
-                } else {
-                    it.hide();
-                }
-            }
-            if (w == '') {
-                m_.chartScroll(div_sel, '');
-                return;
-            }
-            //if(e.keyCode==$.ui.keyCode.ENTER) m_.chartScroll(div_sel, w,150);
-            m_.chartScroll(div_sel, w, 150);//realtime
-        });
-
-        m_.keyboard = $(m_.keyboard_selector).keyboard({
-            // layout: 'qwerty'
-            layout: 'custom'
-            , display: {
-                'cmd_search': '　<span class="ui-icon ui-icon-search"></span>検索　'
-                , 'cmd_clear': '　<span class="ui-icon ui-icon-closethick"></span>クリア　'
-                , 'cmd_close': '　　　　　　<span class="ui-icon ui-icon-circle-close"></span>閉じる　　　　　　'
-                , 'shift': 'かな英数'
-                , 'accept': '　閉じる　'
-            }
-            , customLayout: {
-                'normal': [
-                    'ア カ ガ サ ザ タ ナ ハ バ マ ヤ ラ ワ {b}',
-                    'イ キ ギ シ ジ チ ニ ヒ ビ ミ イ リ ン {b}',
-                    'ウ ク グ ス ズ ツ ヌ フ ブ ム ユ ル & {b}',
-                    'エ ケ ゲ セ ゼ テ ネ ヘ ベ メ エ レ | {b}',
-                    'オ コ ゴ ソ ゾ ト ノ ホ ボ モ ヨ ロ ー {b}',
-                    '{shift} {space} {cmd_clear}',
-                    '{cmd_close}'
-                ]
-                , 'shift': [
-                    'あ か が さ ざ た な は ば ま や ら わ {b}',
-                    'い き ぎ し じ ち に ひ び み い り ん {b}',
-                    'う く ぐ す ず つ ぬ ふ ぶ む ゆ る & {b}',
-                    'え け げ せ ぜ て ね へ べ め え れ | {b}',
-                    'お こ ご そ ぞ と の ほ ぼ も よ ろ ー {b}',
-                    '{shift} {space} {cmd_clear} {cmd_search}',
-
-                    '1 2 3 4 5 6 7 8 9 0 = {bksp}',
-                    '~ ! @ # $ % ^ & * ( ) _ +',
-                    'Q W E R T Y U I O P { } |',
-                    'A S D F G H J K L : " {cmd_search}',
-                    '{shift} Z X C V B N M < > ? {shift}',
-                    '{cmd_close}'
-                ]
-            }
-
-            //,language: 'ja'
-            //,initialFocus : true　//フォーカスでOPEN
-            , openOn: null    //null:イベントクリックで開かない
-            , stayOpen: true  //開いたまま
-            , noFocus: true
-
-            //,appendLocally: true
-            , usePreview: false //INPUTの表示
-            , change: function(e, keyboard, el) {
-                $(m_.keyboard_selector).trigger('change');
-            }
-            , position: !IS_SP ? {
-                of: $('#div_' + m_.keyboard_target)
-                , my: 'left top'
-                , at: 'left bottom+30'
-                , at2: 'left bottom+20'
-                , collision: 'fit fit'
-            } : { //左
-                    of: $(window)
-                    , my: "left bottom"
-                    , at: "left bottom-20"
-                    , at2: 'left bottom-20'
-                    , collision: 'fit fit'
-                }
-
-            , visible: function(a, b) {
-                // if(IS_SP){
-                // $(m_.keyboard_selector).attr('readonly',true).blur();
-                // }
-                $('.ui-keyboard')
-                    .css({
-                        // 'position':'fixed'
-                        // ,'top': window.innerHeight-$('.ui-keyboard').height()
-                        'cursor': 'move'
-                        , 'padding': '4px'
-                        , 'padding-top': '32px'
-                    })
-                    .draggable();
-            }
-            , beforeClose: function(a, b) {
-                // if(IS_SP){
-                // $(m_.keyboard_selector).attr('readonly',false).blur();
-                // }
-            }
-        });
-
-        //キーボード表示ボタン
-        $('.flt_open_btn').button().on('click', function() {
-            let o = $(this);
-            m_.keyboardTargetChange(o.attr('keyboard_target'));
-            let kb = m_.keyboard.getkeyboard();
-            let div_sel = '#' + m_.keyboard_target + '_flt_div';
-            if (kb.isOpen) {
-                kb.close();
-                $(div_sel).hide();
-            } else {
-                kb.reveal();
-                $(div_sel).show();
-                if (!IS_SP) $('#' + m_.keyboard_target + '_flt').focus();
-            }
-        });
-    },
-    keyboardTargetChange: function(target) {
-        m_.keyboard_target = target;
-        m_.keyboard_selector = '#' + target + '_flt';
-    },
-
-
     ageTickFormat: function(s) {
         if (s === 1) return '幼児';
         return s === DN_AGE ? DN_AGE_STR : (s === 0 ? '10歳未満' : s + "代");
@@ -377,8 +258,8 @@ const m_ = {
         let week = $('#chart_week .filter').text();
         let age = $('#chart_age .filter').text();
         let sex = $('#chart_sex .filter').text();
-        let cond = chartCond.filters().join(',');
-        let job = chartJob.filters().join(',');
+        let cond = m_.chartCond.filters().join(',');
+        let job = m_.chartJob.filters().join(',');
         let txt = _.fill(Array(8), '');
         const PL = 'と';
 
@@ -396,8 +277,8 @@ const m_ = {
         }
 
         if (date != '') {
-            if (chartDate.filters().length) {
-                if (chartDate.brushOn()) {
+            if (m_.chartDate.filters().length) {
+                if (m_.chartDate.brushOn()) {
                     txt.push(date);
                 } else {
                     let t = '', sp = date.split(',');
@@ -437,25 +318,24 @@ const m_ = {
         return txt;
     },
     chartNameFilters: function(pre0) {
-        //chartNameにない物は除外
+        //m_.chartNameにない物は除外
         let pre_names = _.keys(m_.names);
         let pre = [];
         for (i of pre0) {
             if (_.indexOf(pre_names, i) !== -1) pre.push(i);
         }
         if (pre.length === 0) {
-            chartName.filterAll();
+            m_.chartName.filterAll();
             m_.renderAllChart();
             return;
         };
 
-        let f = chartName.filters();
+        let f = m_.chartName.filters();
         diff = pre.length > f.length ? _.difference(pre, f) : _.difference(f, pre);
-        chartName.filter(diff[0]);//差分をadd
+        m_.chartName.filter(diff[0]);//差分をadd
 
         m_.renderAllChart();
     },
-    chartAllFilterByKW_render: 0,
     chartAllFilterByKW: function(pre0) {
         //日付
         if (!isNaN(pre0[0])) {
@@ -466,25 +346,25 @@ const m_ = {
                     let s = a.split('-');
                     d = moment('2020-' + s[1] + '-' + s[2]);
                 }
-                composite.filterAll().filter(d.toDate());
+                m_.composite.filterAll().filter(d.toDate());
                 m_.renderAllChart();
-                m_.barChartRedrawGroup(chartDate); return 1;
+                m_.barChartRedrawGroup(m_.chartDate); return 1;
             }
         }
         //職業
         if (_.indexOf(m_.jobcates, pre0) !== -1) {
-            chartJob.filterAll().filter(pre0);
+            m_.chartJob.filterAll().filter(pre0);
             m_.renderAllChart();
             return 1;
         }
         //状態
         if (_.indexOf(m_.conds, pre0) !== -1) {
-            chartCond.filterAll().filter(pre0);
+            m_.chartCond.filterAll().filter(pre0);
             m_.renderAllChart();
             return 1;
         }
 
-        //chartNameにない物は除外 前方一致
+        //m_.chartNameにない物は除外 前方一致
         let pre_names = _.keys(m_.names), city = '', is_pre_find = 0;
         const AC_SPLIT_WD = /\s+/;
         let names = [];
@@ -500,8 +380,8 @@ const m_ = {
 
         //都道府県
         if (is_pre_find) {
-            chartName.filterAll().filter(names.length === 1 ? names[0] : [names]);
-            chartCity.filterAll();
+            m_.chartName.filterAll().filter(names.length === 1 ? names[0] : [names]);
+            m_.chartCity.filterAll();
             m_.renderAllChart();
             m_.chartScroll('#div_name', names[0], 300);
             return 1;
@@ -516,11 +396,11 @@ const m_ = {
         if (city === '') return 0;
 
         //市区町村
-        //chartCity.filterAll().filter(city);//single
+        //m_.chartCity.filterAll().filter(city);//single
         let citys = _.filter(m_.citys, (d) => { return d.indexOf(city) === 0; });//multi
         if (citys.length) {
-            chartName.filterAll();
-            chartCity.filterAll().filter([citys]);
+            m_.chartName.filterAll();
+            m_.chartCity.filterAll().filter([citys]);
             m_.renderAllChart();
             $('#ch_pnl_city').prop('checked', true).trigger('ch_pnl_update');
             m_.chartScroll('#div_city', city, 300);
@@ -537,7 +417,7 @@ const m_ = {
         if (m_.get.name) {
             let names = m_.get.name.split(' ');
             let flt = names.length === 1 ? names[0] : [names];
-            chartName.filterAll().filter(flt);
+            m_.chartName.filterAll().filter(flt);
             $('#btn_search').val(names.join(' '));
             drawJapanMap();
             is_trigger_search = 0;
@@ -582,8 +462,8 @@ const m_ = {
                     break;
             }
             if (fsel) {
-                composite.brushOn(true).render();
-                composite.filter(fsel);
+                m_.composite.brushOn(true).render();
+                m_.composite.filter(fsel);
                 $('.btn_brush').trigger('my_update', 0);//on
             }
         }
@@ -619,7 +499,7 @@ const m_ = {
     },
     //MAPの選択Nameのエリア枠を描画
     mapSetSelectedRegions: function() {
-        let f = chartName.filters();
+        let f = m_.chartName.filters();
         if (f.length && map) {
             m_.is_filter_region_sel = 1;
             map.clearSelectedRegions();
@@ -631,7 +511,6 @@ const m_ = {
             m_.is_filter_region_sel = 0;
         }
     },
-    line: d3.line().curve(d3.curveLinear),
     renderVLine: function(chart, hz) {
         chart.g().select('g.chart-body')
             .selectAll('path.line').data(hz).enter()
@@ -673,13 +552,12 @@ const m_ = {
             filters.push(filter); return filters; //add select
         }
     },
-    last_fth: '',
     on_chartDate_pretransition: function(chart) {
         let ci = chart.chartID();
         //console.log('on_chartDate_pretransition() id:'+ci);
 
-        let is_comp = composite.chartID() === ci;
-        let flt = chartName.filters();
+        let is_comp = m_.composite.chartID() === ci;
+        let flt = m_.chartName.filters();
         let pref_mode = flt.length > 1;
         if (is_comp) {
             m_.chartLegendUpdate(chart);
@@ -699,7 +577,7 @@ const m_ = {
             }
         }
 
-        if (m_.data_type === DTYPE_COVID_JP) {
+        if (m_.data_type) {
             m_.renderVLine(chart, [
                 { cls: ['s1'], x: new Date(YMD_ED_F[0][0]) },
                 { cls: ['s2'], x: new Date(YMD_ED_F[1][0]) },
@@ -773,8 +651,6 @@ const m_ = {
         }
         //m_.gpDateYMMax=_.maxBy(all, function(o) { return o.value; });
     },
-    is_drawJapanMap: 1,
-    is_filter_region_sel: 0,
     on_chart_filtered: function(chart, v) {
         let ci = chart.chartID();
         //console.log('on_chart_filtered() id:'+ci);
@@ -783,29 +659,29 @@ const m_ = {
             m_.datePick.datepicker('show');
         }
 
-        if (ci === chartName.chartID() || ci === chartCity.chartID() || ci === chartDate.chartID()) {//chartName||chartCity|chartDate
+        if (ci === m_.chartName.chartID() || ci === m_.chartCity.chartID() || ci === m_.chartDate.chartID()) {//m_.chartName||m_.chartCity|m_.chartDate
             if (m_.is_job_cate) {
-                let fn = chartName.filters();
-                let fc = chartCity.filters();
-                let fd = chartDate.filters();
+                let fn = m_.chartName.filters();
+                let fc = m_.chartCity.filters();
+                let fd = m_.chartDate.filters();
                 if (fn.length || fc.length || fd.length) {
                     let o = $('#chart_job_title_sub');
                     if (o.text() === '') {
                         $('#chart_job_title_sub').text('(詳細)');
-                        chartJob.dimension(m_.dimJob).group(m_.gpJob).render();
+                        m_.chartJob.dimension(m_.dimJob).group(m_.gpJob).render();
                     }
                 } else {
                     let o = $('#chart_job_title_sub');
                     if (o.text() === '(詳細)') {
                         $('#chart_job_title_sub').text('');
-                        chartJob.dimension(m_.dimJobCat).group(m_.gpJobCat).render();
+                        m_.chartJob.dimension(m_.dimJobCat).group(m_.gpJobCat).render();
                     }
                 }
             }
         }
 
-        if (ci === chartName.chartID()) {
-            chartCity.filterAll();
+        if (ci === m_.chartName.chartID()) {
+            m_.chartCity.filterAll();
             m_.mapSetSelectedRegions();
         }
         $('.jvectormap-tip').hide();
@@ -816,18 +692,18 @@ const m_ = {
         chart.render();
     },
     chartDateLegendUpdate2: function() {
-        let flt_len = chartName.filters().length;
+        let flt_len = m_.chartName.filters().length;
         let pref_mode = flt_len !== 0;
-        composite2.legend().y(pref_mode ? -30 : 0);
+        m_.composite2.legend().y(pref_mode ? -30 : 0);
     },
     renderAllChart: function() {
         if (!m_.config.cDateYm.is_elasticY) {
-            chartDate.y(d3.scaleLinear().domain([0, _.max(_.map(m_.gpDate.all(), 'value')) + 10])); //高さ範囲再計算
+            m_.chartDate.y(d3.scaleLinear().domain([0, _.max(_.map(m_.gpDate.all(), 'value')) + 10])); //高さ範囲再計算
         }
 
         dc.renderAll("chartGroup");
 
-        m_.on_chart_postRedraw(chartJob);
+        m_.on_chart_postRedraw(m_.chartJob);
 
         //クリック時のツールチップの表示
         if (IS_SP) {
@@ -872,39 +748,6 @@ const m_ = {
         }
         return p;
     },
-    group_reduce: {
-        add: function(p, v, dir) {
-            const c = dir * (v[D_CNT] || 1);
-            p = m_.group_reduce_lv_set(p, v[D_LV], c);
-
-            let nm = v[D_PL1]
-            if (p.nmcnt[nm] === undefined) p.nmcnt[nm] = 0; p.nmcnt[nm] += c;
-
-            p = m_.group_reduce_age_set(p, v[D_AGE], c);
-
-            p.total += c;
-            return p;
-        },
-        append: (p, v) => m_.group_reduce.add(p, v, 1),
-        remove: (p, v) => m_.group_reduce.add(p, v, -1),
-        init: (p, v) => {
-            return { lv_a: 0, lv_b: 0, lv_c: 0, lv_d: 0, lv_e: 0, nmcnt: {}, agcnt: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], total: 0 };
-        }
-    },
-    group_reduce_light: {
-        add: function(p, v, dir) {
-            const c = dir * (v[D_CNT] || 1);
-            const l = v[D_LV];
-            p = m_.group_reduce_lv_set(p, l, c);
-            p.total += c;
-            return p;
-        },
-        append: (p, v) => m_.group_reduce_light.add(p, v, 1),
-        remove: (p, v) => m_.group_reduce_light.add(p, v, -1),
-        init: function(p, v) {
-            return { lv_a: 0, lv_b: 0, lv_c: 0, lv_d: 0, lv_e: 0, total: 0 };
-        }
-    },
     chartLegendUpdate: function(chart) {
         let item = chart.legendables();
         let h = chart.legend()._legendItemHeight();
@@ -916,18 +759,17 @@ const m_ = {
             k += d.hidden ? 0 : 1;
         });
     },
-    date_stk_nm: [],
     dateStakShow: function(no) {
         for (var i = 0; i < CHART_DATE_STACK_GRP.length; i++) {
             for (var j = 0; j < CHART_DATE_STACK_GRP[i].length; j++) {
-                if (i === no) chartDate.showStack(CHART_DATE_STACK_GRP[i][j]);
-                else chartDate.hideStack(CHART_DATE_STACK_GRP[i][j]);
+                if (i === no) m_.chartDate.showStack(CHART_DATE_STACK_GRP[i][j]);
+                else m_.chartDate.hideStack(CHART_DATE_STACK_GRP[i][j]);
             }
         }
     },
     dateStack2Accessor: function(chart, no) {
         return function(d, i) {
-            let flt = chartName.filters();
+            let flt = m_.chartName.filters();
             let pref_mode = flt.length > 1 && flt.length <= CHART_DATE_STACK2_N
             if (pref_mode) {
                 m_.date_stk_nm[no] = flt[no];
@@ -967,10 +809,10 @@ const m_ = {
     },
     createFilteredBarStacksData: function() {
         let prefs = _.keys(PREF_EN);
-        let dimName = chartName.dimension()
-        chartDate.x(d3.scaleTime().domain([moment(m_.spk.min_ymd).toDate(), moment(m_.spk.max_ymd).toDate()]));
+        let dimName = m_.chartName.dimension()
+        m_.chartDate.x(d3.scaleTime().domain([moment(m_.spk.min_ymd).toDate(), moment(m_.spk.max_ymd).toDate()]));
         let stacks = [];//stacks[pref][ymd]
-        let grp = chartDate.group();
+        let grp = m_.chartDate.group();
         for (var i = 0; i < prefs.length; i++) {
             dimName.filter(prefs[i]);
             stacks[i] = [];
@@ -999,7 +841,7 @@ const m_ = {
 
         //rollback
         dimName.filterAll();
-        if (m_.domainDate) chartDate.x(d3.scaleTime().domain(m_.domainDate));
+        if (m_.domainDate) m_.chartDate.x(d3.scaleTime().domain(m_.domainDate));
 
         return stacks2;
     },
@@ -1088,6 +930,21 @@ const m_ = {
     },
     loadAllData: () => {
         const is_local_html = location.protocol === 'file:';
+
+        m_.composite = new dc.CompositeChart("#chart_date", "chartGroup");
+        m_.chartDate = new dc.BarChart(m_.composite);
+        m_.chartLine = new dc.LineChart(m_.composite);
+        m_.composite2 = new dc.CompositeChart("#chart_date2", "chartGroup");
+        m_.chartDate2 = new dc.BarChart(m_.composite2);
+        m_.chartLine2 = new dc.LineChart(m_.composite2);
+
+        m_.chartName = new dc.RowChart("#chart_name", "chartGroup");
+        m_.chartCity = new dc.RowChart("#chart_city", "chartGroup");
+        m_.chartSex = new dc.PieChart('#chart_sex', 'chartGroup');
+        m_.chartWeek = new dc.BarChart("#chart_week", "chartGroup");
+        m_.chartAge = new dc.BarChart("#chart_age", "chartGroup");
+        m_.chartCond = new dc.BarChart('#chart_cond', 'chartGroup');
+        m_.chartJob = new dc.BarChart('#chart_job', 'chartGroup');
 
         const load = (d) => {
             m_.data3 = d.data3;
@@ -1180,10 +1037,10 @@ const initDc = (data) => {
         php_parse_str(m_.data_hdr[D_OPT], opt);
         m_.data_type = parseInt(opt.data_type);
     } else {
-        m_.data_type = DTYPE_NORMAL;
+        m_.data_type = 0;
     }
 
-    if (m_.data_type === DTYPE_COVID_JP) {
+    if (m_.data_type) {
         m_.domainDate = [moment('2020-03-20').subtract(1, 'days').toDate(), moment(m_.spk.max_ymd).add(3, 'days').toDate()];
     } else {
         let ymds = _.uniq(_.map(m_.data, D_YMD));
@@ -1213,7 +1070,7 @@ const initDc = (data) => {
         return d[D3_PL1];
     });
 
-    chartName
+    m_.chartName
         .width(IS_SP ? parseInt(window.innerWidth / 2) + 15 : 205)
         .titleLabelOffsetX(50)
         .height(24 + (names_length * 29))
@@ -1316,7 +1173,7 @@ const initDc = (data) => {
         })
         .elasticX(true)
         ;
-    chartName.xAxis().ticks(0);//.tickFormat(d3.format("s"));
+    m_.chartName.xAxis().ticks(0);//.tickFormat(d3.format("s"));
 
     //===========================================================================
     // CHART 市区町村 rowChart chartCity_init
@@ -1329,7 +1186,7 @@ const initDc = (data) => {
     });
     //gpCity.all().forEach( v=>m_.gpCity_all[v.key]=v.value );
 
-    chartCity
+    m_.chartCity
         .width(IS_SP ? parseInt(window.innerWidth / 2) - 30 : 190)
         .height(24 + (Object.keys(gpCity.all()).length * 29))
         .fixedBarHeight(24)
@@ -1360,7 +1217,7 @@ const initDc = (data) => {
             m_.on_chart_filtered(chart, v);
         })
         ;
-    chartCity.xAxis().ticks(0); //.tickFormat(d3.format("d"))
+    m_.chartCity.xAxis().ticks(0); //.tickFormat(d3.format("d"))
 
     //===========================================================================
     // CHART 感染者数(YYYY-MM-DD) barChart chartDate_init
@@ -1374,7 +1231,7 @@ const initDc = (data) => {
     let gpDateStk = dimDate.group().reduce(m_.group_reduce.append, m_.group_reduce.remove, m_.group_reduce.init);
     //.order(function(d) {return d.total;});
 
-    chartDate
+    m_.chartDate
         .centerBar(false)
         .transitionDuration(750)
         .dimension(dimDate)
@@ -1408,22 +1265,22 @@ const initDc = (data) => {
             m_.on_chart_filtered(chart, v);
         })
         ;
-    //chartDate.yAxis().ticks(5); //tickFormat(d3.format("s"));
+    //m_.chartDate.yAxis().ticks(5); //tickFormat(d3.format("s"));
 
     for (var no = 0; no < CHART_DATE_STACK2_N; no++) {
         m_.date_stk_nm[no] = '(選択' + (no + 1) + ')';
-        chartDate.stack(gpDateStk, CHART_DATE_STACK_GRP[1][no], m_.dateStack2Accessor(chartDate, no));
+        m_.chartDate.stack(gpDateStk, CHART_DATE_STACK_GRP[1][no], m_.dateStack2Accessor(m_.chartDate, no));
     }
     for (var no = 0; no < DI_AGE_MAX; no++) {
-        chartDate.stack(gpDateStk, CHART_DATE_STACK_GRP[2][no], m_.dateStack3Accessor(no));
+        m_.chartDate.stack(gpDateStk, CHART_DATE_STACK_GRP[2][no], m_.dateStack3Accessor(no));
     }
 
     m_.dateStakShow(0);
-    m_.pref_tbl_last_cnt = _.last(chartDate.group().all()).value.nmcnt;
+    m_.pref_tbl_last_cnt = _.last(m_.chartDate.group().all()).value.nmcnt;
     //===========================================================================
     // CHART lineChart chartLine_init
     //===========================================================================
-    chartLine
+    m_.chartLine
         .dimension(dimDate)
         .colors('red')
         .group(m_.gpDate, "週間移動平均")
@@ -1441,7 +1298,7 @@ const initDc = (data) => {
         })
         //.dashStyle([2,2])
         ;
-    //chartLine.yAxis().ticks(5);        
+    //m_.chartLine.yAxis().ticks(5);        
 
     //===========================================================================
     // CHART composite_init
@@ -1449,7 +1306,7 @@ const initDc = (data) => {
     let chartDateW = 1290;
     if (IS_SP) chartDateW = window.innerWidth + 500;
 
-    composite
+    m_.composite
         .width(chartDateW)
         .height(250)
         //左
@@ -1489,7 +1346,7 @@ const initDc = (data) => {
                 return date_str + '\n週間移動平均: ' + php_number_format(d.value) + '名';
             }
 
-            let flt = chartName.filters();
+            let flt = m_.chartName.filters();
             let pref_mode = flt.length > 1 && flt.length <= CHART_DATE_STACK2_N;
             if (pref_mode) {
                 let s = '';
@@ -1519,20 +1376,19 @@ const initDc = (data) => {
         .on('pretransition', m_.on_chartDate_pretransition)
         .addFilterHandler(m_.addFilterHandlerSingle)
         .on('preRedraw', function(chart) {
-            chartDate.filterAll().filter([composite.filters()]);
+            m_.chartDate.filterAll().filter([m_.composite.filters()]);
         })
         .on('filtered', function(chart, v) {
             m_.showFilterUi('#panel_date', chart, (f) => moment(f).format('M/D(ddd)'));
             m_.on_chart_filtered(chart, v);
         })
-        .compose([chartDate, chartLine])
+        .compose([m_.chartDate, m_.chartLine])
         ;
 
-    composite.xAxis().ticks(7).tickFormat(function(s) {
+    m_.composite.xAxis().ticks(7).tickFormat(function(s) {
         return moment(s).format('M/Dddd');
     });//d3.timeFormat('%m/%d')
-    composite.yAxis().ticks(5); //.tickFormat(d3.format("d"));
-
+    m_.composite.yAxis().ticks(5); //.tickFormat(d3.format("d"));
 
 
     //===========================================================================
@@ -1560,21 +1416,21 @@ const initDc = (data) => {
         function date2_grp_init(p, v) { return { all: [0, 0, 0], pre: [{}, {}, {}] }; }
     );
 
-    chartDate2
+    m_.chartDate2
         .centerBar(false)
         .transitionDuration(750)
         .dimension(dimDate2)
         .elasticY(true)
         .group(gpDateStk2, 'PCR', function(d) {
-            let flt_len = chartName.filters().length;
+            let flt_len = m_.chartName.filters().length;
             return (flt_len == 0 && m_.chartDate2Mode === DT_PCR) ? d.value.all[DT_PCR] : 0;
         })
         .stack(gpDateStk2, '死亡', function(d) {
-            let flt_len = chartName.filters().length;
+            let flt_len = m_.chartName.filters().length;
             return (flt_len === 0 && m_.chartDate2Mode === DT_DEA) ? d.value.all[DT_DEA] : 0;
         })
         .stack(gpDateStk2, '患者', function(d) {
-            let flt_len = chartName.filters().length;
+            let flt_len = m_.chartName.filters().length;
             return (flt_len === 0 && m_.chartDate2Mode === DT_PAT) ? d.value.all[DT_PAT] : 0;
         })
         .hidableStacks(false) // stackNameLegend click でタックを非表示または表示
@@ -1582,10 +1438,10 @@ const initDc = (data) => {
         .renderLabel(true)
         .label(function(d, i) {
             let ymd = moment(d.x).format('YYYYMMDD');
-            let flt = chartName.filters();
+            let flt = m_.chartName.filters();
             let total;
             if (flt.length) {
-                let f = _.filter(d.data.value.pre[m_.chartDate2Mode], (k, v) => flt.includes(v));//chartNameフィルタでされた物だけ抽出
+                let f = _.filter(d.data.value.pre[m_.chartDate2Mode], (k, v) => flt.includes(v));//m_.chartNameフィルタでされた物だけ抽出
                 total = _.sum(f);
             } else {
                 total = d.data.value.all[m_.chartDate2Mode];
@@ -1601,10 +1457,10 @@ const initDc = (data) => {
             m_.on_chart_filtered(chart, v);
         })
         ;
-    //chartDate.yAxis().ticks(5); //tickFormat(d3.format("s"));
+    //m_.chartDate.yAxis().ticks(5); //tickFormat(d3.format("s"));
     function date2_sel_stack(chart, no) {
         return function(d, i) {
-            let flt = chartName.filters();
+            let flt = m_.chartName.filters();
             let pref_mode = flt.length > 0;
             if (pref_mode) {
                 let flt_name = flt[no - 1];
@@ -1618,13 +1474,13 @@ const initDc = (data) => {
     }
 
     for (var no = 1; no < CHART_DATE2_STACK2_N; no++) {
-        chartDate2.stack(gpDateStk2, '(選択' + no + ')', date2_sel_stack(chartDate2, no));
+        m_.chartDate2.stack(gpDateStk2, '(選択' + no + ')', date2_sel_stack(m_.chartDate2, no));
     }
 
     //===========================================================================
     // CHART lineChart chartLine2_init
     //===========================================================================
-    chartLine2
+    m_.chartLine2
         .dimension(dimDate2)
         .colors('red')
         .group(m_.gpDate2, "週間移動平均")
@@ -1633,14 +1489,14 @@ const initDc = (data) => {
         .valueAccessor(function(d, no) {
             const N = 7;// N日 移動平均
             if (no === 0) {
-                let flt = chartName.filters();
+                let flt = m_.chartName.filters();
                 m_.work = [];
                 m_.dateCntTo2 = '00000000';
                 m_.dateCntMax2Ymd = [];
 
                 if (flt.length) {
-                    chartDate2.group().all().forEach((v) => {
-                        let f = _.filter(v.value.pre[m_.chartDate2Mode], (k, v) => flt.includes(v));//chartNameフィルタでされた物だけ抽出
+                    m_.chartDate2.group().all().forEach((v) => {
+                        let f = _.filter(v.value.pre[m_.chartDate2Mode], (k, v) => flt.includes(v));//m_.chartNameフィルタでされた物だけ抽出
                         let s = _.sum(f);
                         m_.work.push(s);
 
@@ -1652,7 +1508,7 @@ const initDc = (data) => {
                         }
                     });
                 } else {
-                    chartDate2.group().all().forEach((v) => {
+                    m_.chartDate2.group().all().forEach((v) => {
                         let s = v.value.all[m_.chartDate2Mode];
                         m_.work.push(s);
                         let ymd = moment(v.key).format('YYYYMMDD');
@@ -1673,12 +1529,12 @@ const initDc = (data) => {
         })
         //.dashStyle([2,2])
         ;
-    //chartLine.yAxis().ticks(5);        
+    //m_.chartLine.yAxis().ticks(5);        
 
     //===========================================================================
     // CHART composite2_init
     //===========================================================================
-    composite2
+    m_.composite2
         .width(chartDateW)
         .height(160)
         //左
@@ -1712,7 +1568,7 @@ const initDc = (data) => {
                 return date_str + '\n週間移動平均: ' + php_number_format(d.value) + '名';
             }
 
-            let flt = chartName.filters();
+            let flt = m_.chartName.filters();
             if (flt.length > 0) {
                 let s = ''
                 let nmcnt = d.value.pre[m_.chartDate2Mode];
@@ -1734,19 +1590,19 @@ const initDc = (data) => {
         .addFilterHandler(m_.addFilterHandlerSingle)
         .on('preRedraw', function(chart) {
             m_.chartDateLegendUpdate2();
-            chartDate2.filterAll().filter([composite2.filters()]);
+            m_.chartDate2.filterAll().filter([m_.composite2.filters()]);
         })
         .on('filtered', function(chart, v) {
             m_.showFilterUi('#panel_date', chart, (f) => moment(f).format('M/D(ddd)'));
             m_.on_chart_filtered(chart, v);
         })
-        .compose([chartDate2, chartLine2])
+        .compose([m_.chartDate2, m_.chartLine2])
         ;
 
-    composite2.xAxis().ticks(7).tickFormat(function(s) {
+    m_.composite2.xAxis().ticks(7).tickFormat(function(s) {
         return moment(s).format('M/Dddd');
     });
-    composite2.yAxis().ticks(5).tickFormat(d3.format("~s"));//1.5k
+    m_.composite2.yAxis().ticks(5).tickFormat(d3.format("~s"));//1.5k
 
 
     //===========================================================================
@@ -1761,7 +1617,7 @@ const initDc = (data) => {
     let chartSexW = 148;
     let chartSexH = 158;
 
-    chartSex
+    m_.chartSex
         .width(chartSexW)
         .height(chartSexH)
         .cx(parseInt(chartSexW / 2))
@@ -1812,7 +1668,7 @@ const initDc = (data) => {
     }
     let chartWeekH = 148;
 
-    chartWeek
+    m_.chartWeek
         .width(chartWeekW)
         .height(chartWeekH)
         .margins({ top: 0, right: 0, bottom: 20, left: 40 })
@@ -1857,8 +1713,8 @@ const initDc = (data) => {
         })
         //.legend(dc.legend())
         ;
-    chartWeek.xAxis().tickFormat((d) => WEEK_LABEL[d]);
-    chartWeek.yAxis().ticks(4);
+    m_.chartWeek.xAxis().tickFormat((d) => WEEK_LABEL[d]);
+    m_.chartWeek.yAxis().ticks(4);
 
     //===========================================================================
     // CHART 年齢 barChart chartAge_init
@@ -1874,7 +1730,7 @@ const initDc = (data) => {
     let chartAgeW = 504;
     if (IS_SP) chartAgeW = window.innerWidth - 20;
 
-    chartAge
+    m_.chartAge
         .width(chartAgeW)
         .height(chartSexH)
         .transitionDuration(750)
@@ -1884,9 +1740,9 @@ const initDc = (data) => {
             m_.dateCntCreate();
 
             //表示スタックを切り替える
-            //if(chartName.filters().length === 0)
+            //if(m_.chartName.filters().length === 0)
             {
-                if (chartAge.filters().length === 0) {
+                if (m_.chartAge.filters().length === 0) {
                     $('#stack_type_con').prop('checked', true).trigger('change')
                 } else {
                     $('#stack_type_age').prop('checked', true).trigger('change')
@@ -1924,8 +1780,8 @@ const initDc = (data) => {
         .renderHorizontalGridLines(true)
         .addFilterHandler(m_.addFilterHandlerSingleR)
         ;
-    chartAge.xAxis().tickFormat(m_.ageTickFormat);
-    chartAge.yAxis().ticks(5); //tickFormat(d3.format("s")) //Y軸の単位表記
+    m_.chartAge.xAxis().tickFormat(m_.ageTickFormat);
+    m_.chartAge.yAxis().ticks(5); //tickFormat(d3.format("s")) //Y軸の単位表記
 
 
     //===========================================================================
@@ -1941,7 +1797,7 @@ const initDc = (data) => {
     let chartCondW = 620;
     if (IS_SP) chartCondW = window.innerWidth + 200;
 
-    chartCond
+    m_.chartCond
         .width(chartCondW)
         .height(chartSexH)
         .gap(6)
@@ -1993,8 +1849,8 @@ const initDc = (data) => {
         })
         //.legend(dc.legend())
         ;
-    if (m_.data_type === DTYPE_COVID_JP) {
-        chartCond
+    if (m_.data_type) {
+        m_.chartCond
             .colorAccessor(function(d) {
                 let is1 = d.key.indexOf('無症状') !== -1;
                 let is2 = d.key.indexOf('退院') !== -1;
@@ -2019,15 +1875,15 @@ const initDc = (data) => {
                 return COL_CND[i];
             });
     } else {
-        chartCond
+        m_.chartCond
             .colorAccessor(function(d, i) { return i; })
             .colors(function(d) {
                 return colorbrewer.Set3[9][d % 9];
             });
     }
 
-    chartCond.xAxis().tickFormat((d) => { return d === DN_LV ? DN_LV_STR : d });
-    chartCond.yAxis().ticks(4);
+    m_.chartCond.xAxis().tickFormat((d) => { return d === DN_LV ? DN_LV_STR : d });
+    m_.chartCond.yAxis().ticks(4);
 
     //===========================================================================
     // CHART 職業 barChart chartJob_init
@@ -2057,7 +1913,7 @@ const initDc = (data) => {
         chartJobW = m_.gpJob.all().length * m_.config.cJob.barWidth;
     }
 
-    chartJob
+    m_.chartJob
         .width(chartJobW)
         .height(200)
         .gap(4)
@@ -2110,10 +1966,8 @@ const initDc = (data) => {
         })
         .addFilterHandler(m_.addFilterHandlerSingle);
     ;
-    chartJob.xAxis().tickFormat((d) => { return d === DN_JOB ? DN_JOB_STR : d });
-    chartJob.yAxis().ticks(3);
-
-
+    m_.chartJob.xAxis().tickFormat((d) => { return d === DN_JOB ? DN_JOB_STR : d });
+    m_.chartJob.yAxis().ticks(3);
 
     if (IS_SP) {
         $('#btn_search')
@@ -2139,15 +1993,13 @@ const initDc = (data) => {
         _.delay(() => $(this).select(), 7);
     });
 
-
     $('#div_date').scrollLeft(800);
 
 
-
-    if (m_.data_type === DTYPE_COVID_JP) {
+    if (m_.data_type) {
         $('#chart_map_title').show();
-        chartCity.addFilterHandler(m_.addFilterHandlerSingleR);
-        chartCond.addFilterHandler(m_.addFilterHandlerSingleR)
+        m_.chartCity.addFilterHandler(m_.addFilterHandlerSingleR);
+        m_.chartCond.addFilterHandler(m_.addFilterHandlerSingleR)
 
         if (m_.get['tab']) {
             m_.tab.tabs("option", "activate").call(null, null, null, 'tabs_' + m_.get['tab']);
@@ -2159,18 +2011,18 @@ const initDc = (data) => {
         $('#ch_pnl_week').prop('checked', true).trigger('ch_pnl_update');
 
         $('#chart_map_title').hide();
-        chartCity.addFilterHandler(m_.addFilterHandlerSingle);
-        chartCond.addFilterHandler(m_.addFilterHandlerSingle);
+        m_.chartCity.addFilterHandler(m_.addFilterHandlerSingle);
+        m_.chartCond.addFilterHandler(m_.addFilterHandlerSingle);
     }
     //タイトル変更
     $('#panel_name .chart-title').text(m_.data_hdr[D_PL1]);
     $('#panel_city .chart-title').text(m_.data_hdr[D_PL2]);
-    $('#panel_date .chart-title').html(m_.data_type !== DTYPE_NORMAL ? '<i class="fa fa-procedures"></i>感染者数' : m_.data_hdr[D_YMD]);
+    $('#panel_date .chart-title').html(m_.data_type ? '<i class="fa fa-procedures"></i>感染者数' : m_.data_hdr[D_YMD]);
     //$('#chart_sex .chart-title').text(m_.data_hdr[D_LV]);
     //$('#chart_age .chart-title').text(m_.data_hdr[D_LV]);
     $('#panel_cond .chart-title').text(m_.data_hdr[D_LV]);
     $('#panel_job .chart-title').text(m_.data_hdr[D_JOB]);
-    if (m_.data_type === DTYPE_COVID_JP) {
+    if (m_.data_type) {
         $('#stack_type_con').prop('checked', true).trigger('change');
     } else {
         $('#stack_type_age').prop('checked', true).trigger('change');
@@ -2190,7 +2042,7 @@ const initTabs = () => {
                 case 'tabs_c':
                     $('#ch_pnl_name,#ch_pnl_date' + (!IS_SP ? ',#ch_pnl_sex' : '') + ',#ch_pnl_week,#ch_pnl_age,#ch_pnl_cond,#ch_pnl_job').prop('checked', true).trigger('ch_pnl_update', 'is_setting_load');
 
-                    chartName.group(m_.gpName).render();
+                    m_.chartName.group(m_.gpName).render();
                     $('#panel_name .chart-title').text('都道府県');
                     $('#div_div_date2 .chart-title2').text('');
 
@@ -2215,7 +2067,7 @@ const initTabs = () => {
                         $('#div_div_date2').hide();
 
                         gpName2 = m_.dimName2.group().reduce((p, v) => m_.pref_tbl_last_m1[v[D3_PL1]].bed, (p, v) => m_.pref_tbl_last_m1[v[D3_PL1]].bed, (p, v) => 0);
-                        chartName.group(gpName2).render();
+                        m_.chartName.group(gpName2).render();
                     } else {
                         $('#ch_pnl_city,            #ch_pnl_sex,#ch_pnl_week,#ch_pnl_age,#ch_pnl_cond,#ch_pnl_job').prop('checked', false).trigger('ch_pnl_update', 'cmd_none');
                         $('#ch_pnl_name').prop('checked', true).trigger('ch_pnl_update', 'cmd_none');
@@ -2247,28 +2099,28 @@ const initTabs = () => {
                         $('#div_div_date2').show();
                         $('#div_date2').scrollLeft($('#div_date').scrollLeft());
 
-                        chartName.group(gpName2);
+                        m_.chartName.group(gpName2);
 
                         //市区町村フィルタのみの場合,都道府県フィルタないので表示より取得し設定
-                        let flt = chartName.filters();
-                        let flta = chartCity.filters();
+                        let flt = m_.chartName.filters();
+                        let flta = m_.chartCity.filters();
                         if (flt.length === 0 && flta.length) {
                             let flt_from_city = [];
                             $('#chart_name g.row text').each(function(index, el) {
                                 let ken_cnt = this.textContent.replace(/[　\s]+/, ',').split(','); //["福島県", "0"]
                                 if (ken_cnt[1] != 0) flt_from_city.push(ken_cnt[0]);
                             });
-                            chartName.filter([flt_from_city]);
+                            m_.chartName.filter([flt_from_city]);
                         }
 
-                        chartName.render();
-                        composite2.render();
+                        m_.chartName.render();
+                        m_.composite2.render();
                     }
 
                     $('#world-map').hide();
                     $('#japan-map').show();
                     drawJapanMap();
-                    $('.hdr_flt_map').text('～' + moment(chartDate.xAxisMax()).format('MM/DD(ddd)') + 'の状況');
+                    $('.hdr_flt_map').text('～' + moment(m_.chartDate.xAxisMax()).format('MM/DD(ddd)') + 'の状況');
                     if (m_.sel_tab === 'tabs_pc') {
                         $('#legend_n').hide();
                         $('#legend_p').show();
@@ -2402,11 +2254,10 @@ const initAutoComplete = () => {
     });
 }
 
-var map = null;
+var map;
 
 //vectorMap
 const drawJapanMap = () => {
-    if (m_.data_type === DTYPE_COVID_US) return;
     $("#japan-map").empty();
 
     let series_scale = m_.sel_tab === 'tabs_pc' ? { "0.4%以上": "#8c0a00", "0.2%以上": "#ea5432", "0.1%以上": "#ff781d", "0.05%以上": "#ff9d57", "0.01%以上": "#ffceab", "0%以上": "#ffffe0", "0%": "#dadada", "選択中": "#ffffff" } : { "1000人以上": "#8c0a00", "500人以上": "#ea5432", "100人以上": "#ff781d", "50人以上": "#ff9d57", "10人以上": "#ffceab", "1人以上": "#f5deb3", "0人": "#dadada", "選択中": "#ffffff" };
@@ -2432,7 +2283,6 @@ const drawJapanMap = () => {
     map = new jvm.Map({
         container: $('#japan-map'),
         map: 'jp_merc',
-        //map: 'us_aea_en',
         panOnDrag: !IS_SP,
         focusOn: {
             x: 0.45, y: 0.48,
@@ -2500,7 +2350,7 @@ const drawJapanMap = () => {
             m_.chartNameFilters(a);
             m_.is_drawJapanMap = 0;
 
-            if (chartName.filters().length && $('#ui-datepicker-div').is(':visible')) {
+            if (m_.chartName.filters().length && $('#ui-datepicker-div').is(':visible')) {
                 m_.datePick.datepicker('hide');
                 m_.datePick.datepicker('show');
             }
@@ -2616,8 +2466,8 @@ $(document).ready(function() {
 
     $('#reset_btn_date').on('click', function(event) {
         event.preventDefault();
-        composite.filterAll();
-        chartDate.filterAll();
+        m_.composite.filterAll();
+        m_.chartDate.filterAll();
         m_.renderAllChart();
     });
 
@@ -2633,23 +2483,23 @@ $(document).ready(function() {
 
     $('.btn_brush').button().on('click', function(event) {
         event.preventDefault();
-        let b = composite.brushOn();
+        let b = m_.composite.brushOn();
         if (b) {
             $('#reset_btn_date').trigger('click');
             $('#panel_date .filter_txt_diff').text('');
         } else {
-            let f = composite.filters();
+            let f = m_.composite.filters();
             if (f.length) {//選択がある場合,最初~最後+1を選択
                 let fsel = [[[f[0], moment(_.last(f)).add(1, 'days').toDate()]]];
-                composite.filter(fsel);
-                chartDate.filter(fsel);
+                m_.composite.filter(fsel);
+                m_.chartDate.filter(fsel);
             }
         }
         $(this).trigger('my_update', b);
     })
         .on('my_update', function(event, is_off) {
-            $(this).css(is_off ? { color: '', 'background-color': '', 'box-shadow': '0 1px #a2a2a2' } : { color: '#A0A0A0', 'background-color': 'blue', 'box-shadow': '0 -1px #a2a2a2' });
-            composite.brushOn(!is_off).render();
+            $(this).removeClass('btn_off btn_on').addClass(is_off ? 'btn_off' : 'btn_on');
+            m_.composite.brushOn(!is_off).render();
         });
 
     $('[name="stack_type"]').on('change', function(event) {
@@ -2659,7 +2509,7 @@ $(document).ready(function() {
             case 'pre': m_.dateStakShow(1); break;
             case 'age': m_.dateStakShow(2); break;
         }
-        composite.render();
+        m_.composite.render();
     });
 
     if (!IS_SP) {
@@ -2671,11 +2521,6 @@ $(document).ready(function() {
         });
     }
     //$('#chart_map').resizable();
-
-
-    m_.keyboardTargetChange('world');
-    m_.initSearchKeybord();
-
 
     $('#btn_download_csv').button().on('click', function(event) {
         event.preventDefault();
@@ -2704,7 +2549,7 @@ $(document).ready(function() {
 
         let flt_name = $('.hdr_flt').text().replace('の状況', '');
         const bom = new Uint8Array([0xEF, 0xBB, 0xBF]);
-        const filename = (m_.data_type !== DTYPE_NORMAL ? "covid19" : "data") + " - [" + flt_name + "].csv";
+        const filename = (m_.data_type ? "covid19" : "data") + " - [" + flt_name + "].csv";
         const blob = new Blob([bom, csv], { type: "text/csv" });
 
         //IE10/11用

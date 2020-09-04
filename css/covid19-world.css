@@ -208,7 +208,7 @@ i.fa {
 }
 
 .wopen.diff {
-  background: #FF8 url("images/ui-bg_highlight-hard_100_eeeeee_1x100.png") 50% 50% repeat-x;
+  background: #FF8;
 }
 
 .fs12 {
@@ -365,6 +365,18 @@ h4.hdr {
 image.pl {
   border: 1px solid blue;
   cursor: pointer;
+}
+
+.btn_off {
+  box-shadow: 0 1px #a2a2a2;
+  padding: 0px 1px;
+}
+
+.btn_on {
+  color: #A0A0A0;
+  background-color: blue;
+  box-shadow: 0 -1px #a2a2a2;
+  padding: 0px 1px;
 }
 
 .ui-tooltip {

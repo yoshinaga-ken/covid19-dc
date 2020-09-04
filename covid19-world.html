@@ -129,7 +129,7 @@
           <div id="chart_condsel"></div>
         </div>
         <span class="chart-title">地域</span>
-        <a class="reset_btn" href="javascript:chartRegion.filterAll();$('#panel_region .filter_txt').text('');dc.redrawAll('chartGroup2');" style="display: none;"><span class="ui-icon ui-icon-closethick"></span></a>
+        <a class="reset_btn" href="javascript:m_.chartRegion.filterAll();$('#panel_region .filter_txt').text('');dc.redrawAll('chartGroup2');" style="display: none;"><span class="ui-icon ui-icon-closethick"></span></a>
         <span class="filter_txt" title="Ctrlを押しながらバーをクリックで単位単一選択になります" style="display: none;"></span>
         <!-- <span class="ui-icon ui-icon-circle-close sp_icon btn_close" ch_id="ch_pnl_region" style="float:right;"></span> -->
         <div id="div_region">
@@ -152,9 +152,9 @@
       </div>
       <div id="panel_date" class="dc_panel drag">
         <span class="chart-title"><i class="fa fa-procedures"></i>感染者数</span>
-        <span class="btn_brush" style="box-shadow: 0 1px #a2a2a2;padding: 0px 1px;" title="ブラシベースの範囲選択をオン/オフします。&#x0A;Ctrlを押しながら日付バーをクリックで追加選択になります。"><span class="ui-icon ui-icon-arrow-2-e-w sp_icon"></span>選択</span>
+        <span class="btn_brush btn_off" title="ブラシベースの範囲選択をオン/オフします。&#x0A;Ctrlを押しながら日付バーをクリックで追加選択になります。"><span class="ui-icon ui-icon-arrow-2-e-w sp_icon"></span>選択</span>
         <a class="reset_btn" id="reset_btn_date" href="javascript:void(0);" style="display: none;"><span class="ui-icon ui-icon-closethick"></span></a>
-        <span class="filter_txt" style="display: none;"><span class="filter"></span></span>&nbsp;
+        <span class="filter_txt" style="display: none;"><span class="filter"></span></span>&nbsp;<span class="filter_txt_diff"></span>
         <span class="ui-icon ui-icon-circle-close sp_icon btn_close" ch_id="ch_pnl_date" style="float:right;"></span>
         <div style="float:right;font-size:0.8em;">累計&nbsp;<span id="cnt_all" style="font-weight:bold;font-size:1.8em !important;"></span>&nbsp;名&nbsp;&nbsp;</div>
         <div class="clearfix"></div>

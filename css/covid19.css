@@ -433,6 +433,18 @@ image.pl {
   cursor: pointer;
 }
 
+.btn_off {
+  box-shadow: 0 1px #a2a2a2;
+  padding: 0px 1px;
+}
+
+.btn_on {
+  color: #A0A0A0;
+  background-color: blue;
+  box-shadow: 0 -1px #a2a2a2;
+  padding: 0px 1px;
+}
+
 /* jQueryUI ----------------------------------*/
 
 table.ui-datepicker-calendar tbody td.ui-datepicker-week-end a.ui-state-default {

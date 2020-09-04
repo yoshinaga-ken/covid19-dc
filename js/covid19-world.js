@@ -37,21 +37,13 @@ const CHART_YM_STACK1_N = 2 + _.size(WORLD_REGIONS); const CHART_YM_STACK2_N = 8
 const SPARK_SX = IS_SP ? 60 : 25;
 const MAP_COL_TBL = [["1000人以上", "#8c0a00"], ["500人以上", "#ea5432"], ["100人以上", "#ff781d"], ["50人以上", "#ff9d57"], ["10人以上", "#ffceab"], ["1人以上", "#f5deb3"], ["0人", "#dadada"], ["選択中", "#ffffff"]];
 
-//chart
-const composite = new dc.CompositeChart("#chart_date", "chartGroup2");
-const chartDate = new dc.BarChart(composite);
-const chartLine = new dc.LineChart(composite);
-const chartRegion = new dc.RowChart("#chart_region", "chartGroup2");
-const chartWorld = new dc.RowChart("#chart_world", "chartGroup2");
-const chartCondSel = new dc.RowChart("#chart_condsel", "chartGroup2");
-
 colorbrewer.Set3[12][8] = colorbrewer.Set2[8][6];//gray-> light gold
 colorbrewer.Set2[8][7] = colorbrewer.Set1[8][6];//gray-> light gold
 
 const m_ = {
     config: {
         cDateYm: {
-            is_elasticY: 1 //chartDate yAxisの高さを動的に変化させる
+            is_elasticY: 1 //m_.chartDate yAxisの高さを動的に変化させる
         },
         cJob: {
             TD: 750,       //transitionDuration
@@ -61,6 +53,13 @@ const m_ = {
     get: location_get_query(),
     url_data: '/data/covid19-world.json',
     url_name: 'https://ja.wikipedia.org/wiki',
+
+    composite: null,
+    chartDate: null,
+    chartLine: null,
+    chartRegion: null,
+    chartWorld: null,
+    chartCondSel: null,
 
     lv_type: 0, // 0b00:感染 0b01:1:死亡 0b11::3:感染|死亡
     ndx2: {},
@@ -79,6 +78,23 @@ const m_ = {
     dateCntTo: 'YYYYMMDD',
     sel_tab: 'tabs_c',
 
+    tip: null,
+    tipRow: null,
+
+    //gpDateYMMax:{},
+    names: {},
+
+    keyboard: null,
+    keyboard_target: 'name', //'name',
+    keyboard_selector: '#name_flt', //=='#'+keyboard_target+'_flt'
+
+    chartAllFilterByKW_render: 0,
+    is_drawJapanMap: 1,
+    is_drawWorldMap: 1,
+    is_filter_region_sel: 0,
+    line: d3.line().curve(d3.curveLinear),
+    last_fth: '',
+
     dateCntCreate: function() {
         m_.dateCnt = {};
         m_.dateCntMax = -1;
@@ -90,16 +106,6 @@ const m_ = {
             if (d.value > 0 && ymd > m_.dateCntTo) m_.dateCntTo = ymd;
         });
     },
-
-    tip: null,
-    tipRow: null,
-
-    //gpDateYMMax:{},
-    names: {},
-
-    keyboard: null,
-    keyboard_target: 'name', //'name',
-    keyboard_selector: '#name_flt', //=='#'+keyboard_target+'_flt'
     initSearchKeybord: function() {
         //キーボードカスタムボタン
         $.extend($.keyboard.keyaction, {
@@ -280,8 +286,8 @@ const m_ = {
         }
 
         if (date != '') {
-            if (chartDate.filters().length) {
-                if (chartDate.brushOn()) {
+            if (m_.chartDate.filters().length) {
+                if (m_.chartDate.brushOn()) {
                     txt.push(date);
                 } else {
                     let t = '', sp = date.split(',');
@@ -302,14 +308,14 @@ const m_ = {
     },
     chartWorldFilters: function(flts, sel_cd, is_on) {
         if (flts.length === 0) {
-            chartWorld.filterAll().render();
+            m_.chartWorld.filterAll().render();
             document.querySelector('#div_world').scrollTop = 0;
             return;
         }
 
         let sels = [], sel_name;
         _.forEach(m_.world_tbl, (d, k) => { if ($.inArray(d[0], flts) !== -1) sels.push(k); if (d[0] == sel_cd) sel_name = k });
-        chartWorld.filterAll().filter([sels]);
+        m_.chartWorld.filterAll().filter([sels]);
         m_.chartScroll('#div_world', is_on ? sel_name : _.last(sels), 150);
 
         dc.renderAll("chartGroup2");
@@ -324,9 +330,8 @@ const m_ = {
             animate: false
         });
         document.querySelector('#div_world').scrollTop = 0;
-        chartWorld.filterAll().render();
+        m_.chartWorld.filterAll().render();
     },
-    chartAllFilterByKW_render: 0,
     chartAllFilterByKW: function(pre0) {
         //日付
         if (!isNaN(pre0[0])) {
@@ -337,10 +342,10 @@ const m_ = {
                     let s = a.split('-');
                     d = moment('2020-' + s[1] + '-' + s[2]);
                 }
-                composite.filterAll().filter(d.toDate());
-                //chartDate.filterAll().filter(d.toDate());
+                m_.composite.filterAll().filter(d.toDate());
+                //m_.chartDate.filterAll().filter(d.toDate());
                 m_.renderAllChart();
-                m_.barChartRedrawGroup(chartDate);
+                m_.barChartRedrawGroup(m_.chartDate);
                 return 1;
             }
         }
@@ -359,7 +364,7 @@ const m_ = {
             }
         }
         if (is_pre_find) {
-            chartWorld.filterAll().filter(names.length === 1 ? names[0] : [names]);
+            m_.chartWorld.filterAll().filter(names.length === 1 ? names[0] : [names]);
             m_.renderAllChart();
             m_.chartScroll('#div_world', names[0], 300);
             return 1;
@@ -375,7 +380,7 @@ const m_ = {
         if (m_.get.name) {
             let names = m_.get.name.split(' ');
             let flt = names.length === 1 ? names[0] : [names];
-            chartWorld.filterAll().filter(flt);
+            m_.chartWorld.filterAll().filter(flt);
             $('#btn_search').val(names.join(' '));
             is_trigger_search = 0;
         }
@@ -419,8 +424,8 @@ const m_ = {
                     break;
             }
             if (fsel) {
-                composite.brushOn(true).render();
-                composite.filter(fsel);
+                m_.composite.brushOn(true).render();
+                m_.composite.filter(fsel);
                 $('.btn_brush').trigger('my_update', 0);//on
             }
         }
@@ -435,14 +440,18 @@ const m_ = {
         if (flt.length) {
             let is_range = $.isArray(flt[0]);
             if (is_range) {
-                pnl.find('.filter_txt').show().text(func(flt[0][0]) + '～' + func(flt[0][1]));
+                let t = func(flt[0][0]) + '～' + func(flt[0][1]);
+                pnl.find('.filter_txt').show().text(t).attr('title', t);
+                pnl.find('.filter_txt_diff').text((moment(flt[0][1]).diff(flt[0][0], 'days') + 1) + '日間');
             } else {
                 let flt2 = [];
                 for (f of flt) {
                     if (func) f = func(f);
                     flt2.push(f);
                 }
-                pnl.find('.filter_txt').show().text(flt2.join(','));
+                let t = flt2.join(',');
+                pnl.find('.filter_txt').show().text(t).attr('title', t);
+                pnl.find('.filter_txt_diff').text('');
             }
             pnl.find('.reset_btn').show();
         } else {
@@ -450,9 +459,6 @@ const m_ = {
             pnl.find('.reset_btn').hide();
         }
     },
-    is_drawJapanMap: 1,
-    is_drawWorldMap: 1,
-    is_filter_region_sel: 0,
     on_chart_filtered: function(chart, v) {
         let ci = chart.chartID();
         //console.log('on_chart_filtered() id:'+ci);
@@ -466,8 +472,6 @@ const m_ = {
         chart.transitionDuration(m_.config.cJob.TD);
         chart.render();
     },
-
-    line: d3.line().curve(d3.curveLinear),
     render_v_line: function(chart, hz) {
         chart.g().select('g.chart-body')
             .selectAll('path.line').data(hz).enter()
@@ -509,13 +513,12 @@ const m_ = {
             filters.push(filter); return filters; //add select
         }
     },
-    last_fth: '',
     on_chartDate_pretransition: function(chart) {
 
         let o = $('#chart_date g.dc-legend-item');
 
-        let flt = chartWorld.filters();
-        let fltr = chartRegion.filters();
+        let flt = m_.chartWorld.filters();
+        let fltr = m_.chartRegion.filters();
         let is_lv_mode = flt.length < 2 && fltr.length === 0;
         let is_reg_mode = flt.length === 0 && fltr.length;;
 
@@ -594,20 +597,20 @@ const m_ = {
         //m_.gpDateYMMax=_.maxBy(all, function(o) { return o.value; });
     },
     chartDateLegendUpdate: function() {
-        let flt = chartWorld.filters();
-        let fltr = chartRegion.filters();
+        let flt = m_.chartWorld.filters();
+        let fltr = m_.chartRegion.filters();
         let is_lv_mode = flt.length < 2 && fltr.length === 0;
         let is_reg_mode = flt.length === 0 && fltr.length;;
         if (!is_lv_mode) {
-            composite.legend().y(is_reg_mode ? -30 : -170);
+            m_.composite.legend().y(is_reg_mode ? -30 : -170);
         }
     },
     renderAllChart: function() {
         if (!m_.config.cDateYm.is_elasticY) {
             let all = m_.lv_type ? m_.gpDateD.all() : m_.gpDate.all();
             let max = _.max(_.map(all, 'value'))
-            //let max=_.maxBy(chartDate.group().all(),d=>d.value.total[m_.lv_type]).value.total[m_.lv_type];
-            chartDate.y(d3.scaleLinear().domain([0, max + 10])); //高さ範囲再計算
+            //let max=_.maxBy(m_.chartDate.group().all(),d=>d.value.total[m_.lv_type]).value.total[m_.lv_type];
+            m_.chartDate.y(d3.scaleLinear().domain([0, max + 10])); //高さ範囲再計算
         }
 
 
@@ -661,6 +664,13 @@ const m_ = {
     },
     loadData: function() {
         const is_local_html = location.protocol === 'file:';
+
+        m_.composite = new dc.CompositeChart("#chart_date", "chartGroup2");
+        m_.chartDate = new dc.BarChart(m_.composite);
+        m_.chartLine = new dc.LineChart(m_.composite);
+        m_.chartRegion = new dc.RowChart("#chart_region", "chartGroup2");
+        m_.chartWorld = new dc.RowChart("#chart_world", "chartGroup2");
+        m_.chartCondSel = new dc.RowChart("#chart_condsel", "chartGroup2");
 
         function load(d) {
             m_.world = d.world;
@@ -745,7 +755,7 @@ const initDc = (data) => {
     let gpRegion = m_.lv_type ? m_.gpRegionD : m_.gpRegion;
     //gpRegion.all().forEach( v=>m_.gpRegion_all[v.key]=v.value );
 
-    chartRegion
+    m_.chartRegion
         .width(IS_SP ? parseInt(window.innerWidth / 2) - 30 : 200)
         .height(24 + (Object.keys(gpRegion.all()).length * 29))
         .fixedBarHeight(24)
@@ -787,7 +797,7 @@ const initDc = (data) => {
             m_.on_chart_filtered(chart, v);
         })
         ;
-    chartRegion.xAxis().ticks(0);
+    m_.chartRegion.xAxis().ticks(0);
 
     //===========================================================================
     // CHART 国 rowChart chartWorld_init
@@ -825,7 +835,7 @@ const initDc = (data) => {
     let chartWorldW = 320;;
     if (IS_SP) chartWorldW = window.innerWidth + 60;
 
-    chartWorld
+    m_.chartWorld
         .width(chartWorldW)
         .height(24 + (Object.keys(gpWorld.all()).length * 29))
         .fixedBarHeight(24)
@@ -857,7 +867,7 @@ const initDc = (data) => {
             for (var i = 0; i < NAME_N - d.key.length; i++) s += '　';
 
             let is_filtered = m_.gpWorld_all[d.key] !== d.value[0];
-            let flt = chartCondSel.filter(), car = '', det = '';
+            let flt = m_.chartCondSel.filter(), car = '', det = '';
             if (flt === '感染') {
                 car = php_sprintf("%' 9s", php_number_format(d.value[0])) + ((v === undefined || v[4] === 0 || is_filtered) ? '         ' : php_sprintf(" %' 7s", '▲' + v[4])) + ' ';
             }
@@ -930,7 +940,7 @@ const initDc = (data) => {
             m_.dateCntCreate();
         })
         ;
-    chartWorld.xAxis().ticks(4);
+    m_.chartWorld.xAxis().ticks(4);
 
     let chartDateW;
     if (IS_SP) {
@@ -996,17 +1006,17 @@ const initDc = (data) => {
     );
     //.order(function(d) {return d.total;});
 
-    chartDate
+    m_.chartDate
         .centerBar(true)
         .transitionDuration(750)
         .dimension(dimDate)
         .elasticY(true)
         .group(gpDateStk, CND_LV_E, function(d) {
-            let is_lv_mode = chartWorld.filters().length < 2 && chartRegion.filters().length === 0
+            let is_lv_mode = m_.chartWorld.filters().length < 2 && m_.chartRegion.filters().length === 0
             return is_lv_mode ? (m_.lv_type ? d.value.lv_e : 0) : 0;
         })
         .stack(gpDateStk, CND_LV_B, function(d) {
-            let is_lv_mode = chartWorld.filters().length < 2 && chartRegion.filters().length === 0
+            let is_lv_mode = m_.chartWorld.filters().length < 2 && m_.chartRegion.filters().length === 0
             return is_lv_mode ? (m_.lv_type ? 0 : d.value.lv_b) : 0;
         })
         .hidableStacks(false)
@@ -1026,7 +1036,7 @@ const initDc = (data) => {
             m_.on_chart_filtered(chart, v);
         })
         ;
-    //chartDate.yAxis().ticks(5); //tickFormat(d3.format("s"));
+    //m_.chartDate.yAxis().ticks(5); //tickFormat(d3.format("s"));
 
     //
     //region stack    
@@ -1034,8 +1044,8 @@ const initDc = (data) => {
     if (1) {
         function sel_stack_region(chart, ri) {
             return function(d, i) {
-                let flt = chartRegion.filters();
-                if (flt.length && chartWorld.filters().length === 0) {
+                let flt = m_.chartRegion.filters();
+                if (flt.length && m_.chartWorld.filters().length === 0) {
                     ret = $.inArray(ri, flt) !== -1 ? (d.value.rcnt[ri] && d.value.rcnt[ri][m_.lv_type] || 0) : 0;
                     return ret;
                 } else {
@@ -1044,11 +1054,11 @@ const initDc = (data) => {
             }
         }
 
-        let regions = _.sortBy(chartRegion.group().all(), d => -d.value);
+        let regions = _.sortBy(m_.chartRegion.group().all(), d => -d.value);
         for (var i = 0; i < regions.length; i++) {
             let code = regions[i].key;
             let name = WORLD_REGIONS[code][0];
-            chartDate.stack(gpDateStk, name, sel_stack_region(chartDate, code));
+            m_.chartDate.stack(gpDateStk, name, sel_stack_region(m_.chartDate, code));
         }
     }
 
@@ -1058,8 +1068,8 @@ const initDc = (data) => {
     if (1) {
         function sel_stack(chart, no) {
             return function(d, i) {
-                let flt = chartWorld.filters();
-                let pref_mode = flt.length > 1 && chartRegion.filters().length === 0;
+                let flt = m_.chartWorld.filters();
+                let pref_mode = flt.length > 1 && m_.chartRegion.filters().length === 0;
                 if (pref_mode) {
                     chart.stack()[CHART_YM_STACK1_N + no - 1].name = flt[no - 1];
                     return d.value.ncnt[flt[no - 1]] === undefined ? 0 : d.value.ncnt[flt[no - 1]][m_.lv_type];
@@ -1070,14 +1080,14 @@ const initDc = (data) => {
             }
         }
         for (var no = 1; no < CHART_YM_STACK2_N; no++) {
-            chartDate.stack(gpDateStk, '(選択' + no + ')', sel_stack(chartDate, no));
+            m_.chartDate.stack(gpDateStk, '(選択' + no + ')', sel_stack(m_.chartDate, no));
         }
     }
 
     //===========================================================================
     // lineChart chartDate_init
     //===========================================================================
-    chartLine
+    m_.chartLine
         .dimension(dimDate)
         .colors('red')
         .group(m_.gpDate, "週間移動平均")
@@ -1096,12 +1106,12 @@ const initDc = (data) => {
         })
         //.dashStyle([2,2])
         ;
-    //chartLine.yAxis().ticks(5);        
+    //m_.chartLine.yAxis().ticks(5);        
 
     //===========================================================================
     // lineChart composite_init
     //===========================================================================
-    composite
+    m_.composite
         .width(chartDateW)
         .height(!IS_SP ? 250 : 200)
         //左
@@ -1135,8 +1145,8 @@ const initDc = (data) => {
                 return date_str + '\n週間移動平均: ' + php_number_format(d.value) + '名';
             }
 
-            let flt = chartWorld.filters();
-            let fltr = chartRegion.filters();
+            let flt = m_.chartWorld.filters();
+            let fltr = m_.chartRegion.filters();
             let is_lv_mode = flt.length < 2 && fltr.length === 0;
             let is_reg_mode = flt.length === 0 && fltr.length;;
 
@@ -1166,21 +1176,19 @@ const initDc = (data) => {
         .addFilterHandler(m_.addFilterHandlerSingle)
         .on('preRedraw', function(chart) {
             m_.chartDateLegendUpdate();
-            chartDate.filterAll().filter([composite.filters()]);
+            m_.chartDate.filterAll().filter([m_.composite.filters()]);
         })
         .on('filtered', function(chart, v) {
             m_.showFilterUi('#panel_date', chart, (f) => moment(f).format('M/D(ddd)'));
             m_.on_chart_filtered(chart, v);
         })
-        .compose([chartDate, chartLine])
+        .compose([m_.chartDate, m_.chartLine])
         ;
 
-    composite.xAxis().ticks(7).tickFormat(function(s) {
+    m_.composite.xAxis().ticks(7).tickFormat(function(s) {
         return moment(s).format('M/Dddd');
     });
-    composite.yAxis().ticks(5).tickFormat(d3.format("~s"));//1.5k
-
-
+    m_.composite.yAxis().ticks(5).tickFormat(d3.format("~s"));//1.5k
 
     //===========================================================================
     // CHART rowChart chartCondSel_init 選択の為のチャート
@@ -1192,7 +1200,7 @@ const initDc = (data) => {
         return d[0];
     });
     var gpCondSel = dimCondSel.group().reduceSum(function(d) { return d[1] });
-    chartCondSel
+    m_.chartCondSel
         .width(IS_SP ? parseInt(window.innerWidth / 2) - 30 : 200)
         .height(24 + (Object.keys(gpCondSel.all()).length * 29))
         .fixedBarHeight(24)
@@ -1224,20 +1232,19 @@ const initDc = (data) => {
                 break;
             }
 
-            chartRegion.group(m_.lv_type ? m_.gpRegionD : m_.gpRegion).render();
-            chartWorld.render();
+            m_.chartRegion.group(m_.lv_type ? m_.gpRegionD : m_.gpRegion).render();
+            m_.chartWorld.render();
             if (m_.config.cDateYm.is_elasticY) {
                 let all = m_.lv_type ? m_.gpDateD.all() : m_.gpDate.all();
                 let max = _.max(_.map(all, 'value'))
-                //let max=_.maxBy(chartDate.group().all(),d=>d.value.total[m_.lv_type]).value.total[m_.lv_type];
-                chartDate.y(d3.scaleLinear().domain([0, max + 10])); //高さ範囲再計算
-                composite.render();
+                //let max=_.maxBy(m_.chartDate.group().all(),d=>d.value.total[m_.lv_type]).value.total[m_.lv_type];
+                m_.chartDate.y(d3.scaleLinear().domain([0, max + 10])); //高さ範囲再計算
+                m_.composite.render();
             }
         })
         ;
-    chartCondSel.xAxis().ticks(0).tickFormat(d3.format("d"));
-    chartCondSel.filter(m_.is_lv_mode ? '死亡' : '感染');
-
+    m_.chartCondSel.xAxis().ticks(0).tickFormat(d3.format("d"));
+    m_.chartCondSel.filter(m_.is_lv_mode ? '死亡' : '感染');
 
     if (IS_SP) {
         $('#btn_search')
@@ -1428,7 +1435,7 @@ const drawWorldMap = () => {
     let series_scale = { "100万人以上": "#8c0a00", "50万人以上": "#ea5432", "10万人以上": "#ff781d", "5万人以上": "#ff9d57", "1万人以上": "#ffceab", "1000人以上": "#f5deb3", "選択中": "#ffffff" };
 
     let colors = {};
-    chartWorld.group().all().forEach(function(d) {
+    m_.chartWorld.group().all().forEach(function(d) {
         let v = d.value[m_.lv_type];
         while (1) {
             if (v > 999999) { col = MAP_COL_TBL[0][1]; break; }
@@ -1547,7 +1554,7 @@ $(document).ready(function() {
 
         //chartGroup2
         dc.filterAll('chartGroup2');
-        chartCondSel.filter(m_.lv_type ? '死亡' : '感染');
+        m_.chartCondSel.filter(m_.lv_type ? '死亡' : '感染');
         dc.renderAll("chartGroup2");
         if (!IS_SP) $('#btn_search').focus();
     });
@@ -1629,8 +1636,8 @@ $(document).ready(function() {
     $('#reset_btn_date').on('click', function(event) {
         event.preventDefault();
 
-        composite.filterAll();
-        chartDate.filterAll();
+        m_.composite.filterAll();
+        m_.chartDate.filterAll();
         m_.renderAllChart();
     });
 
@@ -1646,22 +1653,23 @@ $(document).ready(function() {
 
     $('.btn_brush').button().on('click', function(event) {
         event.preventDefault();
-        let b = composite.brushOn();
+        let b = m_.composite.brushOn();
         if (b) {
             $('#reset_btn_date').trigger('click');
+            $('#panel_date .filter_txt_diff').text('');
         } else {
-            let f = composite.filters();
+            let f = m_.composite.filters();
             if (f.length) {//選択がある場合,最初~最後+1を選択
                 let fsel = [[[f[0], moment(_.last(f)).add(1, 'days').toDate()]]];
-                composite.filter(fsel);
-                chartDate.filter(fsel);
+                m_.composite.filter(fsel);
+                m_.chartDate.filter(fsel);
             }
         }
         $(this).trigger('my_update', b);
     })
         .on('my_update', function(event, is_off) {
-            $(this).css(is_off ? { color: '', 'background-color': '', 'box-shadow': '0 1px #a2a2a2' } : { color: 'white', 'background-color': 'blue', 'box-shadow': '0 -1px #a2a2a2' });
-            composite.brushOn(!is_off).render();
+            $(this).removeClass('btn_off btn_on').addClass(is_off ? 'btn_off' : 'btn_on');
+            m_.composite.brushOn(!is_off).render();
         });
 
     if (!IS_SP) {
