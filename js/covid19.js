@@ -3242,7 +3242,13 @@ $(document).ready(function() {
     });
 });
 
-$(document).ready(function() {
-    m_.loadAllData();
+const app = new Vue({
+    el: '#app',
+    data: {},
+    watch: {},
+    mounted: function() {
+        m_.loadAllData();
+    },
+    methods: {}
 });
 
