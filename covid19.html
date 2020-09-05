@@ -121,7 +121,7 @@
       <input type="text" id="btn_date" value="" style="display: none;">&nbsp;
       <button id="btn_download_csv" title="フィルタリングされたグラフのデータをCSV形式でダウンロードします。" class="btn_export_file"><i class="ui-icon ui-icon-arrowstop-1-s"></i><img width="20" src="img/csv.png"></button>
       <div class="row">
-        <div id="chart_map" class="dc_panel drag">
+        <div id="chart_map" class="dc_panel drag" v-show="pnl.map.is_show">
           <ul id="chart_map_title" class="chart-title" style="display: none;">
             <li><a href="#tabs_w" title="世界の感染状況"><i class="fa fa-globe"></i>世界</a></li>
             <li><a href="#tabs_c" title="感染者数 @日本">感染</a></li>
@@ -140,8 +140,8 @@
           <div id="world-map"></div>
           <span class="hdr_flt_map"></span>
         </div>
-        <div id="panel_name" class="dc_panel drag">
-          <span class="chart-title">都道府県</span>
+        <div id="panel_name" class="dc_panel drag" v-show="pnl.name.is_show">
+          <span class="chart-title" v-html="pnl.name.title">都道府県</span>
           <a class="reset_btn" href="javascript:m_.is_drawJapanMap=1;m_.chartName.filterAll();$('#panel_name .filter_txt').text('');dc.redrawAll('chartGroup');" style="display: none;"><span class="ui-icon ui-icon-closethick"></span></a>
           <input type="text" class="filter_txt" tt_title="Ctrlを押しながら選択すると単一選択ができます。" readonly style="display: none;">
           <span class="ui-icon ui-icon-circle-close sp_icon btn_close" ch_id="ch_pnl_name" style="float:right;"></span>
@@ -149,8 +149,8 @@
             <div id="chart_name"></div>
           </div>
         </div>
-        <div id="panel_city" class="dc_panel drag">
-          <span class="chart-title">市区町村</span>
+        <div id="panel_city" class="dc_panel drag" v-show="pnl.city.is_show">
+          <span class="chart-title" v-html="pnl.city.title">市区町村</span>
           <a class="reset_btn" href="javascript:m_.chartCity.filterAll();$('#panel_city .filter_txt').text('');dc.redrawAll('chartGroup');" style="display: none;"><span class="ui-icon ui-icon-closethick"></span></a>
           <input type="text" class="filter_txt" tt_title="Ctrlを押しながら選択すると単一選択ができます。" readonly style="display: none;">
           <span class="ui-icon ui-icon-circle-close sp_icon btn_close" ch_id="ch_pnl_city" style="float:right;"></span>
@@ -158,8 +158,8 @@
             <div id="chart_city"></div>
           </div>
         </div>
-        <div id="panel_date" class="dc_panel drag">
-          <span class="chart-title"><i class="fa fa-procedures"></i>感染者数</span>
+        <div id="panel_date" class="dc_panel drag" v-show="pnl.date.is_show">
+          <span class="chart-title" v-html="pnl.date.title"><i class="fa fa-procedures"></i>感染者数</span>
           <span class="btn_brush btn_off" title="ブラシベースの範囲選択をオン/オフします。&#x0A;Ctrlを押しながら日付バーをクリックで追加選択になります。"><span class="ui-icon ui-icon-arrow-2-e-w sp_icon"></span>選択</span>
           <a class="reset_btn" id="reset_btn_date" href="javascript:void(0);" style="display: none;"><span class="ui-icon ui-icon-closethick"></span></a>
           <input type="text" class="filter_txt" readonly style="display: none;">&nbsp;<span class="filter_txt_diff"></span>
@@ -168,43 +168,44 @@
           <input type="radio" id="stack_type_age" name="stack_type" value="age"><label title="バーのスタック表示を年齢にします" for="stack_type_age">年齢</label>
           <input type="radio" id="stack_type_con" name="stack_type" value="con" checked="true"><label title="バーのスタック表示を状態にします" for="stack_type_con">状態</label>
           <span class="ui-icon ui-icon-circle-close sp_icon btn_close" ch_id="ch_pnl_date" style="float:right;"></span>
-          <div style="float:right;font-size:0.8em;">累計&nbsp;<span id="cnt_all" style="font-weight:bold;font-size:1.8em !important;"></span>&nbsp;名&nbsp;&nbsp;</div>
+          <div class="div_total">累計&nbsp;<span class="div_total_cnt" v-text="pnl.date.cnt"></span>&nbsp;名&nbsp;&nbsp;</div>
           <div class="clearfix"></div>
-          <div style="float:left;font-size:0.8em;"><span id="cnt_day">4月15日 12:00時点</span></div>
-          <div style="float:right;font-size:0.8em;">前日比 <span id="cnt_one"></span>　　</div>
+          <div class="div_cnt_day"><span v-text="pnl.date.cnt_day">4月15日 12:00時点</span></div>
+          <div class="div_cnt_one">前日比 <span v-text="pnl.date.cnt_one"></span>　　</div>
           <div id="div_date">
             <div id="chart_date"></div>
           </div>
-          <div id="div_div_date2" style="display: none;">
-            <span class="chart-title"><i class="fa fa-vials"></i>PCR検査人数</span><span class="chart-title2"></span>
-            <div style="float:right;font-size:0.8em;">累計&nbsp;<span id="cnt_all2" style="font-weight:bold;font-size:1.8em !important;">2,123</span>&nbsp;名&nbsp;&nbsp;</div>
+          <div v-show="pnl.date.chart2.is_show">
+            <span class="chart-title" v-html="pnl.date.chart2.title"><i class="fa fa-vials"></i>PCR検査人数</span>
+            <span class="chart-title2" v-html="pnl.date.chart2.title2"></span>
+            <div class="div_total">累計&nbsp;<span class="div_total_cnt" v-text="pnl.date.chart2.cnt">2,123</span>&nbsp;名&nbsp;&nbsp;</div>
             <div id="div_date2" style="overflow-x: auto;width: 100%;">
               <div id="chart_date2"></div>
             </div>
           </div>
         </div>
-        <div id="chart_sex" class="dc_panel drag">
-          <span class="chart-title"><i class="fa fa-venus-mars"></i>性別</span>
+        <div id="chart_sex" class="dc_panel drag" v-show="pnl.sex.is_show">
+          <span class="chart-title" v-html="pnl.sex.title" v-html="pnl.sex.title"><i class="fa fa-venus-mars"></i>性別</span>
           <a class="reset" href="javascript:m_.chartSex.filterAll();dc.redrawAll('chartGroup');" style="display: none;"><span class="ui-icon ui-icon-closethick"></span></a>
           <span class="reset" style="display: none;"><span class="filter"></span></span>&nbsp;
           <span class="ui-icon ui-icon-circle-close sp_icon btn_close" ch_id="ch_pnl_sex" style="float:right;"></span>
           <div class="clearfix"></div>
         </div>
-        <div id="chart_week" class="dc_panel drag">
-          <span class="chart-title">曜日</span><span class="ui-icon ui-icon-circle-close sp_icon btn_close" ch_id="ch_pnl_week" style="float:right;"></span>
+        <div id="chart_week" class="dc_panel drag" v-show="pnl.week.is_show">
+          <span class="chart-title" v-html="pnl.week.title">曜日</span><span class="ui-icon ui-icon-circle-close sp_icon btn_close" ch_id="ch_pnl_week" style="float:right;"></span>
           <a class="reset" href="javascript:m_.chartWeek.filterAll();dc.redrawAll('chartGroup');" style="display: none;"><span class="ui-icon ui-icon-closethick"></span></a>
           <span class="reset" style="display: none;"><span class="filter"></span></span>&nbsp;
           <div class="clearfix"></div>
         </div>
-        <div id="chart_age" class="dc_panel drag">
-          <span class="chart-title">年齢</span>&nbsp;
+        <div id="chart_age" class="dc_panel drag" v-show="pnl.age.is_show">
+          <span class="chart-title" v-html="pnl.age.title">年齢</span>&nbsp;
           <a class="reset" href="javascript:m_.chartAge.filterAll();dc.redrawAll('chartGroup');" style="display: none;"><span class="ui-icon ui-icon-closethick"></span></a>
           <span class="reset" style="display: none;"><span class="filter" tt_title="Ctrlを押しながら選択すると単一選択ができます。"></span></span>&nbsp;
           <span class="ui-icon ui-icon-circle-close sp_icon btn_close" ch_id="ch_pnl_age" style="float:right;"></span>
           <div class="clearfix"></div>
         </div>
-        <div id="panel_cond" class="dc_panel drag">
-          <span class="chart-title"><i class="fa fa-medkit"></i>状態(現在)</span>&nbsp;※公開されている自治体のみ
+        <div id="panel_cond" class="dc_panel drag" v-show="pnl.cond.is_show">
+          <span class="chart-title" v-html="pnl.cond.title"><i class="fa fa-medkit"></i>状態(現在)</span>&nbsp;※公開されている自治体のみ
           <a class="reset_btn" href="javascript:m_.chartCond.filterAll();dc.redrawAll('chartGroup');" style="display: none;"><span class="ui-icon ui-icon-closethick"></span></a>
           <input type="text" class="filter_txt" tt_title="Ctrlを押しながら選択すると単一選択ができます。" readonly style="display: none;">
           <span class="ui-icon ui-icon-circle-close sp_icon btn_close" ch_id="ch_pnl_cond" style="float:right;"></span>
@@ -212,8 +213,8 @@
             <div id="chart_cond"></div>
           </div>
         </div>
-        <div id="panel_job" class="dc_panel drag">
-          <span class="chart-title"><i class="fa fa-id-card-o"></i>職業</span><span id="chart_job_title_sub"></span>&nbsp;※公開されている自治体のみ
+        <div id="panel_job" class="dc_panel drag" v-show="pnl.job.is_show">
+          <span class="chart-title" v-html="pnl.job.title"><i class="fa fa-id-card-o"></i>職業</span><span id="chart_job_title_sub"></span>&nbsp;※公開されている自治体のみ
           <a class="reset_btn" href="javascript:m_.chartJob.filterAll();dc.redrawAll('chartGroup');" style="display: none;"><span class="ui-icon ui-icon-closethick"></span></a>
           <input type="text" class="filter_txt" readonly style="display: none;">
           <span class="ui-icon ui-icon-circle-close sp_icon btn_close" ch_id="ch_pnl_job" style="float:right;"></span>
@@ -221,8 +222,8 @@
             <div id="chart_job"></div>
           </div>
         </div>
-        <div id="panel_detail" class="dc_panel drag">
-          <span class="chart-title">詳細情報</span>
+        <div id="panel_detail" class="dc_panel drag" v-show="pnl.detail.is_show">
+          <span class="chart-title" v-html="pnl.detail.title">詳細情報</span>
           <span class="ui-icon ui-icon-circle-close sp_icon btn_close" ch_id="ch_pnl_detail" style="float:right;"></span>
           <div>
             <div id="detail_div1" class="detail"></div>
@@ -232,8 +233,8 @@
             <div id="detail_div5" class="detail"></div>
           </div>
         </div>
-        <div id="panel_ana" class="dc_panel drag">
-          <span class="chart-title"><i class="fa fa-eye"></i>分析</span>
+        <div id="panel_ana" class="dc_panel drag" v-show="pnl.ana.is_show">
+          <span class="chart-title" v-html="pnl.ana.title"><i class="fa fa-eye"></i>分析</span>
           <span class="ui-icon ui-icon-circle-close sp_icon btn_close" ch_id="ch_pnl_ana" style="float:right;"></span>
           <div class="clearfix"></div>
           <div id="ana_diff_ls">
@@ -425,17 +426,17 @@
       </div>
       <div class="row hasborder">
         <B>表示：</B>&nbsp;
-        <label for="ch_pnl_map"><input id="ch_pnl_map" type="checkbox">地図</label>&nbsp;&nbsp;&nbsp;
-        <label for="ch_pnl_name"><input id="ch_pnl_name" type="checkbox">都道府県</label>&nbsp;&nbsp;&nbsp;
-        <label for="ch_pnl_city"><input id="ch_pnl_city" type="checkbox">市区町村</label>&nbsp;&nbsp;&nbsp;
-        <label for="ch_pnl_date"><input id="ch_pnl_date" type="checkbox"><i class="fa fa-procedures"></i>感染者数</label>&nbsp;&nbsp;&nbsp;
-        <label for="ch_pnl_sex"><input id="ch_pnl_sex" type="checkbox"><i class="fa fa-venus-mars"></i>性別</label>&nbsp;&nbsp;&nbsp;
-        <label for="ch_pnl_week"><input id="ch_pnl_week" type="checkbox">曜日</label>&nbsp;&nbsp;&nbsp;
-        <label for="ch_pnl_age"><input id="ch_pnl_age" type="checkbox">年齢</label>&nbsp;&nbsp;&nbsp;
-        <label for="ch_pnl_cond"><input id="ch_pnl_cond" type="checkbox"><i class="fa fa-medkit"></i>状態</label>&nbsp;&nbsp;&nbsp;
-        <label for="ch_pnl_job"><input id="ch_pnl_job" type="checkbox"><i class="fa fa-id-card-o"></i>職業</label>&nbsp;&nbsp;&nbsp;
-        <label for="ch_pnl_detail"><input id="ch_pnl_detail" type="checkbox">詳細情報</label>&nbsp;&nbsp;&nbsp;
-        <label for="ch_pnl_ana"><input id="ch_pnl_ana" type="checkbox"><i class="fa fa-eye"></i>分析</label>&nbsp;&nbsp;&nbsp;
+        <label for="ch_pnl_map"><input id="ch_pnl_map" type="checkbox" v-model="pnl.map.is_show">地図</label>&nbsp;&nbsp;&nbsp;
+        <label for="ch_pnl_name"><input id="ch_pnl_name" type="checkbox" v-model="pnl.name.is_show">都道府県</label>&nbsp;&nbsp;&nbsp;
+        <label for="ch_pnl_city"><input id="ch_pnl_city" type="checkbox" v-model="pnl.city.is_show">市区町村</label>&nbsp;&nbsp;&nbsp;
+        <label for="ch_pnl_date"><input id="ch_pnl_date" type="checkbox" v-model="pnl.date.is_show"><i class="fa fa-procedures"></i>感染者数</label>&nbsp;&nbsp;&nbsp;
+        <label for="ch_pnl_sex"><input id="ch_pnl_sex" type="checkbox" v-model="pnl.sex.is_show"><i class="fa fa-venus-mars"></i>性別</label>&nbsp;&nbsp;&nbsp;
+        <label for="ch_pnl_week"><input id="ch_pnl_week" type="checkbox" v-model="pnl.week.is_show">曜日</label>&nbsp;&nbsp;&nbsp;
+        <label for="ch_pnl_age"><input id="ch_pnl_age" type="checkbox" v-model="pnl.age.is_show">年齢</label>&nbsp;&nbsp;&nbsp;
+        <label for="ch_pnl_cond"><input id="ch_pnl_cond" type="checkbox" v-model="pnl.cond.is_show"><i class="fa fa-medkit"></i>状態</label>&nbsp;&nbsp;&nbsp;
+        <label for="ch_pnl_job"><input id="ch_pnl_job" type="checkbox" v-model="pnl.job.is_show"><i class="fa fa-id-card-o"></i>職業</label>&nbsp;&nbsp;&nbsp;
+        <label for="ch_pnl_detail"><input id="ch_pnl_detail" type="checkbox" v-model="pnl.detail.is_show">詳細情報</label>&nbsp;&nbsp;&nbsp;
+        <label for="ch_pnl_ana" v-show="pnl.ana.is_chk_show"><input id="ch_pnl_ana" type="checkbox" v-model="pnl.ana.is_show"><i class="fa fa-eye"></i>分析</label>&nbsp;&nbsp;&nbsp;
       </div>
     </div><!-- container2 -->
     <div id="container2_tbl_pref" class="container2">

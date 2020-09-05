@@ -219,19 +219,6 @@ const m_ = {
             if (d.value > 0 && ymd > m_.dateCntTo) m_.dateCntTo = ymd;
         });
     },
-    settingsLoad: function() {
-        function get_pathname_trimr(pn) {
-            let a = pn.split('/');
-            return a.slice(0, a.length - 1).join('/');
-        }
-        m_.settings_name = 'covid19' + get_pathname_trimr(location.pathname);
-        //UI_Settings_Load
-        m_.settings = JSON.parse(localStorage.getItem(m_.settings_name));
-
-        if (m_.get.light !== undefined) {
-            $('#ch_pnl_week').prop('checked', true);
-        }
-    },
     ageTickFormat: function(s) {
         if (s === 1) return '幼児';
         return s === DN_AGE ? DN_AGE_STR : (s === 0 ? '10歳未満' : s + "代");
@@ -626,7 +613,7 @@ const m_ = {
         }
         m_.last_fth = fth;
 
-        $('#cnt_all').text(php_number_format(m_.ndx.groupAll().reduceSum(d => { return d[D_CNT] || 1; }).value()));
+        app.pnl.date.cnt = php_number_format(m_.ndx.groupAll().reduceSum(d => { return d[D_CNT] || 1; }).value());
 
         let all = m_.gpDate.all();
         if (all.length >= 1) {
@@ -640,14 +627,13 @@ const m_ = {
                 d1 = all[all.length - 2];//最終日-1
             }
             if (d) {
-                $('#cnt_day').text(moment(d.key).format('YYYY/M/D(ddd)') + '時点');
-                //$('#cnt_one').text(d.value);//前日比：累計
+                app.pnl.date.cnt_day = moment(d.key).format('YYYY/M/D(ddd)') + '時点';
                 h = d.value - d1.value;
-                $('#cnt_one').text((h >= 0 ? '+' : '') + php_number_format(h));//前日比：日別
+                app.pnl.date.cnt_one = (h >= 0 ? '+' : '') + php_number_format(h);//前日比：日別
             }
         } else {
-            $('#cnt_one').text('');
-            $('#cnt_day').text('');
+            app.pnl.date.cnt_one = '';
+            app.pnl.date.cnt_day = '';
         }
         //m_.gpDateYMMax=_.maxBy(all, function(o) { return o.value; });
     },
@@ -1516,9 +1502,9 @@ const initDc = (data) => {
                     });
                 }
                 if (m_.chartDate2Mode === DT_PAT) {
-                    $('#cnt_all2').text(php_number_format(_.last(m_.work)));
+                    app.pnl.date.chart2.cnt = php_number_format(_.last(m_.work));
                 } else {
-                    $('#cnt_all2').text(php_number_format(_.sum(m_.work)));
+                    app.pnl.date.chart2.cnt = php_number_format(_.sum(m_.work));
                 }
                 m_.dateCntMax2 = _.max(m_.work);
             }
@@ -2006,18 +1992,18 @@ const initDc = (data) => {
         }
     } else {
         m_.sel_tab = 'tabs_c';
-        $('#div_div_date2').hide();
-        $('#ch_pnl_city').prop('checked', true).trigger('ch_pnl_update');
-        $('#ch_pnl_week').prop('checked', true).trigger('ch_pnl_update');
+        app.pnl.date.chart2.is_show = 0;
+        app.pnl.city.is_show = 1;
+        app.pnl.week.is_show = 1;
 
         $('#chart_map_title').hide();
         m_.chartCity.addFilterHandler(m_.addFilterHandlerSingle);
         m_.chartCond.addFilterHandler(m_.addFilterHandlerSingle);
     }
     //タイトル変更
-    $('#panel_name .chart-title').text(m_.data_hdr[D_PL1]);
-    $('#panel_city .chart-title').text(m_.data_hdr[D_PL2]);
-    $('#panel_date .chart-title').html(m_.data_type ? '<i class="fa fa-procedures"></i>感染者数' : m_.data_hdr[D_YMD]);
+    app.pnl.name.title = m_.data_hdr[D_PL1];
+    app.pnl.city.title = m_.data_hdr[D_PL2];
+    app.pnl.date.title = m_.data_type ? '<i class="fa fa-procedures"></i>感染者数' : m_.data_hdr[D_YMD];
     //$('#chart_sex .chart-title').text(m_.data_hdr[D_LV]);
     //$('#chart_age .chart-title').text(m_.data_hdr[D_LV]);
     $('#panel_cond .chart-title').text(m_.data_hdr[D_LV]);
@@ -2040,13 +2026,12 @@ const initTabs = () => {
             m_.sel_tab = sel_tab ? sel_tab : ui.newPanel.attr('id');
             switch (m_.sel_tab) {
                 case 'tabs_c':
-                    $('#ch_pnl_name,#ch_pnl_date' + (!IS_SP ? ',#ch_pnl_sex' : '') + ',#ch_pnl_week,#ch_pnl_age,#ch_pnl_cond,#ch_pnl_job').prop('checked', true).trigger('ch_pnl_update', 'is_setting_load');
+                    app.pnlShowsLoadStore(1);
 
                     m_.chartName.group(m_.gpName).render();
-                    $('#panel_name .chart-title').text('都道府県');
-                    $('#div_div_date2 .chart-title2').text('');
-
-                    $('#div_div_date2').hide();
+                    app.pnl.name.title = '都道府県';
+                    app.pnl.date.chart2.is_show = 0;
+                    app.pnl.date.chart2.title2 = '';
                     $('#world-map').hide();
                     $('#japan-map').show();
                     drawJapanMap();
@@ -2061,42 +2046,49 @@ const initTabs = () => {
                     // case 'tabs_p':
                     // case 'tabs_pc':
                     // case 'tabs_d':
+
+                    app.pnlShowsLoadStore(0);
+                    app.pnl.name.is_show = 1;
+                    app.pnl.city.is_show = 0;
+                    app.pnl.sex.is_show = 0;
+                    app.pnl.week.is_show = 0;
+                    app.pnl.age.is_show = 0;
+                    app.pnl.cond.is_show = 0;
+                    app.pnl.job.is_show = 0;
+
                     if (m_.sel_tab === 'tabs_b') {//病床
-                        $('#ch_pnl_city,#ch_pnl_date,#ch_pnl_sex,#ch_pnl_week,#ch_pnl_age,#ch_pnl_cond,#ch_pnl_job').prop('checked', false).trigger('ch_pnl_update', 'cmd_none');//all_hide
-                        $('#ch_pnl_name').prop('checked', true).trigger('ch_pnl_update', 'cmd_none');
-                        $('#div_div_date2').hide();
+                        app.pnl.date.is_show = 0;
+                        app.pnl.date.chart2.is_show = 0;
 
                         gpName2 = m_.dimName2.group().reduce((p, v) => m_.pref_tbl_last_m1[v[D3_PL1]].bed, (p, v) => m_.pref_tbl_last_m1[v[D3_PL1]].bed, (p, v) => 0);
                         m_.chartName.group(gpName2).render();
                     } else {
-                        $('#ch_pnl_city,            #ch_pnl_sex,#ch_pnl_week,#ch_pnl_age,#ch_pnl_cond,#ch_pnl_job').prop('checked', false).trigger('ch_pnl_update', 'cmd_none');
-                        $('#ch_pnl_name').prop('checked', true).trigger('ch_pnl_update', 'cmd_none');
-                        $('#ch_pnl_date').prop('checked', true).trigger('ch_pnl_update', 'cmd_none');
-                        let title = $('#div_div_date2 .chart-title');
-                        $('#div_div_date2 .chart-title2').text('');
+                        app.pnl.date.is_show = 1;
                         let gpName2;
                         switch (m_.sel_tab) {
                             case 'tabs_p':
                                 m_.chartDate2Mode = DT_PAT;
-                                title.html('<i class="fa fa-procedures"></i>患者数(累計)');
-                                $('#div_div_date2 .chart-title2').text('※入院治療等を要する患者数。(感染者数から無症状、退院、死亡者数を引いた値)')
                                 gpName2 = m_.dimName2.group().reduce((p, v) => v[D3_CNT], (p, v) => v[D3_CNT], (p, v) => 0);
-                                $('#panel_name .chart-title').text('都道府県(患者)');
+                                app.pnl.name.title = '都道府県(患者)';
+                                app.pnl.date.chart2.title = '<i class="fa fa-procedures"></i>患者数(累計)';
+                                app.pnl.date.chart2.title2 = '※入院治療等を要する患者数。(感染者数から無症状、退院、死亡者数を引いた値)';
                                 break;
                             case 'tabs_pc':
                                 m_.chartDate2Mode = DT_PCR;
                                 gpName2 = m_.dimName2.group().reduceSum(function(d) { return d[D3_TYP] === DT_PCR ? d[D3_CNT] : 0; })
-                                title.html('<i class="fa fa-vials"></i>PCR検査人数');
-                                $('#panel_name .chart-title').text('都道府県(PCR)');
+                                app.pnl.name.title = '都道府県(PCR)';
+                                app.pnl.date.chart2.title = '<i class="fa fa-vials"></i>PCR検査人数';
+                                app.pnl.date.chart2.title2 = '';
                                 break;
                             case 'tabs_d':
                                 m_.chartDate2Mode = DT_DEA;
                                 gpName2 = m_.dimName2.group().reduceSum(function(d) { return d[D3_TYP] === DT_DEA ? d[D3_CNT] : 0; })
-                                title.html('死亡者数');
-                                $('#panel_name .chart-title').text('都道府県(死亡)');
+                                app.pnl.name.title = '都道府県(死亡)';
+                                app.pnl.date.chart2.title = '死亡者数';
+                                app.pnl.date.chart2.title2 = '';
                                 break;
                         }
-                        $('#div_div_date2').show();
+                        app.pnl.date.chart2.is_show = 1;
                         $('#div_date2').scrollLeft($('#div_date').scrollLeft());
 
                         m_.chartName.group(gpName2);
@@ -2634,76 +2626,6 @@ $(document).ready(function() {
     });
 
 
-});
-
-$(document).ready(function() {
-
-    m_.settingsLoad();
-
-    //チェックボックスにより、対応するパネル表示のToggle
-    const panel_chboxes = [
-        //                                           default
-        { ch: '#ch_pnl_name', div: '#panel_name', pc: 1, sp: 1 }
-        , { ch: '#ch_pnl_city', div: '#panel_city', pc: 1, sp: 1 }
-        , { ch: '#ch_pnl_date', div: '#panel_date', pc: 1, sp: 1 }
-        , { ch: '#ch_pnl_sex', div: '#chart_sex', pc: 1, sp: 0 }
-        , { ch: '#ch_pnl_week', div: '#chart_week', pc: 0, sp: 0 }
-        , { ch: '#ch_pnl_age', div: '#chart_age', pc: 1, sp: 1 }
-        , { ch: '#ch_pnl_cond', div: '#panel_cond', pc: 1, sp: 1 }
-        , { ch: '#ch_pnl_job', div: '#panel_job', pc: 1, sp: 1 }
-        , { ch: '#ch_pnl_ana', div: '#panel_ana', pc: 0, sp: 0 }
-        , { ch: '#ch_pnl_map', div: '#chart_map', pc: 1, sp: 1 }
-        , { ch: '#ch_pnl_detail', div: '#panel_detail', pc: 1, sp: 1 }
-    ];
-    function ch_pnl_set_event(d) {
-        let ch = $(d.ch);
-        let ch_name = d.ch.replace('#', '');
-        let pnl_div = d.div;
-        let is_check = m_.settings[ch_name];
-        if (m_.get.light !== undefined) {
-            switch (ch_name) {
-                case 'ch_pnl_week': is_check = 1; break;
-                case 'ch_pnl_ana': is_check = 0; $('[for="ch_pnl_ana"]').hide(); break;
-            }
-        }
-        ch
-            .prop('checked', is_check ? true : false)
-            .on('ch_pnl_update', function(e, cmd = 'is_setting_save') {
-                let o = $(pnl_div);
-                if (cmd === 'is_setting_load') {
-                    $(this).prop('checked', m_.settings[ch_name]);
-                }
-                let is_checked = $(this).is(':checked');
-                if (is_checked) {
-                    o.show();
-                } else {
-                    o.hide();
-                }
-                if (cmd === 'is_setting_save') {
-                    //UI_Settings_Save
-                    m_.settings[ch_name] = is_checked ? 1 : 0;
-                    localStorage.setItem(m_.settings_name, JSON.stringify(m_.settings));
-                }
-            })
-            .on('change', function() {
-                $(this).trigger('ch_pnl_update');
-            })
-            .trigger('ch_pnl_update', 'cmd_none')
-            ;
-    }
-
-    //UI_Settings_Load_Default
-    if (!m_.settings) {
-        m_.settings = {};
-        for (var i = 0; i < panel_chboxes.length; i++) {
-            let d = panel_chboxes[i];
-            let ch_name = d.ch.replace('#', '');
-            m_.settings[ch_name] = (IS_SP ? d.sp : d.pc);
-        }
-    }
-    for (var i = 0; i < panel_chboxes.length; i++) {
-        ch_pnl_set_event(panel_chboxes[i]);
-    }
 });
 
 //ShortCutKey
@@ -3244,11 +3166,143 @@ $(document).ready(function() {
 
 const app = new Vue({
     el: '#app',
-    data: {},
-    watch: {},
+    data: {
+        pnl: {
+            map: {
+                is_show: IS_SP ? 1 : 1,
+                title: '地図',
+                // filter:''
+            },
+            name: {
+                is_show: IS_SP ? 1 : 1,
+                title: '都道府県',
+                // filter:''
+            },
+            city: {
+                is_show: IS_SP ? 1 : 1,
+                title: '市区町村',
+                // filter:''
+            },
+            date: {
+                is_show: IS_SP ? 1 : 1,
+                title: '<i class="fa fa-procedures"></i>感染者数',
+                // filter:''
+                cnt_day: '',
+                cnt_one: '',
+                cnt: '',
+                chart2: {
+                    is_show: 0,
+                    title: '<i class="fa fa-vials"></i>PCR検査人数</span>',
+                    title2: '',
+                    cnt: ''
+                }
+            },
+            sex: {
+                is_show: IS_SP ? 0 : 1,
+                title: '<i class="fa fa-venus-mars"></i>性別',
+                // filter:''
+            },
+            week: {
+                is_show: IS_SP ? 0 : 0,
+                title: '曜日',
+                // filter:''
+            },
+            age: {
+                is_show: IS_SP ? 1 : 1,
+                title: '年齢',
+                // filter:''
+            },
+            cond: {
+                is_show: IS_SP ? 1 : 1,
+                title: '<i class="fa fa-medkit"></i>状態(現在)',
+                // filter:''
+            },
+            job: {
+                is_show: IS_SP ? 1 : 1,
+                title: '<i class="fa fa-id-card-o"></i>職業',
+                // filter:''
+            },
+            detail: {
+                is_show: IS_SP ? 1 : 1,
+                title: '詳細',
+                // filter:''
+            },
+            ana: {
+                is_show: IS_SP ? 0 : 0,
+                is_chk_show: 1,
+                title: '<i class="fa fa-eye"></i>分析',
+                // filter:''
+            }
+        },
+        pnl_shows: null,
+
+        settings_name: '',
+    },
+    watch: {
+        // pnl: {
+        //   handler: function (v, old){
+        //     this.settingsSave();
+        //   },
+        //   deep: true
+        // },
+        'pnl.map.is_show': function() { this.settingsSave(); },
+        'pnl.name.is_show': function() { this.settingsSave(); },
+        'pnl.city.is_show': function() { this.settingsSave(); },
+        'pnl.date.is_show': function() { this.settingsSave(); },
+        'pnl.sex.is_show': function() { this.settingsSave(); },
+        'pnl.week.is_show': function() { this.settingsSave(); },
+        'pnl.age.is_show': function() { this.settingsSave(); },
+        'pnl.cond.is_show': function() { this.settingsSave(); },
+        'pnl.job.is_show': function() { this.settingsSave(); },
+        'pnl.detail.is_show': function() { this.settingsSave(); },
+        'pnl.ana.is_show': function() { this.settingsSave(); }
+    },
     mounted: function() {
         m_.loadAllData();
+        this.settingsLoad();
     },
-    methods: {}
+    methods: {
+        getPanelShows: function() {
+            let o = {};
+            _.forEach(this.pnl, (v, k) => {
+                o[k] = { is_show: v.is_show ? 1 : 0 };
+            });
+            return o;
+        },
+        settingsSave: function() {
+            let shows = this.getPanelShows();
+            localStorage.setItem(this.settings_name, JSON.stringify(shows));
+        },
+        settingsLoad: function() {
+            const get_pathname_trimr = (pn) => {
+                let a = pn.split('/');
+                return a.slice(0, a.length - 1).join('/');
+            }
+            this.settings_name = 'covid19' + get_pathname_trimr(location.pathname);
+            //UI_Settings_Load
+            let settings = JSON.parse(localStorage.getItem(this.settings_name));
+            if (settings) {
+                _.merge(this.pnl, settings);
+            }
+            if (m_.get.light !== undefined) {
+                this.pnl.week.is_show = 1;
+                this.pnl.ana.is_show = 0;
+                this.pnl.ana.is_chk_show = 0;
+            }
+        },
+        pnlShowsLoadStore: function(is_load) {
+            if (is_load) {
+                let o = {};
+                _.forEach(this.pnl_shows, (v, k) => {
+                    this.pnl[k].is_show = v.is_show;
+                });
+                this.pnl_shows = null;
+            } else {
+                if (this.pnl_shows === null) {
+                    this.pnl_shows = this.getPanelShows();
+                }
+            }
+        }
+    }
 });
 

@@ -94,7 +94,6 @@
 
   #panel_ana {
     background-color: #ffffe0;
-    display: none;
   }
 
   .ui-tabs-anchor {
@@ -220,7 +219,6 @@
 
   #panel_ana {
     background-color: #ffffe0;
-    display: none;
     width: 100%;
   }
 
@@ -398,9 +396,30 @@ h4.hdr {
   box-shadow: 2px 2px 2px 2px rgba(0, 0, 0, 0.4);
 }
 
+
 #chart_date .filter,
 #panel_date .filter_txt {
   width: 10em;
+}
+
+.div_cnt_day {
+  float: left;
+  font-size: 0.9em;
+}
+
+.div_cnt_one {
+  float: right;
+  font-size: 0.9em;
+}
+
+.div_total {
+  float: right;
+  font-size: 0.8em;
+}
+
+.div_total_cnt {
+  font-weight: bold;
+  font-size: 1.8em !important;
 }
 
 #chart_age .filter {
