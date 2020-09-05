@@ -80,6 +80,7 @@ const MAP_COL_TBL = [["1000人以上", "#8c0a00"], ["500人以上", "#ea5432"], 
 colorbrewer.Set3[12][8] = colorbrewer.Set2[8][6];//Set3[12][8]:gray-> light gold
 colorbrewer.Set2[8][7] = colorbrewer.Set1[8][6];//Set3[12][8]:gray-> light gold
 
+var app;
 const m_ = {
     config: {
         url_param_data_replace: !IS_SP, cDateYm: {
@@ -3164,7 +3165,7 @@ $(document).ready(function() {
     });
 });
 
-const app = new Vue({
+new Vue({
     el: '#app',
     data: {
         pnl: {
@@ -3258,6 +3259,7 @@ const app = new Vue({
         'pnl.ana.is_show': function() { this.settingsSave(); }
     },
     mounted: function() {
+        app = this;
         m_.loadAllData();
         this.settingsLoad();
     },
