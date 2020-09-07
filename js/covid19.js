@@ -167,8 +167,6 @@ const m_ = {
     tbl_pref_isearch: null,
     //gpDateYMMax:{},
 
-    settings_name: '',
-    settings: null,
     chartAllFilterByKW_render: 0,
     line: d3.line().curve(d3.curveLinear),
     last_fth: '',
@@ -2127,9 +2125,6 @@ const initTabs = () => {
                     break;
             }
             if (!IS_SP) $('#btn_search').focus().select();
-        },
-        create: function(event, ui) {
-            $('#chart_map .ui-widget-header').append($('<span class="ui-icon ui-icon-circle-close sp_icon btn_close" ch_id="ch_pnl_map" style="float:right;top: 8px;"></span>'));
         }
     });
 }//initTabs
@@ -2464,15 +2459,7 @@ $(document).ready(function() {
         m_.renderAllChart();
     });
 
-    $('.btn_close').button().on('click', function(event) {
-        event.preventDefault();
-        $('#' + $(this).attr('ch_id')).trigger('click');
-    });
-
-    $('.btn_close2').button().on('click', function(event) {
-        event.preventDefault();
-        $(this).closest('tr').hide();
-    });
+    $('.btn_close').button();
 
     $('.btn_brush').button().on('click', function(event) {
         event.preventDefault();
@@ -3236,8 +3223,15 @@ new Vue({
             }
         },
         pnl_shows: null,
-
-        settings_name: '',
+    },
+    computed: {
+        settingsName: () => {
+            const get_pathname_trimr = (pn) => {
+                let a = pn.split('/');
+                return a.slice(0, a.length - 1).join('/');
+            }
+            return 'covid19' + get_pathname_trimr(location.pathname);
+        }
     },
     watch: {
         // pnl: {
@@ -3273,16 +3267,11 @@ new Vue({
         },
         settingsSave: function() {
             let shows = this.getPanelShows();
-            localStorage.setItem(this.settings_name, JSON.stringify(shows));
+            localStorage.setItem(this.settingsName, JSON.stringify(shows));
         },
         settingsLoad: function() {
-            const get_pathname_trimr = (pn) => {
-                let a = pn.split('/');
-                return a.slice(0, a.length - 1).join('/');
-            }
-            this.settings_name = 'covid19' + get_pathname_trimr(location.pathname);
             //UI_Settings_Load
-            let settings = JSON.parse(localStorage.getItem(this.settings_name));
+            let settings = JSON.parse(localStorage.getItem(this.settingsName));
             if (settings) {
                 _.merge(this.pnl, settings);
             }

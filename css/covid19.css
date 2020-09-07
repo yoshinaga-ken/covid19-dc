@@ -244,6 +244,10 @@ body,
   font-family: "メイリオ", "ヒラギノ角ゴシックW3", "ＭＳ Ｐゴシック", "Osaka", sans-serif;
 }
 
+.btn_close {
+  float: right;
+}
+
 i.fa {
   padding: 3px;
 }
