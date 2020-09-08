@@ -25,6 +25,7 @@
   "homepage": "https://github.com/yoshinaga-ken/covid19-dc#readme",
   "devDependencies": {
     "bower": "^1.8.8",
+    "dataframe-js": "^1.4.3",
     "xlsx2csv": "^1.0.12"
   },
   "dependencies": {

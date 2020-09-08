@@ -7,6 +7,7 @@ const request = require('request')
 const cheerio = require('cheerio')
 // const moment  = require("moment");
 // const _       = require('lodash');
+// const DataFrame = require('dataframe-js').DataFrame;
 
 const OK = 0, NG = -1;
 const pref = process.argv[2];
