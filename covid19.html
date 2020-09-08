@@ -122,7 +122,7 @@
       <button id="btn_download_csv" title="フィルタリングされたグラフのデータをCSV形式でダウンロードします。" class="btn_export_file"><i class="ui-icon ui-icon-arrowstop-1-s"></i><img width="20" src="img/csv.png"></button>
       <div class="row">
         <div id="chart_map" class="dc_panel drag" v-show="pnl.map.is_show">
-          <ul id="chart_map_title" class="chart-title" style="display: none;">
+          <ul class="chart-title" v-show="pnl.map.tabs.is_show">
             <li><a href="#tabs_w" title="世界の感染状況"><i class="fa fa-globe"></i>世界</a></li>
             <li><a href="#tabs_c" title="感染者数 @日本">感染</a></li>
             <li><a href="#tabs_p" title="入院治療等を要する患者数(累計)。(感染者数-無症状者数-退院者数-死亡者数) @日本">患者</a></li>
@@ -165,9 +165,9 @@
           <a class="reset_btn" id="reset_btn_date" href="javascript:void(0);" style="display: none;"><span class="ui-icon ui-icon-closethick"></span></a>
           <input type="text" class="filter_txt" readonly style="display: none;">&nbsp;<span class="filter_txt_diff"></span>
           <img src="img/stack-bar-g.gif" width="20" title="バーのスタック表示のタイプを切り替えます">
-          <input type="radio" id="stack_type_pre" name="stack_type" value="pre"><label title="バーのスタック表示を都道府県にします" for="stack_type_pre">都道府県</label>
-          <input type="radio" id="stack_type_age" name="stack_type" value="age"><label title="バーのスタック表示を年齢にします" for="stack_type_age">年齢</label>
-          <input type="radio" id="stack_type_con" name="stack_type" value="con" checked="true"><label title="バーのスタック表示を状態にします" for="stack_type_con">状態</label>
+          <input type="radio" id="stack_type_pre" v-model="pnl.date.stack_type" value="pre"><label title="バーのスタック表示を都道府県にします" for="stack_type_pre">都道府県</label>
+          <input type="radio" id="stack_type_age" v-model="pnl.date.stack_type" value="age"><label title="バーのスタック表示を年齢にします" for="stack_type_age">年齢</label>
+          <input type="radio" id="stack_type_con" v-model="pnl.date.stack_type" value="con"><label title="バーのスタック表示を状態にします" for="stack_type_con">状態</label>
           <span class="ui-icon ui-icon-circle-close sp_icon btn_close" @click="pnl.date.is_show=0"></span>
           <div class="div_total">累計&nbsp;<span class="div_total_cnt" v-text="pnl.date.cnt"></span>&nbsp;名&nbsp;&nbsp;</div>
           <div class="clearfix"></div>

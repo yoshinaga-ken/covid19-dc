@@ -158,7 +158,6 @@ const m_ = {
 
     tab: null,
     sel_tab: 'tabs_c',
-    sel_stack: 'con',
 
     tip: null,
     tipRow: null,
@@ -1070,14 +1069,14 @@ const initDc = (data) => {
             let filters = chart.filters();
 
             //表示スタックを切り替える
-            if (m_.sel_stack !== 'age') {
+            if (app.pnl.date.stack_type !== 'age') {
                 let pref_mode = filters.length > 1 && filters.length <= CHART_DATE_STACK2_N;
                 if (pref_mode) {
                     m_.dateStakShow(1);
-                    $('#stack_type_pre').prop('checked', true);
+                    app.pnl.date.stack_type = 'pre';
                 } else {
                     m_.dateStakShow(0);
-                    $('#stack_type_con').prop('checked', true);
+                    app.pnl.date.stack_type = 'con';
                 }
             }
 
@@ -1339,7 +1338,7 @@ const initDc = (data) => {
                     s += d.value.nmcnt[f] ? (f + ': ' + d.value.nmcnt[f] + '名\n') : '';
                 }
                 return date_str + '\n────────\n' + s + (flt.length > 1 ? '────────\n計: ' + d.value.total + '名' : '') + '\n' + s_suf;
-            } else if (m_.sel_stack === 'age') {
+            } else if (app.pnl.date.stack_type === 'age') {
                 let s = '';
                 for (var i = 0; i < d.value.agcnt.length; i++) {
                     let per = _.round(100 * d.value.agcnt[i] / d.value.total, 1) + '%';
@@ -1728,9 +1727,9 @@ const initDc = (data) => {
             //if(m_.chartName.filters().length === 0)
             {
                 if (m_.chartAge.filters().length === 0) {
-                    $('#stack_type_con').prop('checked', true).trigger('change')
+                    app.pnl.date.stack_type = 'con';
                 } else {
-                    $('#stack_type_age').prop('checked', true).trigger('change')
+                    app.pnl.date.stack_type = 'age';
                 }
             }
             m_.on_chart_filtered(chart, v);
@@ -1982,7 +1981,7 @@ const initDc = (data) => {
 
 
     if (m_.data_type) {
-        $('#chart_map_title').show();
+        pnl.map.tabs.is_show = 1;
         m_.chartCity.addFilterHandler(m_.addFilterHandlerSingleR);
         m_.chartCond.addFilterHandler(m_.addFilterHandlerSingleR)
 
@@ -1995,7 +1994,7 @@ const initDc = (data) => {
         app.pnl.city.is_show = 1;
         app.pnl.week.is_show = 1;
 
-        $('#chart_map_title').hide();
+        pnl.map.tabs.is_show = 0;
         m_.chartCity.addFilterHandler(m_.addFilterHandlerSingle);
         m_.chartCond.addFilterHandler(m_.addFilterHandlerSingle);
     }
@@ -2003,14 +2002,13 @@ const initDc = (data) => {
     app.pnl.name.title = m_.data_hdr[D_PL1];
     app.pnl.city.title = m_.data_hdr[D_PL2];
     app.pnl.date.title = m_.data_type ? '<i class="fa fa-procedures"></i>感染者数' : m_.data_hdr[D_YMD];
-    //$('#chart_sex .chart-title').text(m_.data_hdr[D_LV]);
-    //$('#chart_age .chart-title').text(m_.data_hdr[D_LV]);
-    $('#panel_cond .chart-title').text(m_.data_hdr[D_LV]);
-    $('#panel_job .chart-title').text(m_.data_hdr[D_JOB]);
+    app.pnl.cond.title = m_.data_hdr[D_LV];
+    app.pnl.job.title = m_.data_hdr[D_JOB];
+
     if (m_.data_type) {
-        $('#stack_type_con').prop('checked', true).trigger('change');
+        app.pnl.date.stack_type = 'con';
     } else {
-        $('#stack_type_age').prop('checked', true).trigger('change');
+        app.pnl.date.stack_type = 'age';
     }
 
     if (!IS_SP) $('#btn_search').focus(); //.select();
@@ -2018,7 +2016,7 @@ const initDc = (data) => {
 
 const initTabs = () => {
     const TAB_NO = { 'c': 1, 'p': 2, 'pc': 3, 'd': 4, 'b': 5 };
-    $('#chart_map_title').show();
+
     m_.tab = $('#chart_map').tabs({
         active: m_.get['tab'] ? TAB_NO[m_.get['tab']] : 1,
         activate: function(event, ui, sel_tab/*<=user_opt*/) {
@@ -2481,16 +2479,6 @@ $(document).ready(function() {
             $(this).removeClass('btn_off btn_on').addClass(is_off ? 'btn_off' : 'btn_on');
             m_.composite.brushOn(!is_off).render();
         });
-
-    $('[name="stack_type"]').on('change', function(event) {
-        m_.sel_stack = $(this).val();
-        switch (m_.sel_stack) {
-            case 'con': m_.dateStakShow(0); break;
-            case 'pre': m_.dateStakShow(1); break;
-            case 'age': m_.dateStakShow(2); break;
-        }
-        m_.composite.render();
-    });
 
     if (!IS_SP) {
         $('.drag').draggable({
@@ -3160,6 +3148,9 @@ new Vue({
                 is_show: IS_SP ? 1 : 1,
                 title: '地図',
                 // filter:''
+                tabs: {
+                    is_show: 1
+                }
             },
             name: {
                 is_show: IS_SP ? 1 : 1,
@@ -3175,6 +3166,7 @@ new Vue({
                 is_show: IS_SP ? 1 : 1,
                 title: '<i class="fa fa-procedures"></i>感染者数',
                 // filter:''
+                stack_type: 'con',//pre|age|con
                 cnt_day: '',
                 cnt_one: '',
                 cnt: '',
@@ -3250,7 +3242,15 @@ new Vue({
         'pnl.cond.is_show': function() { this.settingsSave(); },
         'pnl.job.is_show': function() { this.settingsSave(); },
         'pnl.detail.is_show': function() { this.settingsSave(); },
-        'pnl.ana.is_show': function() { this.settingsSave(); }
+        'pnl.ana.is_show': function() { this.settingsSave(); },
+        'pnl.date.stack_type': function(v, old) {
+            switch (v) {
+                case 'con': m_.dateStakShow(0); break;
+                case 'pre': m_.dateStakShow(1); break;
+                case 'age': m_.dateStakShow(2); break;
+            }
+            m_.composite.render();
+        }
     },
     mounted: function() {
         app = this;
