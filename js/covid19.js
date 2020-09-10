@@ -1981,7 +1981,7 @@ const initDc = (data) => {
 
 
     if (m_.data_type) {
-        pnl.map.tabs.is_show = 1;
+        app.pnl.map.tabs.is_show = 1;
         m_.chartCity.addFilterHandler(m_.addFilterHandlerSingleR);
         m_.chartCond.addFilterHandler(m_.addFilterHandlerSingleR)
 
@@ -1994,7 +1994,7 @@ const initDc = (data) => {
         app.pnl.city.is_show = 1;
         app.pnl.week.is_show = 1;
 
-        pnl.map.tabs.is_show = 0;
+        app.pnl.map.tabs.is_show = 0;
         m_.chartCity.addFilterHandler(m_.addFilterHandlerSingle);
         m_.chartCond.addFilterHandler(m_.addFilterHandlerSingle);
     }
