@@ -143,7 +143,7 @@
         </div>
         <div id="panel_name" class="dc_panel drag" v-show="pnl.name.is_show">
           <span class="chart-title" v-html="pnl.name.title">都道府県</span>
-          <a class="reset_btn" href="javascript:m_.is_drawJapanMap=1;m_.chartName.filterAll();$('#panel_name .filter_txt').text('');dc.redrawAll('chartGroup');" style="display: none;"><span class="ui-icon ui-icon-closethick"></span></a>
+          <a class="btn_reset" id="btn_reset_name" href="javascript:void(0);" style="display: none;"><span class="ui-icon ui-icon-closethick"></span></a>
           <input type="text" class="filter_txt" tt_title="Ctrlを押しながら選択すると単一選択ができます。" readonly style="display: none;">
           <span class="ui-icon ui-icon-circle-close sp_icon btn_close" @click="pnl.name.is_show=0"></span>
           <div id="div_name">
@@ -152,7 +152,7 @@
         </div>
         <div id="panel_city" class="dc_panel drag" v-show="pnl.city.is_show">
           <span class="chart-title" v-html="pnl.city.title">市区町村</span>
-          <a class="reset_btn" href="javascript:m_.chartCity.filterAll();$('#panel_city .filter_txt').text('');dc.redrawAll('chartGroup');" style="display: none;"><span class="ui-icon ui-icon-closethick"></span></a>
+          <a class="btn_reset" id="btn_reset_city" href="javascript:void(0);" style="display: none;"><span class="ui-icon ui-icon-closethick"></span></a>
           <input type="text" class="filter_txt" tt_title="Ctrlを押しながら選択すると単一選択ができます。" readonly style="display: none;">
           <span class="ui-icon ui-icon-circle-close sp_icon btn_close" @click="pnl.city.is_show=0"></span>
           <div id="div_city">
@@ -162,7 +162,7 @@
         <div id="panel_date" class="dc_panel drag" v-show="pnl.date.is_show">
           <span class="chart-title" v-html="pnl.date.title"><i class="fa fa-procedures"></i>感染者数</span>
           <span class="btn_brush btn_off" title="ブラシベースの範囲選択をオン/オフします。&#x0A;Ctrlを押しながら日付バーをクリックで追加選択になります。"><span class="ui-icon ui-icon-arrow-2-e-w sp_icon"></span>選択</span>
-          <a class="reset_btn" id="reset_btn_date" href="javascript:void(0);" style="display: none;"><span class="ui-icon ui-icon-closethick"></span></a>
+          <a class="btn_reset" id="btn_reset_date" href="javascript:void(0);" style="display: none;"><span class="ui-icon ui-icon-closethick"></span></a>
           <input type="text" class="filter_txt" readonly style="display: none;">&nbsp;<span class="filter_txt_diff"></span>
           <img src="img/stack-bar-g.gif" width="20" title="バーのスタック表示のタイプを切り替えます">
           <input type="radio" id="stack_type_pre" v-model="pnl.date.stack_type" value="pre"><label title="バーのスタック表示を都道府県にします" for="stack_type_pre">都道府県</label>
@@ -186,29 +186,29 @@
           </div>
         </div>
         <div id="chart_sex" class="dc_panel drag" v-show="pnl.sex.is_show">
-          <span class="chart-title" v-html="pnl.sex.title" v-html="pnl.sex.title"><i class="fa fa-venus-mars"></i>性別</span>
-          <a class="reset" href="javascript:m_.chartSex.filterAll();dc.redrawAll('chartGroup');" style="display: none;"><span class="ui-icon ui-icon-closethick"></span></a>
+          <span class="chart-title" v-html="pnl.sex.title"><i class="fa fa-venus-mars"></i>性別</span>
+          <a class="reset btn_reset" id="btn_reset_sex" href="javascript:void(0);" style="display: none;"><span class="ui-icon ui-icon-closethick"></span></a>
           <span class="reset" style="display: none;"><span class="filter"></span></span>&nbsp;
           <span class="ui-icon ui-icon-circle-close sp_icon btn_close" @click="pnl.sex.is_show=0"></span>
           <div class="clearfix"></div>
         </div>
         <div id="chart_week" class="dc_panel drag" v-show="pnl.week.is_show">
           <span class="chart-title" v-html="pnl.week.title">曜日</span>
-          <a class="reset" href="javascript:m_.chartWeek.filterAll();dc.redrawAll('chartGroup');" style="display: none;"><span class="ui-icon ui-icon-closethick"></span></a>
+          <a class="reset btn_reset" id="btn_reset_week" href="javascript:void(0);" style="display: none;"><span class="ui-icon ui-icon-closethick"></span></a>
           <span class="reset" style="display: none;"><span class="filter"></span></span>&nbsp;
           <span class="ui-icon ui-icon-circle-close sp_icon btn_close" @click="pnl.week.is_show=0"></span>
           <div class="clearfix"></div>
         </div>
         <div id="chart_age" class="dc_panel drag" v-show="pnl.age.is_show">
           <span class="chart-title" v-html="pnl.age.title">年齢</span>&nbsp;
-          <a class="reset" href="javascript:m_.chartAge.filterAll();dc.redrawAll('chartGroup');" style="display: none;"><span class="ui-icon ui-icon-closethick"></span></a>
+          <a class="reset btn_reset" id="btn_reset_age" href="javascript:void(0);" style="display: none;"><span class="ui-icon ui-icon-closethick"></span></a>
           <span class="reset" style="display: none;"><span class="filter" tt_title="Ctrlを押しながら選択すると単一選択ができます。"></span></span>&nbsp;
           <span class="ui-icon ui-icon-circle-close sp_icon btn_close" @click="pnl.age.is_show=0"></span>
           <div class="clearfix"></div>
         </div>
         <div id="panel_cond" class="dc_panel drag" v-show="pnl.cond.is_show">
           <span class="chart-title" v-html="pnl.cond.title"><i class="fa fa-medkit"></i>状態(現在)</span>&nbsp;※公開されている自治体のみ
-          <a class="reset_btn" href="javascript:m_.chartCond.filterAll();dc.redrawAll('chartGroup');" style="display: none;"><span class="ui-icon ui-icon-closethick"></span></a>
+          <a class="btn_reset" id="btn_reset_cond" href="javascript:void(0);" style="display: none;"><span class="ui-icon ui-icon-closethick"></span></a>
           <input type="text" class="filter_txt" tt_title="Ctrlを押しながら選択すると単一選択ができます。" readonly style="display: none;">
           <span class="ui-icon ui-icon-circle-close sp_icon btn_close" @click="pnl.cond.is_show=0"></span>
           <div style="overflow-x:auto">
@@ -217,7 +217,7 @@
         </div>
         <div id="panel_job" class="dc_panel drag" v-show="pnl.job.is_show">
           <span class="chart-title" v-html="pnl.job.title"><i class="fa fa-id-card-o"></i>職業</span><span id="chart_job_title_sub"></span>&nbsp;※公開されている自治体のみ
-          <a class="reset_btn" href="javascript:m_.chartJob.filterAll();dc.redrawAll('chartGroup');" style="display: none;"><span class="ui-icon ui-icon-closethick"></span></a>
+          <a class="btn_reset" id="btn_reset_job" href="javascript:void(0);" style="display: none;"><span class="ui-icon ui-icon-closethick"></span></a>
           <input type="text" class="filter_txt" readonly style="display: none;">
           <span class="ui-icon ui-icon-circle-close sp_icon btn_close" @click="pnl.job.is_show=0"></span>
           <div style="overflow-x:auto">
@@ -257,11 +257,11 @@
                 </tr>
                 <tr>
                   <td>
-                    <div class="diff wopen"><span class="ui-icon ui-icon-arrow-2-n-s ic_btn"></span>比較
+                    <div class="diff wopen"><span class="ui-icon ui-icon-arrow-2-n-s ic_btn"></span>比較</div>
                   </td>
                   <td></td>
                   <td>
-                    <div class="diff wopen"><span class="ui-icon ui-icon-arrow-2-n-s ic_btn"></span>比較
+                    <div class="diff wopen"><span class="ui-icon ui-icon-arrow-2-n-s ic_btn"></span>比較</div>
                   </td>
                 </tr>
                 <tr>
@@ -273,11 +273,11 @@
                 </tr>
                 <tr>
                   <td>
-                    <div class="diff wopen"><span class="ui-icon ui-icon-arrow-2-n-s ic_btn"></span>比較
+                    <div class="diff wopen"><span class="ui-icon ui-icon-arrow-2-n-s ic_btn"></span>比較</div>
                   </td>
                   <td></td>
                   <td>
-                    <div class="diff wopen"><span class="ui-icon ui-icon-arrow-2-n-s ic_btn"></span>比較
+                    <div class="diff wopen"><span class="ui-icon ui-icon-arrow-2-n-s ic_btn"></span>比較</div>
                   </td>
                 </tr>
                 <tr>
@@ -289,11 +289,11 @@
                 </tr>
                 <tr>
                   <td>
-                    <div class="diff wopen"><span class="ui-icon ui-icon-arrow-2-n-s ic_btn"></span>比較
+                    <div class="diff wopen"><span class="ui-icon ui-icon-arrow-2-n-s ic_btn"></span>比較</div>
                   </td>
                   <td></td>
                   <td>
-                    <div class="diff wopen"><span class="ui-icon ui-icon-arrow-2-n-s ic_btn"></span>比較
+                    <div class="diff wopen"><span class="ui-icon ui-icon-arrow-2-n-s ic_btn"></span>比較</div>
                   </td>
                 </tr>
                 <tr>
@@ -401,11 +401,11 @@
                 </tr>
                 <tr>
                   <td>
-                    <div class="diff wopen"><span class="ui-icon ui-icon-arrow-2-n-s ic_btn"></span>比較
+                    <div class="diff wopen"><span class="ui-icon ui-icon-arrow-2-n-s ic_btn"></span>比較</div>
                   </td>
                   <td></td>
                   <td>
-                    <div class="diff wopen"><span class="ui-icon ui-icon-arrow-2-n-s ic_btn"></span>比較
+                    <div class="diff wopen"><span class="ui-icon ui-icon-arrow-2-n-s ic_btn"></span>比較</div>
                   </td>
                 </tr>
                 <tr>

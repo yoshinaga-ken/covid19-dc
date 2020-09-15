@@ -226,7 +226,7 @@ const m_ = {
         if (p === undefined) return '';
         let n = m_.names[pre_name] ? m_.names[pre_name] : 0;
         let patient = n - p.discharged - p.deaths;//現患者数=感染者数-退院者数-死亡者数
-        ret = pre_name + br +
+        let ret = pre_name + br +
             '総人口　: ' + php_number_format(p.n) + '名' + br +
             '感染者数: ' + php_number_format(n) + '名 (' + (_.round(100 * n / p.n, 3)) + '%)' + br +
             '患者数　: ' + php_number_format(patient) + '名' + br +
@@ -250,7 +250,7 @@ const m_ = {
 
         if (name !== '') {
             let t = '', sp = name.split(',');
-            for (i of sp) {
+            for (let i of sp) {
                 t += i.trim() + PL;
             }
             txt[1] = (sp.length == 1 ? '' : '【') + php_trim(t, PL) + (sp.length == 1 ? '' : '】');
@@ -267,7 +267,7 @@ const m_ = {
                     txt.push(date);
                 } else {
                     let t = '', sp = date.split(',');
-                    for (i of sp) {
+                    for (let i of sp) {
                         t += i + PL;
                     }
                     txt[0] = (sp.length == 1 ? '' : '【') + php_trim(t, PL) + (sp.length == 1 ? '' : '】');
@@ -280,13 +280,13 @@ const m_ = {
         }
         if (age != '') {
             let t = '', sp = age.split(',');
-            for (i of sp) t += m_.ageTickFormat(+i) + PL;
+            for (let i of sp) t += m_.ageTickFormat(+i) + PL;
             txt[4] = '年齢:' + (sp.length == 1 ? '' : '【') + php_trim(t, PL) + (sp.length == 1 ? '' : '】');
         }
         if (sex != '') {
             let t = '', sp = sex.split(',');
             if (sp.length !== 3) {
-                for (i of sp) {
+                for (let i of sp) {
                     t += i.trim() + PL;
                 }
                 txt[5] = '性別:' + (sp.length == 1 ? '' : '【') + php_trim(t, PL) + (sp.length == 1 ? '' : '】');
@@ -468,7 +468,7 @@ const m_ = {
                 pnl.find('.filter_txt_diff').text((moment(flt[0][1]).diff(flt[0][0], 'days') + 1) + '日間');
             } else {
                 let flt2 = [];
-                for (f of flt) {
+                for (let f of flt) {
                     if (func) f = func(f);
                     flt2.push(f);
                 }
@@ -476,10 +476,10 @@ const m_ = {
                 pnl.find('.filter_txt').show().val(t).attr('title', t);
                 pnl.find('.filter_txt_diff').text('');
             }
-            pnl.find('.reset_btn').show();
+            pnl.find('.btn_reset').show();
         } else {
             pnl.find('.filter_txt').hide();
-            pnl.find('.reset_btn').hide();
+            pnl.find('.btn_reset').hide();
         }
     },
     //MAPの選択Nameのエリア枠を描画
@@ -563,6 +563,7 @@ const m_ = {
         }
 
         if (m_.data_type) {
+            //緊急事態宣言 縦ライン表示
             m_.renderVLine(chart, [
                 { cls: ['s1'], x: new Date(YMD_ED_F[0][0]) },
                 { cls: ['s2'], x: new Date(YMD_ED_F[1][0]) },
@@ -574,6 +575,7 @@ const m_ = {
 
         if (!is_comp) return;
 
+        //StackBarチャートを選択したらフィルタがかかるようにする
         chart.selectAll("rect.bar").on("click", function(d) {
             //chart.filter(null).filter(d.data.key).redrawGroup();//単一選択
             chart.filter(d.data.key).redrawGroup();//追加選択
@@ -643,7 +645,8 @@ const m_ = {
             m_.datePick.datepicker('show');
         }
 
-        if (ci === m_.chartName.chartID() || ci === m_.chartCity.chartID() || ci === m_.chartDate.chartID()) {//m_.chartName||m_.chartCity|m_.chartDate
+        //職業チャートの(カテゴリ表示|詳細表示)の切り替え
+        if (ci === m_.chartName.chartID() || ci === m_.chartCity.chartID() || ci === m_.chartDate.chartID()) {
             if (m_.is_job_cate) {
                 let fn = m_.chartName.filters();
                 let fc = m_.chartCity.filters();
@@ -733,6 +736,7 @@ const m_ = {
         return p;
     },
     chartLegendUpdate: function(chart) {
+        //hideStack()したlegendは表示しない && translate() 整列
         let item = chart.legendables();
         let h = chart.legend()._legendItemHeight();
         let o2 = $(chart.anchor()).find('g.dc-legend-item'), k = 0;
@@ -794,7 +798,10 @@ const m_ = {
     createFilteredBarStacksData: function() {
         let prefs = _.keys(PREF_EN);
         let dimName = m_.chartName.dimension()
+        //stacks[]の日付ドメインを合わせる
         m_.chartDate.x(d3.scaleTime().domain([moment(m_.spk.min_ymd).toDate(), moment(m_.spk.max_ymd).toDate()]));
+
+
         let stacks = [];//stacks[pref][ymd]
         let grp = m_.chartDate.group();
         for (var i = 0; i < prefs.length; i++) {
@@ -918,6 +925,7 @@ const m_ = {
         m_.composite = new dc.CompositeChart("#chart_date", "chartGroup");
         m_.chartDate = new dc.BarChart(m_.composite);
         m_.chartLine = new dc.LineChart(m_.composite);
+
         m_.composite2 = new dc.CompositeChart("#chart_date2", "chartGroup");
         m_.chartDate2 = new dc.BarChart(m_.composite2);
         m_.chartLine2 = new dc.LineChart(m_.composite2);
@@ -1006,6 +1014,7 @@ const m_ = {
             }
         });
 
+
         if (m_.get.light === undefined) {
             initPrefTable();
         }
@@ -1016,6 +1025,7 @@ const initDc = (data) => {
     m_.data_hdr = data.shift();
     m_.data = data;
 
+    //ヘッダの最終カラムから、データオプションを取得
     if (m_.data_hdr[D_OPT]) {
         let opt = {};
         php_parse_str(m_.data_hdr[D_OPT], opt);
@@ -1138,7 +1148,7 @@ const initDc = (data) => {
         //.gap(10) //default:5
         .renderLabel(true) //LeftLabel & tooltip
         .label(function(d) {
-            s = d.key;
+            let s = d.key;
             for (var i = 0; i < 4 - d.key.length; i++) s += '　';
             s += ' ';
             let is_filtered = m_.gpName_all[d.key] !== d.value;
@@ -1261,6 +1271,7 @@ const initDc = (data) => {
 
     m_.dateStakShow(0);
     m_.pref_tbl_last_cnt = _.last(m_.chartDate.group().all()).value.nmcnt;
+
     //===========================================================================
     // CHART lineChart chartLine_init
     //===========================================================================
@@ -1334,7 +1345,7 @@ const initDc = (data) => {
             let pref_mode = flt.length > 1 && flt.length <= CHART_DATE_STACK2_N;
             if (pref_mode) {
                 let s = '';
-                for (f of flt) {
+                for (let f of flt) {
                     s += d.value.nmcnt[f] ? (f + ': ' + d.value.nmcnt[f] + '名\n') : '';
                 }
                 return date_str + '\n────────\n' + s + (flt.length > 1 ? '────────\n計: ' + d.value.total + '名' : '') + '\n' + s_suf;
@@ -1371,9 +1382,8 @@ const initDc = (data) => {
 
     m_.composite.xAxis().ticks(7).tickFormat(function(s) {
         return moment(s).format('M/Dddd');
-    });//d3.timeFormat('%m/%d')
+    });
     m_.composite.yAxis().ticks(5); //.tickFormat(d3.format("d"));
-
 
     //===========================================================================
     // CHART 感染者数(YYYY-MM-DD) barChart chartDate2_init
@@ -1382,7 +1392,6 @@ const initDc = (data) => {
         return d3.timeDay(new Date(d[D3_YMD]));
     });
     m_.gpDate2 = dimDate2.group().reduceSum(function(d) { return d[D3_CNT]; });
-    //m_.dateCntCreate();
 
     let gpDateStk2 = dimDate2.group().reduce(
         function date2_grp_add(p, v) {
@@ -1506,7 +1515,7 @@ const initDc = (data) => {
                 }
                 m_.dateCntMax2 = _.max(m_.work);
             }
-            i = no - N + 1;
+            let i = no - N + 1;
             let v = m_.work.slice(i < 0 ? 0 : i, i + N);
             let ave = Math.round(_.sum(v) / N);
             return ave;
@@ -1557,7 +1566,7 @@ const initDc = (data) => {
                 let s = ''
                 let nmcnt = d.value.pre[m_.chartDate2Mode];
                 let total = 0;
-                for (f of flt) {
+                for (let f of flt) {
                     s += nmcnt[f] ? (f + ': ' + php_number_format(nmcnt[f]) + '名\n') : '';
                     total += nmcnt[f];
                 }
@@ -1573,6 +1582,7 @@ const initDc = (data) => {
         .on('pretransition', m_.on_chartDate_pretransition)
         .addFilterHandler(m_.addFilterHandlerSingle)
         .on('preRedraw', function(chart) {
+            //フィルタを追加選択(CTRL+)した時、chartDateのフィルタには追加されない(bug?)ので、ここでcompositeのフィルタをコピー
             m_.chartDateLegendUpdate2();
             m_.chartDate2.filterAll().filter([m_.composite2.filters()]);
         })
@@ -1587,7 +1597,6 @@ const initDc = (data) => {
         return moment(s).format('M/Dddd');
     });
     m_.composite2.yAxis().ticks(5).tickFormat(d3.format("~s"));//1.5k
-
 
     //===========================================================================
     // CHART 性別 pie chartSex_init
@@ -1799,10 +1808,6 @@ const initDc = (data) => {
         .on('postRedraw', function(chart) {
             //m_.on_chart_postRedraw(chart);
         })
-        // .on('preRender', function(chart){console.log('preRender')})
-        // .on('pretransition', function(chart){
-        //     //chart.width(chart.xUnitCount()*40);//chartCondMinWidth
-        // })
         .on('renderlet', function(chart, filter) {
             _.delay(() => {
                 $('#chart_cond rect.selected title').each((i, v) => {
@@ -1929,8 +1934,6 @@ const initDc = (data) => {
             chart.width((chart.xUnitCount() + 1) * m_.config.cJob.barWidth);
         })
         .on('filtered', function(chart, v) {
-
-
             m_.showFilterUi('#panel_job', chart);
             m_.dateCntCreate();
             m_.on_chart_filtered(chart, v);
@@ -1979,15 +1982,13 @@ const initDc = (data) => {
 
     $('#div_date').scrollLeft(800);
 
-
+    //
+    //data_typeによる UI制御
+    //
     if (m_.data_type) {
         app.pnl.map.tabs.is_show = 1;
         m_.chartCity.addFilterHandler(m_.addFilterHandlerSingleR);
         m_.chartCond.addFilterHandler(m_.addFilterHandlerSingleR)
-
-        if (m_.get['tab']) {
-            m_.tab.tabs("option", "activate").call(null, null, null, 'tabs_' + m_.get['tab']);
-        }
     } else {
         m_.sel_tab = 'tabs_c';
         app.pnl.date.chart2.is_show = 0;
@@ -2012,7 +2013,7 @@ const initDc = (data) => {
     }
 
     if (!IS_SP) $('#btn_search').focus(); //.select();
-}//initDc
+}
 
 const initTabs = () => {
     const TAB_NO = { 'c': 1, 'p': 2, 'pc': 3, 'd': 4, 'b': 5 };
@@ -2125,7 +2126,7 @@ const initTabs = () => {
             if (!IS_SP) $('#btn_search').focus().select();
         }
     });
-}//initTabs
+}
 
 const initAutoComplete = () => {
     /**
@@ -2283,7 +2284,6 @@ const drawJapanMap = () => {
         //markersSelectable: true,
         hoverOpacity: 0.7,
         regionStyle: {
-
             selected: {
                 //fill: '#0000FF',
                 //'fill-opacity':0,
@@ -2355,7 +2355,10 @@ const drawJapanMap = () => {
 
 $(document).ready(function() {
 
-    initTabs();
+
+    if (m_.data_type) {
+        initTabs();
+    }
 
     $('.btn_clear_all').on('click', function(e) {
         e.preventDefault();
@@ -2435,6 +2438,7 @@ $(document).ready(function() {
         },
         beforeShow: function(input, inst) {
             m_.dateCntCreate();
+            //位置を調整
             //if(!IS_SP)
             {
                 var calendar = inst.dpDiv;
@@ -2450,11 +2454,17 @@ $(document).ready(function() {
     });
     $('.ui-datepicker-trigger').addClass('ui-button ui-corner-all ui-widget');
 
-    $('#reset_btn_date').on('click', function(event) {
-        event.preventDefault();
-        m_.composite.filterAll();
-        m_.chartDate.filterAll();
-        m_.renderAllChart();
+    $('.btn_reset').on('click', function(event) {
+        switch ($(this).attr('id')) {
+            case 'btn_reset_name': m_.chartName.filterAll(); $('#panel_name .filter_txt').text(''); m_.is_drawJapanMap = 1; dc.redrawAll('chartGroup'); break;
+            case 'btn_reset_city': m_.chartCity.filterAll(); $('#panel_city .filter_txt').text(''); dc.redrawAll('chartGroup'); break;
+            case 'btn_reset_date': m_.composite.filterAll(); m_.chartDate.filterAll(); m_.renderAllChart(); break;
+            case 'btn_reset_sex': m_.chartSex.filterAll(); dc.redrawAll('chartGroup'); break;
+            case 'btn_reset_week': m_.chartWeek.filterAll(); dc.redrawAll('chartGroup'); break;
+            case 'btn_reset_age': m_.chartAge.filterAll(); dc.redrawAll('chartGroup'); break;
+            case 'btn_reset_cond': m_.chartCond.filterAll(); dc.redrawAll('chartGroup'); break;
+            case 'btn_reset_job': m_.chartJob.filterAll(); dc.redrawAll('chartGroup'); break;
+        }
     });
 
     $('.btn_close').button();
@@ -2463,7 +2473,7 @@ $(document).ready(function() {
         event.preventDefault();
         let b = m_.composite.brushOn();
         if (b) {
-            $('#reset_btn_date').trigger('click');
+            $('#btn_reset_date').trigger('click');
             $('#panel_date .filter_txt_diff').text('');
         } else {
             let f = m_.composite.filters();
@@ -2554,7 +2564,6 @@ $(document).ready(function() {
     });
 });
 
-
 $(document).ready(function() {
     $('#btn_ana').on('click', function(event) {
         event.preventDefault();
@@ -2600,8 +2609,6 @@ $(document).ready(function() {
         }
 
     });
-
-
 });
 
 //ShortCutKey
@@ -2746,7 +2753,9 @@ const initPrefTableData = () => {
 
         let pop = m_.pref_tbl_last_m1[pref_name].n;
         let p_per = parseInt(100 * pop / p_max);
-        let c_per = _.round(100 * v / pop, 3); let c_per2 = parseInt((c_per * 10) * p_per);
+        let c_per = _.round(100 * v / pop, 3);          //(感染者/人口)%
+        let c_per2 = parseInt((c_per * 10) * p_per);   //10万人あたり%
+
         spn.find('td:eq(1)')//人口/感染率
             .text(pop)
             .attr('title', '感染率(感染者数/人口): ' + c_per + '%')
@@ -2922,7 +2931,6 @@ const initPrefTable = () => {
 
     drawPrefSparkline('first', m_.spk.bar_stacks);
 
-
     m_.tbl_pref = $('#tbl_pref').DataTable({
         stateSave: true,
         order: [],
@@ -3090,6 +3098,7 @@ const initPrefTable = () => {
             input.before(m_.tbl_pref_isearch).remove();
             m_.tbl_pref_isearch.addClass('btn_clear').btn_clear();
 
+            //DataTableがstateSave:trueの時は、columの表示状態も保存されるので詳細表示をのチェックボックスを合わせる
             if (that.column(4).visible()) {
                 $("#chk_tbl_detail").prop('checked', true).checkboxradio('refresh');
             }
@@ -3104,7 +3113,6 @@ const initPrefTable = () => {
             // "synonyms": {}
         }
     });
-
 
     if (!IS_SP) {
         $('#tbl_pref').sortable({

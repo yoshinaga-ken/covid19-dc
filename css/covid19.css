@@ -560,7 +560,7 @@ path.line {
 .detail {
   float: left;
   display: none;
-  font-size: width:38em;
+  width: 38em;
   background: #fffacd;
   padding: 4px;
   margin-left: 1px;
