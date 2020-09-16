@@ -22,7 +22,8 @@
     width: 460px;
   }
 
-  #japan-map {
+  #japan-map,
+  #japan-map svg {
     width: 440px;
     height: 450px;
   }
@@ -479,6 +480,10 @@ table.ui-datepicker-calendar tbody td:first-child a.ui-state-default {
   font-weight: bold;
 }
 
+table.ui-datepicker-calendar tbody td.holiday a.ui-state-default {
+  color: red;
+}
+
 .ui-datepicker table {
   /*width: 100%;*/
   font-size: .7em;
@@ -560,7 +565,6 @@ path.line {
 .detail {
   float: left;
   display: none;
-  width: 38em;
   background: #fffacd;
   padding: 4px;
   margin-left: 1px;

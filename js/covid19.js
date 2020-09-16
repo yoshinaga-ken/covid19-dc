@@ -306,7 +306,7 @@ const m_ = {
         //m_.chartNameにない物は除外
         let pre_names = _.keys(m_.names);
         let pre = [];
-        for (i of pre0) {
+        for (const i of pre0) {
             if (_.indexOf(pre_names, i) !== -1) pre.push(i);
         }
         if (pre.length === 0) {
@@ -316,7 +316,7 @@ const m_ = {
         };
 
         let f = m_.chartName.filters();
-        diff = pre.length > f.length ? _.difference(pre, f) : _.difference(f, pre);
+        const diff = pre.length > f.length ? _.difference(pre, f) : _.difference(f, pre);
         m_.chartName.filter(diff[0]);//差分をadd
 
         m_.renderAllChart();
@@ -353,8 +353,8 @@ const m_ = {
         let pre_names = _.keys(m_.names), city = '', is_pre_find = 0;
         const AC_SPLIT_WD = /\s+/;
         let names = [];
-        for (pre1 of pre0.split(AC_SPLIT_WD)) {
-            for (nm of pre_names) {
+        for (const pre1 of pre0.split(AC_SPLIT_WD)) {
+            for (const nm of pre_names) {
                 if (pre1 === nm) {
                     if (names.length === 0) city = pre1.replace(nm, '');
                     names.push(nm);
@@ -373,7 +373,7 @@ const m_ = {
         }
 
         city = pre0;
-        for (nm of pre_names) {
+        for (const nm of pre_names) {
             if (pre0.indexOf(nm) === 0) {
                 city = pre0.replace(nm, '');
             }
@@ -488,7 +488,7 @@ const m_ = {
         if (f.length && map) {
             m_.is_filter_region_sel = 1;
             map.clearSelectedRegions();
-            sels = [];
+            let sels = [];
             for (var i = 0; i < f.length; i++) {
                 sels[i] = _.capitalize(PREF_EN[f[i]])
             }
@@ -693,7 +693,7 @@ const m_ = {
         m_.on_chart_postRedraw(m_.chartJob);
 
         //クリック時のツールチップの表示
-        if (IS_SP) {
+        if (IS_SP && m_.tip) {
             //rowChartTip
             // d3.selectAll("g.row").call(m_.tipRow);
             // d3.selectAll("g.row").on('mouseover', m_.tipRow.show).on('mouseout', m_.tipRow.hide);
@@ -975,7 +975,7 @@ const m_ = {
         });
     },
     init: function() {
-        if (IS_SP) {
+        if (IS_SP && d3.tip) {
             m_.tip = d3.tip()
                 .attr('class', 'd3-tip')
                 .offset([-10, 0])
@@ -2196,6 +2196,7 @@ const initAutoComplete = () => {
             //選択
             _this.options.select = function(event, ui) {
                 event.preventDefault();
+                let ret = '';
                 if (_this.options.user_opt.select) ret = _this.options.user_opt.select(event, ui);
                 //$('.ui-menu').hide();
                 return ret;

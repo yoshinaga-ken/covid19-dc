@@ -225,7 +225,7 @@
           </div>
         </div>
         <div id="panel_detail" class="dc_panel drag" v-show="pnl.detail.is_show">
-          <span class="chart-title" v-html="pnl.detail.title">詳細情報</span>
+          <span class="chart-title" v-html="pnl.detail.title">詳細</span>
           <span class="ui-icon ui-icon-circle-close sp_icon btn_close" @click="pnl.detail.is_show=0"></span>
           <div>
             <div id="detail_div1" class="detail"></div>
@@ -437,7 +437,7 @@
         <label for="ch_pnl_age"><input id="ch_pnl_age" type="checkbox" v-model="pnl.age.is_show">年齢</label>&nbsp;&nbsp;&nbsp;
         <label for="ch_pnl_cond"><input id="ch_pnl_cond" type="checkbox" v-model="pnl.cond.is_show"><i class="fa fa-medkit"></i>状態</label>&nbsp;&nbsp;&nbsp;
         <label for="ch_pnl_job"><input id="ch_pnl_job" type="checkbox" v-model="pnl.job.is_show"><i class="fa fa-id-card-o"></i>職業</label>&nbsp;&nbsp;&nbsp;
-        <label for="ch_pnl_detail"><input id="ch_pnl_detail" type="checkbox" v-model="pnl.detail.is_show">詳細情報</label>&nbsp;&nbsp;&nbsp;
+        <label for="ch_pnl_detail"><input id="ch_pnl_detail" type="checkbox" v-model="pnl.detail.is_show">詳細</label>&nbsp;&nbsp;&nbsp;
         <label for="ch_pnl_ana" v-show="pnl.ana.is_chk_show"><input id="ch_pnl_ana" type="checkbox" v-model="pnl.ana.is_show"><i class="fa fa-eye"></i>分析</label>&nbsp;&nbsp;&nbsp;
       </div>
     </div><!-- container2 -->

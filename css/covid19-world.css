@@ -379,6 +379,27 @@ image.pl {
   padding: 0px 1px;
 }
 
+
+table.ui-datepicker-calendar tbody td.ui-datepicker-week-end a.ui-state-default {
+  color: #4040FF;
+}
+
+table.ui-datepicker-calendar tbody td:first-child a.ui-state-default {
+  color: #FF4040;
+  font-weight: bold;
+}
+
+table.ui-datepicker-calendar tbody td.holiday a.ui-state-default {
+  color: red;
+}
+
+.ui-datepicker table {
+  /*width: 100%;*/
+  font-size: .7em;
+  /*border-collapse: collapse;*/
+  margin: 0 0 0
+}
+
 .ui-tooltip {
   font-family: "メイリオ", "ヒラギノ角ゴシックW3", "ＭＳ Ｐゴシック", "Osaka", sans-serif;
   /*font-size: medium;*/
@@ -453,7 +474,6 @@ path.line {
 .detail {
   float: left;
   display: none;
-  font-size: width:38em;
   background: #fffacd;
   padding: 4px;
   margin-left: 1px;
