@@ -51,7 +51,7 @@ const m_ = {
     }
   },
   get: location_get_query(),
-  url_data: '/data/covid19-world.json',
+  url_data: 'data/covid19-world.json',
   url_name: 'https://ja.wikipedia.org/wiki',
 
   composite: null,
@@ -951,8 +951,8 @@ const initDc = (data) => {
     $('#panel_date').width(panel_date_w);
     chartDateW = panel_date_w;
     while (1) {
-      if (chartDateW > 1300) { gap_val = -7; break; }
-      if (chartDateW > 1250) { gap_val = -6; break; }
+      if (chartDateW > 1300) { gap_val = -6; break; }
+      if (chartDateW > 1250) { gap_val = -5; break; }
       if (chartDateW > 1150) { gap_val = -5; break; }
       if (chartDateW > 900) { gap_val = -4; break; }
       if (chartDateW > 700) { gap_val = -3; break; }
@@ -1451,8 +1451,7 @@ const drawWorldMap = () => {
   });
 
   //param: https://jvectormap.com/documentation/javascript-api/jvm-dataseries/
-  mapw = new jvm.Map({
-    container: $('#world-map'),
+  mapw = $('#world-map').vectorMap({
     map: 'world_mill',
     panOnDrag: !IS_SP,
     focusOn: {
@@ -1529,7 +1528,9 @@ const drawWorldMap = () => {
     }
     //onMarkerTipShow:(e, el, code) =>{},
     //onMarkerClick: (e, code) => {}
-  });
+  })
+    .vectorMap('get', 'mapObject');
+
   mapw.series.regions[0].setValues(colors);
   $('.jvectormap-legend-tick-sample:last').css({ 'border': '3px solid #1a75ff' });
 
@@ -1537,6 +1538,10 @@ const drawWorldMap = () => {
 
 
 $(document).ready(function() {
+
+  if (IS_SP) {
+    $('#toolbar_togwin').insertAfter('#panels');
+  }
 
   initTabs();
 

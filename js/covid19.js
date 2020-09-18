@@ -1254,7 +1254,7 @@ const initDc = (data) => {
         // })
         //.y(d3.scaleLinear().domain([0, 50]))
         .ordinalColors(COL_CND.concat(COL_NAME).concat(COL_AGE))
-        .gap(!IS_SP ? -7 : -4).on('filtered', function(chart, v) {
+        .gap(!IS_SP ? -6 : -4).on('filtered', function(chart, v) {
             //m_.showFilterUi('#panel_date',chart,(f)=>moment(f).format('M/D(ddd)'));
             m_.on_chart_filtered(chart, v);
         })
@@ -1445,7 +1445,7 @@ const initDc = (data) => {
 
         })
         .ordinalColors(_.concat(DT_COL, _.concat(colorbrewer.Set1[3], colorbrewer.Set1[6])))
-        .gap(!IS_SP ? -7 : -4).on('filtered', function(chart, v) {
+        .gap(!IS_SP ? -6 : -4).on('filtered', function(chart, v) {
             //m_.showFilterUi('#panel_date',chart,(f)=>moment(f).format('M/D(ddd)'));
             m_.on_chart_filtered(chart, v);
         })
@@ -2268,8 +2268,7 @@ const drawJapanMap = () => {
     });
 
     //param: https://jvectormap.com/documentation/javascript-api/jvm-dataseries/
-    map = new jvm.Map({
-        container: $('#japan-map'),
+    map = $('#japan-map').vectorMap({
         map: 'jp_merc',
         panOnDrag: !IS_SP,
         focusOn: {
@@ -2344,7 +2343,9 @@ const drawJapanMap = () => {
         }
         //onMarkerTipShow:(e, el, code) =>{},
         //onMarkerClick: (e, code) => {}
-    });
+    })
+        .vectorMap('get', 'mapObject');
+
     map.series.regions[0].setValues(colors);
     $('.jvectormap-legend-tick-sample:last').css({ 'border': '3px solid #1a75ff' });
     // d3.selectAll("path").call(mapTip);
@@ -2354,7 +2355,11 @@ const drawJapanMap = () => {
 }
 
 
-$(document).ready(function() {
+const onDocumentReady = () => {
+
+    if (IS_SP) {
+        $('#toolbar_togwin').insertAfter('#panels');
+    }
 
 
     if (m_.data_type) {
@@ -2563,9 +2568,7 @@ $(document).ready(function() {
         event.preventDefault();
         $(this).select();
     });
-});
 
-$(document).ready(function() {
     $('#btn_ana').on('click', function(event) {
         event.preventDefault();
         $('#ana_diff_ls').hide().fadeIn();
@@ -2610,48 +2613,47 @@ $(document).ready(function() {
         }
 
     });
-});
 
-//ShortCutKey
-$(document)
-    .keyup(function(e) {
-        switch (e.keyCode) {
-            // case $.ui.keyCode.LEFT:
-            // case $.ui.keyCode.RIGHT:
-            //      break;
-            case 76://Ctrl+Shift+L
-                if (e.ctrlKey && e.shiftKey) {
-                    if (document.activeElement && document.activeElement.id === 'tbl_flt') {
-                        $(id).val('').trigger('change');
-                    } else {
-                        $('.btn_clear_all').trigger('click');
+    //ShortCutKey
+    $(document)
+        .keyup(function(e) {
+            switch (e.keyCode) {
+                // case $.ui.keyCode.LEFT:
+                // case $.ui.keyCode.RIGHT:
+                //      break;
+                case 76://Ctrl+Shift+L
+                    if (e.ctrlKey && e.shiftKey) {
+                        if (document.activeElement && document.activeElement.id === 'tbl_flt') {
+                            $(id).val('').trigger('change');
+                        } else {
+                            $('.btn_clear_all').trigger('click');
+                        }
                     }
-                }
-                break;
-            case 70://Ctrl+Shift+F
-                if (e.ctrlKey && e.shiftKey) {
-                    let id = document.activeElement && document.activeElement.id === 'tbl_flt' ? '#tbl_flt' : '#btn_search'
-                    $(id).focus().select();
-                }
-                break;
-        }
-    });
-
-
-$('body')
-    //titleをHTMLでpopupさせたい時
-    .tooltip({
-        items: "[tt_title],.tt_img",
-        show: { effect: "show", delay: 500 },
-        hide: 0,
-        content: function() {
-            let o = $(this);
-            if (o.is('.tt_img')) {
-                return '<img src="' + o.attr('src') + '">';
+                    break;
+                case 70://Ctrl+Shift+F
+                    if (e.ctrlKey && e.shiftKey) {
+                        let id = document.activeElement && document.activeElement.id === 'tbl_flt' ? '#tbl_flt' : '#btn_search'
+                        $(id).focus().select();
+                    }
+                    break;
             }
-            return o.attr('tt_title');
-        }
-    });
+        });
+
+    $('body')
+        //titleをHTMLでpopupさせたい時
+        .tooltip({
+            items: "[tt_title],.tt_img",
+            show: { effect: "show", delay: 500 },
+            hide: 0,
+            content: function() {
+                let o = $(this);
+                if (o.is('.tt_img')) {
+                    return '<img src="' + o.attr('src') + '">';
+                }
+                return o.attr('tt_title');
+            }
+        });
+}
 
 
 //===========================================================================
@@ -3264,6 +3266,7 @@ new Vue({
     mounted: function() {
         app = this;
         m_.loadAllData();
+        onDocumentReady();
         this.settingsLoad();
     },
     methods: {

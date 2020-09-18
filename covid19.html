@@ -9,8 +9,8 @@
   <meta name="description" content="新型コロナウイルスの感染状況を次元チャートで可視化。都道府県、感染者数、年齢、症状、職業といったグラフ上の項目のクリックやキーワードを入力によって、任意の項目でのチャートのフィルタリングが行えます。">
   <!-- Bootstrap -->
   <link href="bower_components/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
-  <link href="jslib/font-awesome-5.3.1/css/all.min.css" rel="stylesheet" />
-  <link href="jslib/font-awesome-5.3.1/css/v4-shims.min.css" rel="stylesheet" />
+  <link href="jslib/font-awesome/css/all.min.css" rel="stylesheet" />
+  <link href="jslib/font-awesome/css/v4-shims.min.css" rel="stylesheet" />
   <!-- jquery-ui -->
   <link rel="stylesheet" href="bower_components/jquery-ui/themes/blitzer/jquery-ui.min.css">
   <link rel="stylesheet" href="jslib/jquery-ui-iconfont/jquery-ui-1.12.icon-font.min.css">
@@ -120,7 +120,21 @@
       <input type="search" id="btn_search" autocomplete="off" class="btn_clear" value="">
       <input type="text" id="btn_date" value="" style="display: none;">&nbsp;
       <button id="btn_download_csv" title="フィルタリングされたグラフのデータをCSV形式でダウンロードします。" class="btn_export_file"><i class="ui-icon ui-icon-arrowstop-1-s"></i><img width="20" src="img/csv.png"></button>
-      <div class="row">
+      <div id="toolbar_togwin">
+        <B>表示：</B>
+        <label for="ch_pnl_map"><input id="ch_pnl_map" type="checkbox" v-model="pnl.map.is_show">地図</label>&nbsp;&nbsp;
+        <label for="ch_pnl_name"><input id="ch_pnl_name" type="checkbox" v-model="pnl.name.is_show">都道府県</label>&nbsp;&nbsp;
+        <label for="ch_pnl_city"><input id="ch_pnl_city" type="checkbox" v-model="pnl.city.is_show">市区町村</label>&nbsp;&nbsp;
+        <label for="ch_pnl_date"><input id="ch_pnl_date" type="checkbox" v-model="pnl.date.is_show"><i class="fa fa-procedures"></i>感染者数</label>&nbsp;&nbsp;
+        <label for="ch_pnl_sex"><input id="ch_pnl_sex" type="checkbox" v-model="pnl.sex.is_show"><i class="fa fa-venus-mars"></i>性別</label>&nbsp;&nbsp;
+        <label for="ch_pnl_week"><input id="ch_pnl_week" type="checkbox" v-model="pnl.week.is_show">曜日</label>&nbsp;&nbsp;
+        <label for="ch_pnl_age"><input id="ch_pnl_age" type="checkbox" v-model="pnl.age.is_show">年齢</label>&nbsp;&nbsp;
+        <label for="ch_pnl_cond"><input id="ch_pnl_cond" type="checkbox" v-model="pnl.cond.is_show"><i class="fa fa-medkit"></i>状態</label>&nbsp;&nbsp;
+        <label for="ch_pnl_job"><input id="ch_pnl_job" type="checkbox" v-model="pnl.job.is_show"><i class="fa fa-id-card-o"></i>職業</label>&nbsp;&nbsp;
+        <label for="ch_pnl_detail"><input id="ch_pnl_detail" type="checkbox" v-model="pnl.detail.is_show">詳細</label>&nbsp;&nbsp;
+        <label for="ch_pnl_ana" v-show="pnl.ana.is_chk_show"><input id="ch_pnl_ana" type="checkbox" v-model="pnl.ana.is_show"><i class="fa fa-eye"></i>分析</label>
+      </div>
+      <div id="panels" class="row">
         <div id="chart_map" class="dc_panel drag" v-show="pnl.map.is_show">
           <ul class="chart-title" v-show="pnl.map.tabs.is_show">
             <li><a href="#tabs_w" title="世界の感染状況"><i class="fa fa-globe"></i>世界</a></li>
@@ -322,11 +336,11 @@
                 </tr>
                 <tr>
                   <td>
-                    <div class="wopen diff"><span class="ui-icon ui-icon-arrow-2-n-s ic_btn"></span>比較
+                    <div class="wopen diff"><span class="ui-icon ui-icon-arrow-2-n-s ic_btn"></span>比較</div>
                   </td>
                   <td></td>
                   <td>
-                    <div class="wopen diff"><span class="ui-icon ui-icon-arrow-2-n-s ic_btn"></span>比較
+                    <div class="wopen diff"><span class="ui-icon ui-icon-arrow-2-n-s ic_btn"></span>比較</div>
                   </td>
                 </tr>
                 <tr>
@@ -345,11 +359,11 @@
                 </tr>
                 <tr>
                   <td>
-                    <div class="wopen diff"><span class="ui-icon ui-icon-arrow-2-n-s ic_btn"></span>比較
+                    <div class="wopen diff"><span class="ui-icon ui-icon-arrow-2-n-s ic_btn"></span>比較</div>
                   </td>
                   <td></td>
                   <td>
-                    <div class="wopen diff"><span class="ui-icon ui-icon-arrow-2-n-s ic_btn"></span>比較
+                    <div class="wopen diff"><span class="ui-icon ui-icon-arrow-2-n-s ic_btn"></span>比較</div>
                   </td>
                 </tr>
                 <tr>
@@ -378,11 +392,11 @@
                 </tr>
                 <tr>
                   <td>
-                    <div class="wopen diff"><span class="ui-icon ui-icon-arrow-2-n-s ic_btn"></span>比較
+                    <div class="wopen diff"><span class="ui-icon ui-icon-arrow-2-n-s ic_btn"></span>比較</div>
                   </td>
                   <td></td>
                   <td>
-                    <div class="wopen diff"><span class="ui-icon ui-icon-arrow-2-n-s ic_btn"></span>比較
+                    <div class="wopen diff"><span class="ui-icon ui-icon-arrow-2-n-s ic_btn"></span>比較</div>
                   </td>
                 </tr>
                 <tr>
@@ -425,20 +439,6 @@
             <li>このサイトのURLのパラメタについては<B><a tt_title="■URLの例<BR>福岡県 の状況の場合<BR>https://sakanaclub.xsrv.jp/dc/covid19/name=福岡県<BR><BR>福岡県 4/4(月)～5/2(土) 職業:看護師 の状況の場合<BR>https://sakanaclub.xsrv.jp/dc/covid19/name=福岡県&date=4-4+5-2&q=看護師<BR><BR>■パラメタの説明<BR>＊name: 都道府県<BR>例 name=福岡県<BR>   name=福岡県+佐賀県  ...複数形式<BR><BR>＊date: 日付<BR>例 date=4-11     ...単一日形式  4月11日<BR>　 date=4-4+5-8  ...範囲日形式  4月4日~5月8日<BR>　 date=4-4+14   ...範囲日形式2 4月4日 + 14days<BR><BR>＊q: 検索キーワード (市区町村・職業・状態等のキーワード)<BR>例 q=北九州市 ...市区町村<BR>　 q=看護師　 ...職業等<BR>">こちらを参照</a></B></li>
           </ul>
         </div>
-      </div>
-      <div class="row hasborder">
-        <B>表示：</B>&nbsp;
-        <label for="ch_pnl_map"><input id="ch_pnl_map" type="checkbox" v-model="pnl.map.is_show">地図</label>&nbsp;&nbsp;&nbsp;
-        <label for="ch_pnl_name"><input id="ch_pnl_name" type="checkbox" v-model="pnl.name.is_show">都道府県</label>&nbsp;&nbsp;&nbsp;
-        <label for="ch_pnl_city"><input id="ch_pnl_city" type="checkbox" v-model="pnl.city.is_show">市区町村</label>&nbsp;&nbsp;&nbsp;
-        <label for="ch_pnl_date"><input id="ch_pnl_date" type="checkbox" v-model="pnl.date.is_show"><i class="fa fa-procedures"></i>感染者数</label>&nbsp;&nbsp;&nbsp;
-        <label for="ch_pnl_sex"><input id="ch_pnl_sex" type="checkbox" v-model="pnl.sex.is_show"><i class="fa fa-venus-mars"></i>性別</label>&nbsp;&nbsp;&nbsp;
-        <label for="ch_pnl_week"><input id="ch_pnl_week" type="checkbox" v-model="pnl.week.is_show">曜日</label>&nbsp;&nbsp;&nbsp;
-        <label for="ch_pnl_age"><input id="ch_pnl_age" type="checkbox" v-model="pnl.age.is_show">年齢</label>&nbsp;&nbsp;&nbsp;
-        <label for="ch_pnl_cond"><input id="ch_pnl_cond" type="checkbox" v-model="pnl.cond.is_show"><i class="fa fa-medkit"></i>状態</label>&nbsp;&nbsp;&nbsp;
-        <label for="ch_pnl_job"><input id="ch_pnl_job" type="checkbox" v-model="pnl.job.is_show"><i class="fa fa-id-card-o"></i>職業</label>&nbsp;&nbsp;&nbsp;
-        <label for="ch_pnl_detail"><input id="ch_pnl_detail" type="checkbox" v-model="pnl.detail.is_show">詳細</label>&nbsp;&nbsp;&nbsp;
-        <label for="ch_pnl_ana" v-show="pnl.ana.is_chk_show"><input id="ch_pnl_ana" type="checkbox" v-model="pnl.ana.is_show"><i class="fa fa-eye"></i>分析</label>&nbsp;&nbsp;&nbsp;
       </div>
     </div><!-- container2 -->
     <div id="container2_tbl_pref" class="container2">
@@ -1079,7 +1079,7 @@
         </table>
       </div>
     </div><!-- container2 -->
-  </div>
+  </div><!-- app -->
   <script type="text/javascript" src="js/covid19.min.js" charset="UTF-8"></script>
 </body>
 

@@ -9,7 +9,7 @@
   }
 
   #btn_search {
-    width: 28em;
+    width: 18em;
   }
 
   .dc-chart g.row text {
@@ -252,12 +252,12 @@ i.fa {
   padding: 10px 20px 10px 20px;
 }
 
-.hasborder {
+#toolbar_togwin {
+  display: inline-block;
   background: #FFFFFF;
   border: 1px solid #808080;
   border-radius: 4px;
   padding: 4px;
-  margin-top: 6px;
 }
 
 .ui-tabs .ui-tabs-panel {

@@ -830,3 +830,21 @@ function sscanf(str, format) {
   // POST-PROCESSING
   return _finish();
 }
+
+function php_printf02d(i) {
+  return ('0' + String(i)).substr(-2);
+}
+
+function php_location_get_query() {
+  let q;
+  if (location.search === "") {
+    if (location.pathname.indexOf('=') === -1) return {};
+    let s = location.pathname.split('/');
+    q = s[s.length - 1];
+  } else {
+    q = php_trim(location.search, "?");
+  }
+  let o = {};
+  php_parse_str(q, o);
+  return o;
+}

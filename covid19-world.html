@@ -9,8 +9,8 @@
   <meta name="description" content="新型コロナウイルスの感染状況を次元チャートで可視化。都道府県、感染者数、年齢、症状、職業といったグラフ上の項目のクリックやキーワードを入力によって、任意の項目でのチャートのフィルタリングが行えます。">
   <!-- Bootstrap -->
   <link href="bower_components/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
-  <link href="jslib/font-awesome-5.3.1/css/all.min.css" rel="stylesheet" />
-  <link href="jslib/font-awesome-5.3.1/css/v4-shims.min.css" rel="stylesheet" />
+  <link href="jslib/font-awesome/css/all.min.css" rel="stylesheet" />
+  <link href="jslib/font-awesome/css/v4-shims.min.css" rel="stylesheet" />
   <!-- jquery-ui -->
   <link rel="stylesheet" href="bower_components/jquery-ui/themes/blitzer/jquery-ui.min.css">
   <link rel="stylesheet" href="jslib/jquery-ui-iconfont/jquery-ui-1.12.icon-font.min.css">
@@ -103,7 +103,14 @@
     <input type="search" id="btn_search" autocomplete="off" class="btn_clear" value="">
     <input type="text" id="btn_date" value="" style="display: none;">&nbsp;&nbsp;
     <button id="btn_download_csv" title="フィルタリングされたグラフのデータをCSV形式でダウンロードします。" class="btn_export_file"><i class="ui-icon ui-icon-arrowstop-1-s"></i><img width="20" src="img/csv.png"></button>
-    <div class="row">
+    <div id="toolbar_togwin">
+      <B>表示：</B>
+      <label for="ch_pnl_map"><input id="ch_pnl_map" type="checkbox" checked>地図</label>&nbsp;&nbsp;
+      <label for="ch_pnl_world"><input id="ch_pnl_world" type="checkbox" checked>国名</label>&nbsp;&nbsp;
+      <label for="ch_pnl_date"><input id="ch_pnl_date" type="checkbox" checked><i class="fa fa-procedures"></i>感染者数</label>&nbsp;&nbsp;
+      <label for="ch_pnl_detail"><input id="ch_pnl_detail" type="checkbox" checked>詳細</label>
+    </div>
+    <div id="panels" class="row">
       <div id="chart_map" class="dc_panel drag">
         <ul id="chart_map_title" class="chart-title" style="display: none;">
           <li><a href="#tabs_w" title="世界の感染状況"><i class="fa fa-globe"></i>世界</a></li>
@@ -175,13 +182,6 @@
           <div id="detail_div5" class="detail"></div>
         </div>
       </div>
-    </div>
-    <div class="row hasborder">
-      <B>表示：</B>&nbsp;
-      <label for="ch_pnl_map"><input id="ch_pnl_map" type="checkbox" checked>地図</label>&nbsp;&nbsp;&nbsp;
-      <label for="ch_pnl_world"><input id="ch_pnl_world" type="checkbox" checked>国名</label>&nbsp;&nbsp;&nbsp;
-      <label for="ch_pnl_date"><input id="ch_pnl_date" type="checkbox" checked><i class="fa fa-procedures"></i>感染者数</label>&nbsp;&nbsp;&nbsp;
-      <label for="ch_pnl_detail"><input id="ch_pnl_detail" type="checkbox" checked>詳細</label>&nbsp;&nbsp;&nbsp;
     </div>
   </div><!-- container2 -->
   <script type="text/javascript" src="js/covid19-world.min.js" charset="UTF-8"></script>
