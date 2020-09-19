@@ -94,3 +94,7 @@ $ make dwn_all
 # ダウンロードデータをクリーン
 $ make clean
 ```
+
+## 関連プロジェクト
+
+- [covid19-dc-vue-admin](https://github.com/yoshinaga-ken/covid19-dc-vue-admin)

@@ -95,3 +95,6 @@ $ make dwn_all
 #Clean download data
 $ make clean
 ```
+## Related Project
+
+- [covid19-dc-vue-admin](https://github.com/yoshinaga-ken/covid19-dc-vue-admin)
