@@ -91,7 +91,7 @@ const m_ = {
             barWidth: 40
         }
     },
-    get: location_get_query(),
+    get: php_location_get_query(),
     url_data: { "path": "data\/", "assets": "covid19-assets.json", "data": "covid19-data.json" },
     url_name: 'https://ja.wikipedia.org/wiki',
 
@@ -302,11 +302,11 @@ const m_ = {
         }
         return txt;
     },
-    chartNameFilters: function(pre0) {
+    chartNameFilters: function(ja_prefs, ja_prefs_sel, is_selected) {
         //m_.chartNameにない物は除外
         let pre_names = _.keys(m_.names);
         let pre = [];
-        for (const i of pre0) {
+        for (const i of ja_prefs) {
             if (_.indexOf(pre_names, i) !== -1) pre.push(i);
         }
         if (pre.length === 0) {
@@ -421,8 +421,8 @@ const m_ = {
                 let ret;
                 let s2 = s.split('-');
                 switch (s2.length) {
-                    case 3: ret = moment(s2[0] + '-' + printf02d(s2[1]) + '-' + printf02d(s[2])); break;
-                    case 2: ret = moment(moment().format('YYYY') + '-' + printf02d(s2[0]) + '-' + printf02d(s2[1])); break;
+                    case 3: ret = moment(s2[0] + '-' + php_printf02d(s2[1]) + '-' + php_printf02d(s[2])); break;
+                    case 2: ret = moment(moment().format('YYYY') + '-' + php_printf02d(s2[0]) + '-' + php_printf02d(s2[1])); break;
                     case 1: ret = s; break;
                 }
                 return ret;
@@ -588,7 +588,7 @@ const m_ = {
 
         let ft = m_.getFilterTxt();
 
-        fth = ft.join(' ').trim();
+        let fth = ft.join(' ').trim();
         $('.hdr_flt').text((fth === '' ? '全国' : fth) + 'の状況');
         if (m_.get.light !== undefined) {
             $('head title').text((fth === '' ? '全国' : fth) + 'の状況 - 新型コロナウイルス感染状況');
@@ -628,7 +628,7 @@ const m_ = {
             }
             if (d) {
                 app.pnl.date.cnt_day = moment(d.key).format('YYYY/M/D(ddd)') + '時点';
-                h = d.value - d1.value;
+                const h = d.value - d1.value;
                 app.pnl.date.cnt_one = (h >= 0 ? '+' : '') + php_number_format(h);//前日比：日別
             }
         } else {
@@ -1286,7 +1286,7 @@ const initDc = (data) => {
             if (no === 0) {
                 m_.work = _.values(_.mapValues(m_.gpDate.all(), d => d.value));
             }
-            i = no - N + 1;
+            let i = no - N + 1;
             let v = m_.work.slice(i < 0 ? 0 : i, i + N);
             let ave = Math.round(_.sum(v) / N);
             return ave;
@@ -2327,14 +2327,17 @@ const drawJapanMap = () => {
                 el.html(html);
             } : false,
 
-        onRegionSelected: (/*e,name,is_on*/) => {
+        onRegionSelected: (e, name, is_selected) => {
             if (m_.is_filter_region_sel) return;
             //選択を取得
             let xs = map.getSelectedRegions();
-            let a = xs.map(x => map.mapData.paths[x].name);
+            let ja_prefs = xs.map(x => map.mapData.paths[x].name);
+            let ja_prefs_sel = map.mapData.paths[name].name;
             //名前チャートフィルタ
-            m_.chartNameFilters(a);
+            m_.chartNameFilters(ja_prefs);
             m_.is_drawJapanMap = 0;
+
+            m_.chartScroll('#div_name', is_selected ? ja_prefs_sel : ja_prefs[0], 300);
 
             if (m_.chartName.filters().length && $('#ui-datepicker-div').is(':visible')) {
                 m_.datePick.datepicker('hide');
@@ -2421,8 +2424,8 @@ const onDocumentReady = () => {
         beforeShowDay: function(date) {
             let ret = [];
             let y = date.getFullYear();
-            let m = printf02d(date.getMonth() + 1);
-            let d = printf02d(date.getDate());
+            let m = php_printf02d(date.getMonth() + 1);
+            let d = php_printf02d(date.getDate());
             let ymd = y + m + d;
 
             ret[0] = 1;//is_selectable
