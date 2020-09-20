@@ -5,7 +5,7 @@
 
 const request = require('request')
 const cheerio = require('cheerio')
-// const moment  = require("moment");
+const moment = require("moment");
 // const _       = require('lodash');
 // const DataFrame = require('dataframe-js').DataFrame;
 
@@ -46,17 +46,24 @@ request(url, (err, response, body) => {
 				//<tr>655例目,令和2年7月26日,10,女性,京都市
 				//<table>退院等（死亡退院・転院を含む）
 				//<head>No,発表日,年代,性別,居住地等,
-				console.log('No,発表日,年代,性別,居住地等,状態');
+				const TOK = '\t';
+				//console.log('No,発表日,年代,性別,居住地等,状態');
 				$('table').each((i, tbl) => {
 					$('tr', tbl).each((j, tr) => {
 						if (j === 0) return; //header
-
 						let t = '';
 						$('td', tr).each((k, td) => {
 							if (k > 4) return;
-							t += (k === 0 ? '' : ',') + $(td).text().replace(/\r?\n/g, '').trim();
+
+							let tt = $(td).text();
+							switch (k) {
+								case 0: tt = tt.replace('例目', ''); break;
+								//令和2年7月21日 -> 2020-07-21
+								case 1: tt = moment(tt.replace('令和2年', '2020/').replace('月', '/').replace('日', '')).format('YYYY-MM-DD'); break;
+							}
+							t += (k === 0 ? '' : TOK) + tt.replace(/\r?\n/g, '').trim();
 						});
-						t += ',' + ((i === 0) ? '入院・療養中' : '退院・死亡');
+						t += TOK + ((i === 0) ? '入院' : '退院');
 						console.log(t);
 					});
 				});

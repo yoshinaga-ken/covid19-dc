@@ -312,11 +312,14 @@ dwn_shiga:
 #https://www.pref.kyoto.jp/kentai/corona/hassei1-50.html
 dwn_kyoto:
 	@echo "■kyoto"
-	@echo "府内感染状況　退院等（死亡退院・転院を含む）　410例目 以降 HTML"
-	$(NODE) dom_parse.js kyoto | tee $@
-	@echo "府内感染状況　退院等（死亡退院・転院を含む）　1例目から410例目まで（PDF：431KB）"
-	$(WGET) -O "$(DWN_PRE)kyoto-京都府-001-410.pdf" "https://www.pref.kyoto.jp/kentai/corona/documents/jyoukyo001-410.pdf"
-	$(PYTHON) pdf2csv.py kyoto "$(DWN_PRE)kyoto-京都府-001-410.pdf" "$(DWN_PRE)kyoto-京都府-001-410.csv"
+	@echo "府内感染状況 - 入院(入院・療養中) or 退院(死亡退院・転院を含む) at HTML"
+	-mv "$(DWN_DATA_DIR)/$(DWN_PRE)京都府.csv" "$(DWN_DATA_DIR)/$(DWN_PRE)京都府-bak.csv"
+	$(NODE) dom_parse.js kyoto | sort -t $$'\t' -k1 -n | tee "$(DWN_DATA_DIR)/$(DWN_PRE)京都府.csv"
+
+dwn_kyoto_pdf:
+	@echo "府内感染状況　退院等（死亡退院・転院を含む）　1例目から580例目まで（PDF：588KB）"
+	$(WGET) -O "$(DWN_DATA_DIR)/$(DWN_PRE)kyoto-京都府.pdf" "https://www.pref.kyoto.jp/kentai/corona/documents/jyoukyo001-580.pdf"
+	$(PYTHON) pdf2csv.py kyoto "$(DWN_DATA_DIR)/$(DWN_PRE)京都府.pdf" "$(DWN_DATA_DIR)/$(DWN_PRE)京都府-001-XXX.csv"
 	
 
 #大阪府
