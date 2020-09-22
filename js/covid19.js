@@ -302,7 +302,7 @@ const m_ = {
         }
         return txt;
     },
-    chartNameFilters: function(ja_prefs, ja_prefs_sel, is_selected) {
+    chartNameFilters: function(ja_prefs) {
         //m_.chartNameにない物は除外
         let pre_names = _.keys(m_.names);
         let pre = [];
@@ -794,6 +794,15 @@ const m_ = {
             if (duration === 0) o.scrollTop(top);
             else o.animate({ scrollTop: top }, duration, 'swing');
         }
+    },
+    panelResize: function() {
+        const w = $('#container2_dc').width()
+            - (app.pnl.map.is_show ? $('#chart_map').width() + 5 : 0)
+            - (app.pnl.name.is_show ? $('#panel_name').width() + 5 : 0)
+            - (app.pnl.city.is_show ? $('#panel_city').width() + 5 : 0)
+            - 5;
+        $('#panel_date').width(w);
+        m_.composite2.width(w);
     },
     createFilteredBarStacksData: function() {
         let prefs = _.keys(PREF_EN);
@@ -1592,11 +1601,16 @@ const initDc = (data) => {
         })
         .compose([m_.chartDate2, m_.chartLine2])
         ;
-
     m_.composite2.xAxis().ticks(7).tickFormat(function(s) {
         return moment(s).format('M/Dddd');
     });
     m_.composite2.yAxis().ticks(5).tickFormat(d3.format("~s"));//1.5k
+
+    if (!IS_SP) {
+        m_.panelResize();
+        m_.composite.useViewBoxResizing(true);
+        m_.composite2.useViewBoxResizing(true);
+    }
 
     //===========================================================================
     // CHART 性別 pie chartSex_init
@@ -2617,6 +2631,12 @@ const onDocumentReady = () => {
 
     });
 
+    if (!IS_SP) {
+        window.onresize = function() {
+            m_.panelResize();
+        }
+    }
+
     //ShortCutKey
     $(document)
         .keyup(function(e) {
@@ -3242,21 +3262,21 @@ new Vue({
     watch: {
         // pnl: {
         //   handler: function (v, old){
-        //     this.settingsSave();
+        //     this.onChangePnlIsShow();
         //   },
         //   deep: true
         // },
-        'pnl.map.is_show': function() { this.settingsSave(); },
-        'pnl.name.is_show': function() { this.settingsSave(); },
-        'pnl.city.is_show': function() { this.settingsSave(); },
-        'pnl.date.is_show': function() { this.settingsSave(); },
-        'pnl.sex.is_show': function() { this.settingsSave(); },
-        'pnl.week.is_show': function() { this.settingsSave(); },
-        'pnl.age.is_show': function() { this.settingsSave(); },
-        'pnl.cond.is_show': function() { this.settingsSave(); },
-        'pnl.job.is_show': function() { this.settingsSave(); },
-        'pnl.detail.is_show': function() { this.settingsSave(); },
-        'pnl.ana.is_show': function() { this.settingsSave(); },
+        'pnl.map.is_show': function() { this.onChangePnlIsShow(); },
+        'pnl.name.is_show': function() { this.onChangePnlIsShow(); },
+        'pnl.city.is_show': function() { this.onChangePnlIsShow(); },
+        'pnl.date.is_show': function() { this.onChangePnlIsShow(); },
+        'pnl.sex.is_show': function() { this.onChangePnlIsShow(); },
+        'pnl.week.is_show': function() { this.onChangePnlIsShow(); },
+        'pnl.age.is_show': function() { this.onChangePnlIsShow(); },
+        'pnl.cond.is_show': function() { this.onChangePnlIsShow(); },
+        'pnl.job.is_show': function() { this.onChangePnlIsShow(); },
+        'pnl.detail.is_show': function() { this.onChangePnlIsShow(); },
+        'pnl.ana.is_show': function() { this.onChangePnlIsShow(); },
         'pnl.date.stack_type': function(v, old) {
             switch (v) {
                 case 'con': m_.dateStakShow(0); break;
@@ -3279,6 +3299,10 @@ new Vue({
                 o[k] = { is_show: v.is_show ? 1 : 0 };
             });
             return o;
+        },
+        onChangePnlIsShow: function() {
+            if (!IS_SP) m_.panelResize();
+            this.settingsSave();
         },
         settingsSave: function() {
             let shows = this.getPanelShows();
