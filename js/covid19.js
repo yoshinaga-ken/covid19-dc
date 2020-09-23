@@ -253,7 +253,7 @@ const m_ = {
             for (let i of sp) {
                 t += i.trim() + PL;
             }
-            txt[1] = (sp.length == 1 ? '' : '【') + php_trim(t, PL) + (sp.length == 1 ? '' : '】');
+            txt[1] = (sp.length === 1 ? '' : '【') + php_trim(t, PL) + (sp.length === 1 ? '' : '】');
         }
 
         if (city !== '') {
@@ -261,7 +261,7 @@ const m_ = {
             txt[2] = (is ? '【' : '') + city + (is ? '】' : '');
         }
 
-        if (date != '') {
+        if (date !== '') {
             if (m_.chartDate.filters().length) {
                 if (m_.chartDate.brushOn()) {
                     txt.push(date);
@@ -270,33 +270,33 @@ const m_ = {
                     for (let i of sp) {
                         t += i + PL;
                     }
-                    txt[0] = (sp.length == 1 ? '' : '【') + php_trim(t, PL) + (sp.length == 1 ? '' : '】');
+                    txt[0] = (sp.length === 1 ? '' : '【') + php_trim(t, PL) + (sp.length === 1 ? '' : '】');
                 }
             }
         }
-        if (week != '') {
+        if (week !== '') {
             let is = week.indexOf(',') !== -1;
             txt[3] = '曜日:' + (is ? '【' : '') + week + (is ? '】' : '');
         }
-        if (age != '') {
+        if (age !== '') {
             let t = '', sp = age.split(',');
             for (let i of sp) t += m_.ageTickFormat(+i) + PL;
-            txt[4] = '年齢:' + (sp.length == 1 ? '' : '【') + php_trim(t, PL) + (sp.length == 1 ? '' : '】');
+            txt[4] = '年齢:' + (sp.length === 1 ? '' : '【') + php_trim(t, PL) + (sp.length === 1 ? '' : '】');
         }
-        if (sex != '') {
+        if (sex !== '') {
             let t = '', sp = sex.split(',');
             if (sp.length !== 3) {
                 for (let i of sp) {
                     t += i.trim() + PL;
                 }
-                txt[5] = '性別:' + (sp.length == 1 ? '' : '【') + php_trim(t, PL) + (sp.length == 1 ? '' : '】');
+                txt[5] = '性別:' + (sp.length === 1 ? '' : '【') + php_trim(t, PL) + (sp.length === 1 ? '' : '】');
             }
         }
-        if (cond != '') {
+        if (cond !== '') {
             let is = cond.indexOf(',') !== -1;
             txt[6] = '状態:' + (is ? '【' : '') + cond + (is ? '】' : '');
         }
-        if (job != '') {
+        if (job !== '') {
             let is = job.indexOf(',') !== -1;
             txt[7] = '職業:' + (is ? '【' : '') + job + (is ? '】' : '');
         }
@@ -829,7 +829,7 @@ const m_ = {
             stacks2[i] = [];
             from = moment(m_.spk.min_ymd);
             for (var j = 0; j <= nday; j++) {
-                let ymd = j == 0 ? from.format('YYMD') : from.add(1, 'days').format('YYMD');
+                let ymd = j === 0 ? from.format('YYMD') : from.add(1, 'days').format('YYMD');
                 if (stacks[i][ymd] !== undefined) {
                     stacks2[i][j] = stacks[i][ymd];
                 } else {
@@ -1149,7 +1149,7 @@ const initDc = (data) => {
                     return PREF_EN[d.key] ? 'img/japan/' + PREF_EN[d.key] + '.gif' : IMG_NO;
                 })
                 .on('click', function(d) {
-                    next = m_.url_name + '/' + d.key;
+                    const next = m_.url_name + '/' + d.key;
                     window.open(next);
                 });
         })
@@ -2048,7 +2048,8 @@ const initTabs = () => {
                     $('#japan-map').show();
                     drawJapanMap();
                     let ft = m_.getFilterTxt();
-                    ft[1] = ''; fth = ft.join(' ').trim();
+                    ft[1] = '';
+                    const fth = ft.join(' ').trim();
                     $('.hdr_flt_map').text(fth === '' ? '' : fth + 'の状況');
                     $('#legend_n').show();
                     $('#legend_p').hide();
@@ -2072,7 +2073,7 @@ const initTabs = () => {
                         app.pnl.date.is_show = 0;
                         app.pnl.date.chart2.is_show = 0;
 
-                        gpName2 = m_.dimName2.group().reduce((p, v) => m_.pref_tbl_last_m1[v[D3_PL1]].bed, (p, v) => m_.pref_tbl_last_m1[v[D3_PL1]].bed, (p, v) => 0);
+                        let gpName2 = m_.dimName2.group().reduce((p, v) => m_.pref_tbl_last_m1[v[D3_PL1]].bed, (p, v) => m_.pref_tbl_last_m1[v[D3_PL1]].bed, (p, v) => 0);
                         m_.chartName.group(gpName2).render();
                     } else {
                         app.pnl.date.is_show = 1;

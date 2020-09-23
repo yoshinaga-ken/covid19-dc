@@ -22,14 +22,8 @@
     width: 460px;
   }
 
-  #japan-map {
-    width: 440px;
-    height: 450px;
-    display: none;
-  }
-
   #world-map {
-    width: 440px;
+    width: 450px;
     height: 450px;
   }
 
@@ -121,12 +115,6 @@
   #chart_map {
     float: left;
     width: 100%;
-  }
-
-  #japan-map {
-    width: 100%;
-    height: 250px;
-    display: none;
   }
 
   #world-map {

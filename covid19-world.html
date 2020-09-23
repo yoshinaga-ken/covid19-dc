@@ -9,8 +9,8 @@
   <meta name="description" content="新型コロナウイルスの感染状況を次元チャートで可視化。都道府県、感染者数、年齢、症状、職業といったグラフ上の項目のクリックやキーワードを入力によって、任意の項目でのチャートのフィルタリングが行えます。">
   <!-- Bootstrap -->
   <link href="bower_components/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
-  <link href="jslib/font-awesome-5.3.1/css/all.min.css" rel="stylesheet" />
-  <link href="jslib/font-awesome-5.3.1/css/v4-shims.min.css" rel="stylesheet" />
+  <link href="jslib/font-awesome/css/all.min.css" rel="stylesheet" />
+  <link href="jslib/font-awesome/css/v4-shims.min.css" rel="stylesheet" />
   <!-- jquery-ui -->
   <link rel="stylesheet" href="bower_components/jquery-ui/themes/blitzer/jquery-ui.min.css">
   <link rel="stylesheet" href="jslib/jquery-ui-iconfont/jquery-ui-1.12.icon-font.min.css">
@@ -96,7 +96,7 @@
 
 <body class="hold-transition skin-blue sidebar-mini" bgcolor="#fffafa">
   <!-- Main content -->
-  <div class="container2">
+  <div id="container2_dc" class="container2">
     <h4 class="hdr"><i class="fa fa-thermometer-half"></i>&nbsp;新型コロナウイルス 世界 感染状況</h4>
     <h4 class="hdr_flt">全国の状況</h4>
     <i class="fa fa-filter" style="font-size: 1.3em;padding:4px"></i><a class="btn_clear_all ui-button" title="フィルタリングをリセットします" href="#"><span class="ui-icon ui-icon-closethick"></span>クリア</a>&nbsp;
@@ -106,6 +106,7 @@
     <div id="toolbar_togwin">
       <B>表示：</B>
       <label for="ch_pnl_map"><input id="ch_pnl_map" type="checkbox" checked>地図</label>&nbsp;&nbsp;
+      <label for="ch_pnl_cond"><input id="ch_pnl_cond" type="checkbox" checked>状態</label>&nbsp;&nbsp;
       <label for="ch_pnl_world"><input id="ch_pnl_world" type="checkbox" checked>国名</label>&nbsp;&nbsp;
       <label for="ch_pnl_date"><input id="ch_pnl_date" type="checkbox" checked><i class="fa fa-procedures"></i>感染者数</label>&nbsp;&nbsp;
       <label for="ch_pnl_detail"><input id="ch_pnl_detail" type="checkbox" checked>詳細</label>
@@ -126,12 +127,12 @@
         <div id="tabs_pc"></div>
         <div id="tabs_d"></div>
         <div id="tabs_b"></div>
-        <div id="japan-map"></div>
         <div id="world-map"></div>
         <span class="hdr_flt_map"></span>
       </div>
       <div id="panel_region" class="drag dc_panel">
         <span class="chart-title">状態</span>
+        <span class="ui-icon ui-icon-circle-close sp_icon btn_close" ch_id="ch_pnl_cond" style="float:right;"></span>
         <div id="div_condsel">
           <div id="chart_condsel"></div>
         </div>
@@ -158,7 +159,7 @@
         </div>
       </div>
       <div id="panel_date" class="dc_panel drag">
-        <span class="chart-title"><i class="fa fa-procedures"></i>感染者数</span>
+        <span class="chart-title"><i class="fa fa-procedures"></i>感染者数</span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
         <span class="btn_brush btn_off" title="ブラシベースの範囲選択をオン/オフします。&#x0A;Ctrlを押しながら日付バーをクリックで追加選択になります。"><span class="ui-icon ui-icon-arrow-2-e-w sp_icon"></span>選択</span>
         <a class="reset_btn" id="reset_btn_date" href="javascript:void(0);" style="display: none;"><span class="ui-icon ui-icon-closethick"></span></a>
         <span class="filter_txt" style="display: none;"><span class="filter"></span></span>&nbsp;<span class="filter_txt_diff"></span>

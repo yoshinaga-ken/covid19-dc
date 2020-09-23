@@ -50,7 +50,7 @@ const m_ = {
       barWidth: 45   //
     }
   },
-  get: location_get_query(),
+  get: php_location_get_query(),
   url_data: 'data/covid19-world.json',
   url_name: 'https://ja.wikipedia.org/wiki',
 
@@ -398,8 +398,8 @@ const m_ = {
         let ret;
         let s2 = s.split('-');
         switch (s2.length) {
-          case 3: ret = moment(s2[0] + '-' + printf02d(s2[1]) + '-' + printf02d(s[2])); break;
-          case 2: ret = moment(moment().format('YYYY') + '-' + printf02d(s2[0]) + '-' + printf02d(s2[1])); break;
+          case 3: ret = moment(s2[0] + '-' + php_printf02d(s2[1]) + '-' + php_printf02d(s[2])); break;
+          case 2: ret = moment(moment().format('YYYY') + '-' + php_printf02d(s2[0]) + '-' + php_printf02d(s2[1])); break;
           case 1: ret = s; break;
         }
         return ret;
@@ -552,7 +552,7 @@ const m_ = {
 
     let ft = m_.getFilterTxt();
 
-    fth = ft.join(' ').trim();
+    let fth = ft.join(' ').trim();
     $('.hdr_flt').text((fth === '' ? '世界' : fth) + 'の状況');
 
     if (m_.sel_tab === 'tabs_w' || m_.sel_tab === 'tabs_c') {
@@ -653,6 +653,14 @@ const m_ = {
       else o.animate({ scrollTop: top }, duration, 'swing');
     }
   },
+  panelResize: function() {
+    const w = $('#container2_dc').width()
+      - ($('#ch_pnl_map').prop('checked') ? $('#chart_map').width() + 5 : 0)
+      - ($('#ch_pnl_cond').prop('checked') ? $('#panel_region').width() + 5 : 0)
+      - ($('#ch_pnl_world').prop('checked') ? $('#panel_world').width() + 5 : 0)
+      - 5;
+    $('#panel_date').width(w);
+  },
   remove_empty: function(source_group) {
     return {
       all: function() {
@@ -732,7 +740,7 @@ const m_ = {
 
 const initDc = (data) => {
 
-  m_.domainDate = [moment(m_.world[0][D2_YMD]).add(3, 'days').toDate(), moment(_.last(m_.world)[D2_YMD]).add(3, 'days').toDate()];
+  m_.domainDate = [moment(m_.world[0][D2_YMD]).add(5, 'days').toDate(), moment(_.last(m_.world)[D2_YMD]).add(3, 'days').toDate()];
 
   const pl1 = _.map(m_.world, D2_PL1);
   const names_length = _.uniq(pl1).length
@@ -1190,6 +1198,11 @@ const initDc = (data) => {
   });
   m_.composite.yAxis().ticks(5).tickFormat(d3.format("~s"));//1.5k
 
+  if (!IS_SP) {
+    m_.panelResize();
+    m_.composite.useViewBoxResizing(true);
+  }
+
   //===========================================================================
   // CHART rowChart chartCondSel_init 選択の為のチャート
   //===========================================================================
@@ -1598,8 +1611,8 @@ $(document).ready(function() {
     beforeShowDay: function(date) {
       let ret = [];
       let y = date.getFullYear();
-      let m = printf02d(date.getMonth() + 1);
-      let d = printf02d(date.getDate());
+      let m = php_printf02d(date.getMonth() + 1);
+      let d = php_printf02d(date.getDate());
       let ymd = y + m + d;
 
       ret[0] = 1;//is_selectable
@@ -1684,6 +1697,12 @@ $(document).ready(function() {
     });
   }
 
+  if (!IS_SP) {
+    window.onresize = function() {
+      m_.panelResize();
+    }
+  }
+
   //$('#chart_map').resizable();
 
 
@@ -1699,6 +1718,7 @@ $(document).ready(function() {
   //チェックボックスにより、関連するパネルをtoggleする
   const panel_chboxes = [
     { ch: '#ch_pnl_world', div: '#panel_world' }
+    , { ch: '#ch_pnl_cond', div: '#panel_region' }
     , { ch: '#ch_pnl_date', div: '#panel_date' }
     , { ch: '#ch_pnl_map', div: '#chart_map' }
     , { ch: '#ch_pnl_detail', div: '#panel_detail' }
@@ -1714,6 +1734,7 @@ $(document).ready(function() {
         } else {
           o.hide();
         }
+        if (!IS_SP) m_.panelResize();
       })
       .on('change', function() {
         $(this).trigger('update');
@@ -1724,6 +1745,7 @@ $(document).ready(function() {
     ch_pnl_set_event(panel_chboxes[i]);
   }
 });
+
 
 //ShortCutKey
 $(document)
