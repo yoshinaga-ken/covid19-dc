@@ -2821,7 +2821,7 @@ const drawPrefSparkline = (mode, bar_stacks) => {
     let tbl = $('#tbl_pref');
     //tbl.find('canvas').remove();
 
-    let barWidth = IS_SP ? 3 : 7;
+    let barWidth = IS_SP ? 3 : 5;
     let barHeight = IS_SP ? 50 : 80;
     let td_idx = $('#tbl_pref tr:eq(3) td').length - 1;//DataTableカラム非表示考慮
 
