@@ -264,11 +264,11 @@ dwn_nagano:
 
 #岐阜県
 #TAG:data_csv
-#https://data.gifu-opendata.pref.gifu.lg.jp/dataset/c11223-001
+#https://gifu-opendata.pref.gifu.lg.jp/dataset/c11223-001
 dwn_gifu:
 	@echo "■gifu"
 	-mv "$(DWN_DATA_DIR)/$(DWN_PRE)岐阜県.csv" "$(DWN_DATA_DIR)/$(DWN_PRE)岐阜県-bak.csv"
-	$(WGET) -O$(DWN_DATA_DIR)/tmp "https://data.gifu-opendata.pref.gifu.lg.jp/dataset/4661bf9d-6f75-43fb-9d59-f02eb84bb6e3/resource/9c35ee55-a140-4cd8-a266-a74edf60aa80/download/210005gifucovid19patients.csv"
+	$(WGET) -O$(DWN_DATA_DIR)/patient.csv "https://gifu-opendata.pref.gifu.lg.jp/dataset/4661bf9d-6f75-43fb-9d59-f02eb84bb6e3/resource/9c35ee55-a140-4cd8-a266-a74edf60aa80/download/210005_gifu_covid19_patients.csv"
 	iconv -f SJIS -t UTF-8 $(DWN_DATA_DIR)/tmp > "$(DWN_DATA_DIR)/$(DWN_PRE)岐阜県.csv"
 
 #静岡県
