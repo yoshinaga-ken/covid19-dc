@@ -95,6 +95,7 @@ $ make dwn_all
 $ make clean
 ```
 
-## 関連プロジェクト
+## 関連プロジェクトやサイト
 
 - [covid19-dc-vue-admin](https://github.com/yoshinaga-ken/covid19-dc-vue-admin)
+- [日本の人口構成多次元チャート (表示方式検証中)](https://sakanaclub.xsrv.jp/prefecture-population-dc/?data=population.csv)

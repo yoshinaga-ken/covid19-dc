@@ -95,6 +95,7 @@ $ make dwn_all
 #Clean download data
 $ make clean
 ```
-## Related Project
+## Related projects and sites
 
 - [covid19-dc-vue-admin](https://github.com/yoshinaga-ken/covid19-dc-vue-admin)
+- [Japan's population multidimensional chart](https://sakanaclub.xsrv.jp/prefecture-population-dc/?data=population.csv)
