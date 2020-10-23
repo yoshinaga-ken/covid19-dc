@@ -494,6 +494,7 @@ const m_ = {
             }
             map.setSelectedRegions(sels);
             m_.is_filter_region_sel = 0;
+            m_.is_drawJapanMap = 0;
         }
     },
     renderVLine: function(chart, hz) {
@@ -1263,7 +1264,7 @@ const initDc = (data) => {
         // })
         //.y(d3.scaleLinear().domain([0, 50]))
         .ordinalColors(COL_CND.concat(COL_NAME).concat(COL_AGE))
-        .gap(!IS_SP ? -6 : -4).on('filtered', function(chart, v) {
+        .gap(!IS_SP ? -5 : -4).on('filtered', function(chart, v) {
             //m_.showFilterUi('#panel_date',chart,(f)=>moment(f).format('M/D(ddd)'));
             m_.on_chart_filtered(chart, v);
         })
@@ -1454,7 +1455,7 @@ const initDc = (data) => {
 
         })
         .ordinalColors(_.concat(DT_COL, _.concat(colorbrewer.Set1[3], colorbrewer.Set1[6])))
-        .gap(!IS_SP ? -6 : -4).on('filtered', function(chart, v) {
+        .gap(!IS_SP ? -4 : -4).on('filtered', function(chart, v) {
             //m_.showFilterUi('#panel_date',chart,(f)=>moment(f).format('M/D(ddd)'));
             m_.on_chart_filtered(chart, v);
         })
