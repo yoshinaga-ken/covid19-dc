@@ -409,12 +409,14 @@ h4.hdr {
 
 .div_cnt_day {
   float: left;
-  font-size: 0.9em;
+  font-size: 1em;
+  margin-left: 1em;
+  margin-bottom: 0.8em;
 }
 
 .div_cnt_one {
   float: right;
-  font-size: 0.9em;
+  font-size: 1em;
 }
 
 .div_total {

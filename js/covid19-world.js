@@ -330,7 +330,8 @@ const m_ = {
       animate: false
     });
     document.querySelector('#div_world').scrollTop = 0;
-    m_.chartWorld.filterAll().render();
+    m_.chartWorld.filterAll();
+    dc.redrawAll('chartGroup2');
   },
   chartAllFilterByKW: function(pre0) {
     //日付
@@ -455,7 +456,7 @@ const m_ = {
       }
       pnl.find('.reset_btn').show();
     } else {
-      pnl.find('.filter_txt').hide();
+      pnl.find('.filter_txt').text('').hide();
       pnl.find('.reset_btn').hide();
     }
   },
@@ -703,14 +704,14 @@ const m_ = {
         .attr('class', 'd3-tip')
         .offset([-10, 0])
         .html(function() {
-          return $(this).find('title').text().replace(/\n/g, '<BR>');
+          return $(this).find('title').text().replace(/\n/g, '<br />');
         });
 
       // m_.tipRow = d3.tip()
       //       .attr('class', 'd3-tip')
       //       .offset([-200, 10])
       //       .html(function () {
-      //         return $(this).find('title').text().replace(/\n/g,'<BR>');
+      //         return $(this).find('title').text().replace(/\n/g,'<br />');
       //       });
     }
 
@@ -922,18 +923,18 @@ const initDc = (data) => {
         let name = flts[i];
         let p = m_.world_tbl[name];
         let icon = p ? '<img src="img/world/' + p[1] + '.png">' : '';
-        let ret = '<B>' + icon + '<a target="_blank" title="' + name + 'の wikipediaへ" href="' + m_.url_name + '/' + name + '">' + name + '</a></B><BR>';
+        let ret = '<B>' + icon + '<a target="_blank" title="' + name + 'の wikipediaへ" href="' + m_.url_name + '/' + name + '">' + name + '</a></B><br />';
         if (p) {
           ret +=
-            '総人口　: <BR>' +
-            '地域　　: ' + WORLD_REGIONS[p[WT_AC]][0] + '<BR>' +
-            // 'PCR検査: <BR>'+
-            '感染者数: ' + php_number_format(p[WT_P]) + ' ▲' + php_number_format(p[WT_PD]) + '<BR>' +
-            '死亡者数: ' + php_number_format(p[WT_D]) + ' ▲' + php_number_format(p[WT_DD]) + '<BR>' +
+            '総人口　: <br />' +
+            '地域　　: ' + WORLD_REGIONS[p[WT_AC]][0] + '<br />' +
+            // 'PCR検査: <br />'+
+            '感染者数: ' + php_number_format(p[WT_P]) + ' ▲' + php_number_format(p[WT_PD]) + '<br />' +
+            '死亡者数: ' + php_number_format(p[WT_D]) + ' ▲' + php_number_format(p[WT_DD]) + '<br />' +
             '<a title="感染者数に対する死亡者率。死亡者数 ÷ 感染者数">死亡率</a>　: ' + _.round(p[WT_DD] / p[WT_PD], 2) + '%'
-            // '退院者数: <BR>'+
-            // '実患者数: <BR>'+
-            // '対策病床数: <BR>'
+            // '退院者数: <br />'+
+            // '実患者数: <br />'+
+            // '対策病床数: <br />'
             ;
         }
         $('#detail_div' + no).html(ret).hide().show();
@@ -952,18 +953,18 @@ const initDc = (data) => {
 
   let chartDateW;
   if (IS_SP) {
-    chartDateW = window.innerWidth + 100;
+    chartDateW = window.innerWidth + 350;
     gap_val = -2;
   } else {
     let panel_date_w = window.innerWidth - ($('#chart_map').width() + $('#panel_region').width() + $('#panel_world').width()) - 120;
     $('#panel_date').width(panel_date_w);
     chartDateW = panel_date_w;
     while (1) {
-      if (chartDateW > 1300) { gap_val = -6; break; }
-      if (chartDateW > 1250) { gap_val = -5; break; }
-      if (chartDateW > 1150) { gap_val = -5; break; }
-      if (chartDateW > 900) { gap_val = -4; break; }
-      if (chartDateW > 700) { gap_val = -3; break; }
+      if (chartDateW > 1300) { gap_val = -4; break; }
+      if (chartDateW > 1250) { gap_val = -3; break; }
+      if (chartDateW > 1150) { gap_val = -3; break; }
+      if (chartDateW > 900) { gap_val = -3; break; }
+      if (chartDateW > 700) { gap_val = -2; break; }
       gap_val = -2; break;
     }
   }
@@ -1124,8 +1125,7 @@ const initDc = (data) => {
     .height(!IS_SP ? 250 : 200)
     //左
     .margins({ top: 0, right: 0, bottom: 20, left: 35 })
-    .legend(dc.legend().x(IS_SP ? parseInt(chartDateW / 3) : 200).y(0))
-    //右
+    .legend(dc.legend().x(IS_SP ? (chartDateW - 150) : 200).y(0))         //右
     // .margins({top: 0, right: 0, bottom: 20, left: 35})
     // .legend(dc.legend().x(chartDateW-500).y(0))
     .x(d3.scaleTime().domain(m_.domainDate))
@@ -1524,9 +1524,9 @@ const drawWorldMap = () => {
       if (nm === '') return;
       let f = _.findLast(m_.world, d => d[0] === nm);
       if (!f) return;
-      let html = nm + '<BR>' +
-        '感染者数: ' + php_number_format(ft[2]) + '名' + (!ft || ft[4] === 0 ? '' : ' ▲' + php_number_format(ft[4])) + '<BR>' +
-        '死亡者数: ' + php_number_format(ft[3]) + '名' + (!ft || ft[5] === 0 ? '' : ' ▲' + php_number_format(ft[5])) + '<BR>' +
+      let html = nm + '<br />' +
+        '感染者数: ' + php_number_format(ft[2]) + '名' + (!ft || ft[4] === 0 ? '' : ' ▲' + php_number_format(ft[4])) + '<br />' +
+        '死亡者数: ' + php_number_format(ft[3]) + '名' + (!ft || ft[5] === 0 ? '' : ' ▲' + php_number_format(ft[5])) + '<br />' +
         '死亡率(死亡/感染): ' + _.round(ft[3] / ft[2], 2) + '%';
       el.html(html);
     },

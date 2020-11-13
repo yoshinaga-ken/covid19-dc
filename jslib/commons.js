@@ -12,6 +12,8 @@
 
 $.fn.extend({
 	btn_clear: function() {
+		let o=(this);
+		if(o.parent().find('.btn_clear_btn').length) return;
 		let btn = $('<span>').button({ icons: { primary: "ui-icon ui-icon-closethick" } });
 		btn.addClass("btn_clear_btn");
 		btn.on('click', function() {
@@ -20,7 +22,7 @@ $.fn.extend({
 			if (!g_isTouch) input.focus();
 			input.focus();
 		});
-		$(this).after(btn);
+		o.after(btn);
 		//btn.height($(v).height()+16); //for jqui11
 		return this;
 	},

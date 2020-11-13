@@ -346,6 +346,30 @@ h4.hdr {
   width: 10em;
 }
 
+.div_cnt_day {
+  float: left;
+  font-size: 1em;
+  margin-left: 1em;
+  margin-bottom: 0.8em;
+}
+
+.div_cnt_one {
+  float: right;
+  font-size: 1em;
+}
+
+.div_total {
+  float: right;
+  font-size: 0.8em;
+}
+
+.div_total_cnt {
+  font-weight: bold;
+  font-size: 1.8em !important;
+}
+
+
+
 #chart_date_range g.y {
   display: none;
 }

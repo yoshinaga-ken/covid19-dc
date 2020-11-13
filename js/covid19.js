@@ -478,7 +478,7 @@ const m_ = {
             }
             pnl.find('.btn_reset').show();
         } else {
-            pnl.find('.filter_txt').hide();
+            pnl.find('.filter_txt').val('').hide();
             pnl.find('.btn_reset').hide();
         }
     },
@@ -603,7 +603,7 @@ const m_ = {
         if (fth !== '') {
             if (m_.last_fth !== fth) {
                 $('#chk_tbl_spkflt')
-                    .checkboxradio({ label: '<i class="fa fa-filter"></i>[' + fth + ' ]' + (IS_SP ? '<BR>' : '') + 'でフィルタ' })
+                    .checkboxradio({ label: '<i class="fa fa-filter"></i>[' + fth + ' ]' + (IS_SP ? '<br />' : '') + 'でフィルタ' })
                     //.checkboxradio('refresh')
                     .prop('checked', true).trigger('click') //off
                     ;
@@ -990,14 +990,14 @@ const m_ = {
                 .attr('class', 'd3-tip')
                 .offset([-10, 0])
                 .html(function() {
-                    return $(this).find('title').text().replace(/\n/g, '<BR>');
+                    return $(this).find('title').text().replace(/\n/g, '<br />');
                 });
 
             // m_.tipRow = d3.tip()
             //       .attr('class', 'd3-tip')
             //       .offset([-200, 10])
             //       .html(function () {
-            //         return $(this).find('title').text().replace(/\n/g,'<BR>');
+            //         return $(this).find('title').text().replace(/\n/g,'<br />');
             //       });
         }
 
@@ -1114,16 +1114,16 @@ const initDc = (data) => {
                 let icon = '<img src="img/japan/' + PREF_EN[name] + '.gif">';
                 let per = parseInt(100 * n / p_max);
                 let bar_style = "background: linear-gradient(to right, rgb(31, 119, 180, 0.3) " + per + "%, #fffacd " + per + "%, #fffacd " + (100 - per) + "%) center center / 100% 100% no-repeat;";
-                let ret = '<B>' + icon + '<a target="_blank" title="' + name + 'の wikipediaへ" href="' + m_.url_name + '/' + name + '">' + name + '</a></B><BR>' +
-                    '<img style="width:180px;height:120px;object-fit: cover;object-position:0% 0%;" src="' + PREF_IMG_PATH + PREF_IMG[name] + '"><BR>' +
-                    (p === undefined ? 'なし<BR>' : (
+                let ret = '<B>' + icon + '<a target="_blank" title="' + name + 'の wikipediaへ" href="' + m_.url_name + '/' + name + '">' + name + '</a></B><br />' +
+                    '<img style="width:180px;height:120px;object-fit: cover;object-position:0% 0%;" src="' + PREF_IMG_PATH + PREF_IMG[name] + '"><br />' +
+                    (p === undefined ? 'なし<br />' : (
                         '<table><tbody>' +
                         '<tr><td>総人口　:</td><td>' + php_number_format(p.n) + '名</tr>' +
                         '<tr><td>感染者数:</td><td style="' + bar_style + '"> ' + php_number_format(n) + '名 <a title="人口に対する感染者率。感染者数 ÷ 総人口。">(' + (_.round(100 * n / p.n, 3)) + '%)</a></td></tr>' +
                         '<tr><td>患者数　:</td><td> ' + php_number_format(patient) + '名</td></tr>' +
                         '<tr><td>PCR検査:</td><td> ' + php_number_format(p.pcrtested) + '名 <a title="人口に対するPCR検査率。PCR検査数 ÷ 総人口。">(' + p.pcrtested_p + '%)</a></td></tr>' +
                         '<tr><td>死亡者数:</td><td> ' + p.deaths + '名</td></tr>' +
-                        '<tr><td>退院者数:</td><td> ' + php_number_format(p.discharged) + '名<BR>' +
+                        '<tr><td>退院者数:</td><td> ' + php_number_format(p.discharged) + '名<br />' +
                         '<tr><td>対策病床数:</td><td> ' + php_number_format(p.bed) + '床 <a title="対策病床使用率。患者数/対策病床数。">(' + (_.round(100 * patient / p.bed, 2)) + '%)</a></td></tr>' +
                         '</tbody></table>'
                     )) +
@@ -1163,10 +1163,10 @@ const initDc = (data) => {
             s += ' ';
             let is_filtered = m_.gpName_all[d.key] !== d.value;
             // let p=m_.pref_tbl_last_m1[d.key];
-            //       'PCR検査: '+php_number_format(p.pcrtested)+'名 ('+p.pcrtested_p+'%)<BR>'+
-            //       '死亡者数: '+p.deaths+'名<BR>'+
-            //       '退院者数: '+php_number_format(p.discharged)+'名<BR>'+
-            //       '対策病床数: '+php_number_format(p.bed)+'床 ('+(_.round(100*patient/p.bed,2)) + '%)<BR>'
+            //       'PCR検査: '+php_number_format(p.pcrtested)+'名 ('+p.pcrtested_p+'%)<br />'+
+            //       '死亡者数: '+p.deaths+'名<br />'+
+            //       '退院者数: '+php_number_format(p.discharged)+'名<br />'+
+            //       '対策病床数: '+php_number_format(p.bed)+'床 ('+(_.round(100*patient/p.bed,2)) + '%)<br />'
 
             return s + php_number_format(d.value) + (is_filtered ? '' : (m_.pref_tbl_last_cnt[d.key] ? '▲' + m_.pref_tbl_last_cnt[d.key] : ''));
         })
@@ -1264,7 +1264,7 @@ const initDc = (data) => {
         // })
         //.y(d3.scaleLinear().domain([0, 50]))
         .ordinalColors(COL_CND.concat(COL_NAME).concat(COL_AGE))
-        .gap(!IS_SP ? -5 : -4).on('filtered', function(chart, v) {
+        .gap(!IS_SP ? -5 : -3).on('filtered', function(chart, v) {
             //m_.showFilterUi('#panel_date',chart,(f)=>moment(f).format('M/D(ddd)'));
             m_.on_chart_filtered(chart, v);
         })
@@ -1318,8 +1318,7 @@ const initDc = (data) => {
         // .margins({top: 0, right: 0, bottom: 20, left: 30})
         // .legend(dc.legend().x(40).y(0))
         //右
-        .margins({ top: 0, right: 0, bottom: 20, left: 35 })
-        .legend(dc.legend().x(IS_SP ? chartDateW - 350 : 60).y(0).legendText((d) => {
+        .margins({ top: 0, right: 0, bottom: 20, left: 35 }).legend(dc.legend().x(IS_SP ? chartDateW - 200 : 60).y(0).legendText((d) => {
             let sel_no = d.name.split(':');
             return sel_no.length === 2 ? m_.date_stk_nm[sel_no[1]] : d.name;
         }))
@@ -1455,7 +1454,7 @@ const initDc = (data) => {
 
         })
         .ordinalColors(_.concat(DT_COL, _.concat(colorbrewer.Set1[3], colorbrewer.Set1[6])))
-        .gap(!IS_SP ? -4 : -4).on('filtered', function(chart, v) {
+        .gap(!IS_SP ? -6 : -3).on('filtered', function(chart, v) {
             //m_.showFilterUi('#panel_date',chart,(f)=>moment(f).format('M/D(ddd)'));
             m_.on_chart_filtered(chart, v);
         })
@@ -1544,8 +1543,7 @@ const initDc = (data) => {
         // .margins({top: 0, right: 0, bottom: 20, left: 30})
         // .legend(dc.legend().x(40).y(0))
         //右
-        .margins({ top: 0, right: 0, bottom: 20, left: 30 })
-        .legend(dc.legend().x(IS_SP ? chartDateW - 350 : 60).y(0))
+        .margins({ top: 0, right: 0, bottom: 20, left: 50 }).legend(dc.legend().x(IS_SP ? chartDateW - 350 : 60).y(0))
         .x(m_.domainDate ? d3.scaleTime().domain(m_.domainDate) : d3.scaleTime())
         .elasticX(false)
         //.round(d3.timeDay.round)        
@@ -2339,7 +2337,7 @@ const drawJapanMap = () => {
         onRegionTipShow:
             !IS_SP ? (e, el, code) => { //hover
                 let pre_name = map.mapData.paths[code].name;
-                let html = m_.getChartnameTitle(pre_name, '<BR>');
+                let html = m_.getChartnameTitle(pre_name, '<br />');
                 el.html(html);
             } : false,
 
@@ -2846,13 +2844,13 @@ const drawPrefSparkline = (mode, bar_stacks) => {
                 let pref_name = options.userOptions.useropt[0];
                 let ii = options.userOptions.useropt[1];
                 let ymd = moment(m_.spk.max_ymd).subtract(bar_stacks[0].length - (f[0].offset + 1), 'days').format('M/D(ddd)');
-                return ymd + ' - ' + pref_name + '<BR>─【新規】─────<BR>' +
-                    (f[4].value == 0 ? '' : '<span class="square" style="background:' + f[4].color + '"></span>' + CND_LV_A + ': ' + f[4].value + '名<BR>') +
-                    (f[3].value == 0 ? '' : '<span class="square" style="background:' + f[3].color + '"></span>' + CND_LV_B + ': ' + f[3].value + '名<BR>') +
-                    (f[2].value == 0 ? '' : '<span class="square" style="background:' + f[2].color + '"></span>' + CND_LV_C + ': ' + f[2].value + '名<BR>') +
-                    (f[1].value == 0 ? '' : '<span class="square" style="background:' + f[1].color + '"></span>' + CND_LV_D + ': ' + f[1].value + '名<BR>') +
-                    (f[0].value == 0 ? '' : '<span class="square" style="background:' + f[0].color + '"></span>' + CND_LV_E + ': ' + f[0].value + '名<BR>') +
-                    '計: ' + (f[4].value + f[3].value + f[2].value + f[1].value + f[0].value) + '名<BR>'
+                return ymd + ' - ' + pref_name + '<br />─【新規】─────<br />' +
+                    (f[4].value == 0 ? '' : '<span class="square" style="background:' + f[4].color + '"></span>' + CND_LV_A + ': ' + f[4].value + '名<br />') +
+                    (f[3].value == 0 ? '' : '<span class="square" style="background:' + f[3].color + '"></span>' + CND_LV_B + ': ' + f[3].value + '名<br />') +
+                    (f[2].value == 0 ? '' : '<span class="square" style="background:' + f[2].color + '"></span>' + CND_LV_C + ': ' + f[2].value + '名<br />') +
+                    (f[1].value == 0 ? '' : '<span class="square" style="background:' + f[1].color + '"></span>' + CND_LV_D + ': ' + f[1].value + '名<br />') +
+                    (f[0].value == 0 ? '' : '<span class="square" style="background:' + f[0].color + '"></span>' + CND_LV_E + ': ' + f[0].value + '名<br />') +
+                    '計: ' + (f[4].value + f[3].value + f[2].value + f[1].value + f[0].value) + '名<br />'
                     ;
             }
         });
@@ -2874,7 +2872,7 @@ const drawPrefSparkline = (mode, bar_stacks) => {
                 // ,normalRangeColor: 'rgba(0,0,0,0.1)'
                 , tooltipFormatter(sparkline, options, f) {
                     let style = f.y >= 0.5 ? 'font-weight:bold;color:#FF0000;' : '';
-                    return '<span class="ui-icon ui-icon-chart-line" style="background:#FFF;color:' + f.color + '"></span>10万人中 <span style="' + style + '">' + f.y + '</span>名<BR>─【累計】─────<BR>';
+                    return '<span class="ui-icon ui-icon-chart-line" style="background:#FFF;color:' + f.color + '"></span>10万人中 <span style="' + style + '">' + f.y + '</span>名<br />─【累計】─────<br />';
                 }
             });
         }
@@ -2894,8 +2892,8 @@ const drawPrefSparkline = (mode, bar_stacks) => {
                 let death = carr - _1;
                 //let population=m_.pref_tbl_last_m1[pref_name].n; 
                 //let per=_.round(100*death/population,3)+'%'; //死亡/人口
-                return '感染者: ' + php_number_format(f.y) + '名<BR>' +
-                    '<span class="ui-icon ui-icon-chart-line" style="background:#FFF;color:' + f.color + '"></span>死亡: ' + php_number_format(death) + '名<BR>';
+                return '感染者: ' + php_number_format(f.y) + '名<br />' +
+                    '<span class="ui-icon ui-icon-chart-line" style="background:#FFF;color:' + f.color + '"></span>死亡: ' + php_number_format(death) + '名<br />';
 
             }
         });
@@ -2912,7 +2910,7 @@ const drawPrefSparkline = (mode, bar_stacks) => {
                 //let carr =m_.spk.line[0][pref_no][f.x];// 感染累計
                 let _1 = m_.spk.line[1][pref_no][f.x];   // 感染累計-死亡
                 let _2 = m_.spk.line[2][pref_no][f.x];  // 感染累計-(死亡＋退院)=患者数
-                return '<span class="ui-icon ui-icon-chart-line" style="background:#FFF;color:' + f.color + '"></span>退院: ' + php_number_format(_1 - _2) + '名<BR>';
+                return '<span class="ui-icon ui-icon-chart-line" style="background:#FFF;color:' + f.color + '"></span>退院: ' + php_number_format(_1 - _2) + '名<br />';
             }
         });
 
@@ -2937,7 +2935,7 @@ const drawPrefSparkline = (mode, bar_stacks) => {
             , chartRangeMax: 1000
             , colorMap: { 1000: 'rgba(255,0,0,0.9)', 999: 'rgba(0,0,255,0.9)' } //1000:start 999:end
             , tooltipFormatter(sparkline, options, f) {
-                return '<BR>' + (f[0].value === 1000 ? '※緊急事態宣言 発令' : (f[0].value === 999 ? '※緊急事態宣言 解除' : ''));
+                return '<br />' + (f[0].value === 1000 ? '※緊急事態宣言 発令' : (f[0].value === 999 ? '※緊急事態宣言 解除' : ''));
             }
         });
     }
@@ -3037,7 +3035,7 @@ const initPrefTable = () => {
                         let p = m_.pref_tbl_last_m1[row[0]];
                         if (p) {
                             let c_per = _.round(100 * p.carriers / p.n, 3);   //(感染者/人口)%
-                            ret = php_number_format(data) + '<BR>' + c_per + '%';
+                            ret = php_number_format(data) + '<br />' + c_per + '%';
                         } else {
                             let carriers = getJapanResionData(row[0], 'carriers');
                             if (carriers === '') {
@@ -3045,7 +3043,7 @@ const initPrefTable = () => {
                             } else {
                                 let n = getJapanResionData(row[0], 'n');
                                 let c_per = _.round(100 * carriers / n, 3);   //(感染者/人口)%
-                                ret = php_number_format(n) + '<BR>' + c_per + '%';
+                                ret = php_number_format(n) + '<br />' + c_per + '%';
                             }
                         }
                     } else {
