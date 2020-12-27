@@ -11,6 +11,7 @@ const moment = require("moment");
 
 const OK = 0, NG = -1;
 const pref = process.argv[2];
+const arg1 = process.argv[3]!==undefined ? parseInt(process.argv[3]) : 0;
 let url;
 
 switch (pref) {
@@ -22,7 +23,17 @@ switch (pref) {
 		break;
 	case 'kyoto':
 		//ホーム > 健康・福祉・人権 > 健康・医療 > 京都府の健康対策 > 感染症緊急情報 > 新型コロナウイルス感染症に関連する情報について > 府内の感染状況
-		url = 'https://www.pref.kyoto.jp/kentai/corona/hassei1-50.html';
+		switch(arg1){
+		case 0: url = 'https://www.pref.kyoto.jp/kentai/corona/hassei1-50.html';break;
+		case 1: url = 'https://www.pref.kyoto.jp/kentai/corona/hassei9.html';break;//府内の感染状況（3501から4000例目）
+		case 2: url = 'https://www.pref.kyoto.jp/kentai/corona/hassei8.html';break;//府内の感染状況（3001から3500例目）
+		case 3: url = 'https://www.pref.kyoto.jp/kentai/corona/hassei7.html';break;//府内の感染状況（2501から3000例目）
+		case 4: url = 'https://www.pref.kyoto.jp/kentai/corona/hassei6.html';break;//府内の感染状況（2001から2500例目）
+		case 5: url = 'https://www.pref.kyoto.jp/kentai/corona/hassei5.html';break;//府内の感染状況（1501から2000例目）
+		case 6: url = 'https://www.pref.kyoto.jp/kentai/corona/hassei4.html';break;//府内の感染状況（1001から1500例目）
+		case 7: url = 'https://www.pref.kyoto.jp/kentai/corona/hassei3.html';break;//府内の感染状況（501から1000例目）
+		case 8: url = 'https://www.pref.kyoto.jp/kentai/corona/hassei2.html';break;//府内の感染状況（1から500例目）
+		}
 		break;
 }
 
