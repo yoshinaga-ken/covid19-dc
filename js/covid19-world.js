@@ -29,7 +29,7 @@ const COND_COL_E = COND_COL[4];
 const IMG_NO = 'img/noimage.png';
 
 //緊急事態宣言
-const YMD_ED_F = [["2020-04-07", "【緊急事態宣言】\n発令。７都府県\n対象：東京・埼玉・千葉・神奈川・大阪・兵庫・福岡"], ["2020-04-16", "【緊急事態宣言】\n対象を｢全国｣に拡大"], ["2020-05-14", "【緊急事態宣言】\n39県で解除\n継続：北海道・東京・埼玉・千葉・神奈川・大阪・京都・兵庫"], ["2020-05-21", "【緊急事態宣言】\n大阪・京都・兵庫を解除\n継続：北海道・東京・埼玉・千葉・神奈川"], ["2020-05-25", "【緊急事態宣言】\n全都道府県で解除"]];
+const YMD_ED_F = [["2020-04-07", "【緊急事態宣言】\n発令。７都府県\n対象：東京・埼玉・千葉・神奈川・大阪・兵庫・福岡"], ["2020-04-16", "【緊急事態宣言】\n対象を｢全国｣に拡大"], ["2020-05-14", "【緊急事態宣言】\n39県で解除\n継続：北海道・東京・埼玉・千葉・神奈川・大阪・京都・兵庫"], ["2020-05-21", "【緊急事態宣言】\n大阪・京都・兵庫を解除\n継続：北海道・東京・埼玉・千葉・神奈川"], ["2020-05-25", "【緊急事態宣言】\n全都道府県で解除"], ["2020-07-22", "【GoToトラベル キャンペーン】\n開始"], ["2020-10-01", "【GoToイート キャンペーン】\n開始"], ["2021-01-08", "【緊急事態宣言#2】\n発令。1都3県\n対象：東京・埼玉・千葉・神奈川"], ["2021-01-13", "【緊急事態宣言#2】\n対象を11都道府県に拡大\n対象：東京・埼玉・千葉・神奈川に加えて\n大阪・京都・兵庫・愛知・岐阜・栃木・福岡の7府県を追加"]];
 
 const WORLD_REGIONS = { "0": ["アフリカ", "Africa"], "2": ["東地中海", "Eastern Mediterranean"], "3": ["ヨーロッパ", "Europe"], "4": ["東南アジア", "South-East Asia"], "5": ["西太平洋", "Western Pacific"], "11": ["北アメリカ", "North Americas"], "12": ["中央アメリカ", "Central Americas"], "13": ["南アメリカ", "South Americas"] };
 
@@ -541,11 +541,17 @@ const m_ = {
     //宣言vertical line
     //
     m_.render_v_line(chart, [
-      { cls: ['s1'], x: new Date(YMD_ED_F[0][0]) },
-      { cls: ['s2'], x: new Date(YMD_ED_F[1][0]) },
-      { cls: ['s2'], x: new Date(YMD_ED_F[2][0]) },
-      { cls: ['s2'], x: new Date(YMD_ED_F[3][0]) },
-      { cls: ['s3'], x: new Date(YMD_ED_F[4][0]) }
+      { cls: ['s1'], x: new Date(YMD_ED_F[0][0] + ' 00:00:00') },
+      { cls: ['s2'], x: new Date(YMD_ED_F[1][0] + ' 00:00:00') },
+      { cls: ['s2'], x: new Date(YMD_ED_F[2][0] + ' 00:00:00') },
+      { cls: ['s2'], x: new Date(YMD_ED_F[3][0] + ' 00:00:00') },
+      { cls: ['s3'], x: new Date(YMD_ED_F[4][0] + ' 00:00:00') },
+
+      { cls: ['campaign'], x: new Date(YMD_ED_F[5][0] + ' 00:00:00') },
+      { cls: ['campaign'], x: new Date(YMD_ED_F[6][0] + ' 00:00:00') },
+
+      { cls: ['s1'], x: new Date(YMD_ED_F[7][0] + ' 00:00:00') },
+      { cls: ['s2'], x: new Date(YMD_ED_F[8][0] + ' 00:00:00') }
     ]);
 
     if (m_.is_drawWorldMap) drawWorldMap();
@@ -765,7 +771,7 @@ const initDc = (data) => {
   //gpRegion.all().forEach( v=>m_.gpRegion_all[v.key]=v.value );
 
   m_.chartRegion
-    .width(IS_SP ? parseInt(window.innerWidth / 2) - 30 : 200)
+    .width(IS_SP ? parseInt(window.innerWidth / 2) - 10 : 200)
     .height(24 + (Object.keys(gpRegion.all()).length * 29))
     .fixedBarHeight(24)
     .margins({ top: 0, left: 10, right: 10, bottom: 20 })
@@ -960,7 +966,7 @@ const initDc = (data) => {
     $('#panel_date').width(panel_date_w);
     chartDateW = panel_date_w;
     while (1) {
-      if (chartDateW > 1300) { gap_val = -4; break; }
+      if (chartDateW > 1300) { gap_val = -3; break; }
       if (chartDateW > 1250) { gap_val = -3; break; }
       if (chartDateW > 1150) { gap_val = -3; break; }
       if (chartDateW > 900) { gap_val = -3; break; }
@@ -972,7 +978,7 @@ const initDc = (data) => {
   // CHART 感染者数(YYYY-MM-DD) barChart chartDate_init
   //===========================================================================
   let dimDate = ndx2.dimension(function(d) {
-    return d3.timeDay(new Date(d[D2_YMD]));
+    return d3.timeDay(new Date(d[D2_YMD] + ' 00:00:00'));
   });
   m_.gpDate = dimDate.group().reduceSum(function(d) { return d[D2_P]; });
   m_.gpDateD = dimDate.group().reduceSum(function(d) { return d[D2_D]; });
@@ -1145,6 +1151,12 @@ const initDc = (data) => {
         if (ymd === YMD_ED_F[2][0]) { s_suf = YMD_ED_F[2][1]; break; }
         if (ymd === YMD_ED_F[3][0]) { s_suf = YMD_ED_F[3][1]; break; }
         if (ymd === YMD_ED_F[4][0]) { s_suf = YMD_ED_F[4][1]; break; }
+
+        if (ymd === YMD_ED_F[5][0]) { s_suf = YMD_ED_F[5][1]; break; }
+        if (ymd === YMD_ED_F[6][0]) { s_suf = YMD_ED_F[6][1]; break; }
+
+        if (ymd === YMD_ED_F[7][0]) { s_suf = YMD_ED_F[7][1]; break; }
+        if (ymd === YMD_ED_F[8][0]) { s_suf = YMD_ED_F[8][1]; break; }
         break;
       }
       let date_str = typeof (d.key) === "object" ? moment(d.key).format('YYYY/M/D(ddd)') : d.key;
@@ -1343,9 +1355,9 @@ const initTabs = () => {
 }
 
 const initAutoComplete = () => {
-  /**
-   * class $.ui.autocomplete_ex extends $.ui.autocomplete
-   */
+    /**
+     * class $.ui.autocomplete_ex extends $.ui.autocomplete
+     */
   $.widget("ui.autocomplete_ex", $.ui.autocomplete, {
     //デフォルトオプション
     options: {
@@ -1672,7 +1684,6 @@ $(document).ready(function() {
     let b = m_.composite.brushOn();
     if (b) {
       $('#reset_btn_date').trigger('click');
-      $('#panel_date .filter_txt_diff').text('');
     } else {
       let f = m_.composite.filters();
       if (f.length) {//選択がある場合,最初~最後+1を選択
@@ -1685,6 +1696,7 @@ $(document).ready(function() {
   })
     .on('my_update', function(event, is_off) {
       $(this).removeClass('btn_off btn_on').addClass(is_off ? 'btn_off' : 'btn_on');
+      if (is_off) $('#panel_date .filter_txt_diff').text('');
       m_.composite.brushOn(!is_off).render();
     });
 

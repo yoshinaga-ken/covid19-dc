@@ -66,7 +66,7 @@ const SEX_LABEL = ["不明", "男性", "女性"];
 const WEEK_LABEL = moment.weekdaysMin();
 const IMG_NO = 'img/noimage.png';
 
-const YMD_ED_F = [["2020-04-07", "【緊急事態宣言】\n発令。７都府県\n対象：東京・埼玉・千葉・神奈川・大阪・兵庫・福岡"], ["2020-04-16", "【緊急事態宣言】\n対象を｢全国｣に拡大"], ["2020-05-14", "【緊急事態宣言】\n39県で解除\n継続：北海道・東京・埼玉・千葉・神奈川・大阪・京都・兵庫"], ["2020-05-21", "【緊急事態宣言】\n大阪・京都・兵庫を解除\n継続：北海道・東京・埼玉・千葉・神奈川"], ["2020-05-25", "【緊急事態宣言】\n全都道府県で解除"]];
+const YMD_ED_F = [["2020-04-07", "【緊急事態宣言】\n発令。７都府県\n対象：東京・埼玉・千葉・神奈川・大阪・兵庫・福岡"], ["2020-04-16", "【緊急事態宣言】\n対象を｢全国｣に拡大"], ["2020-05-14", "【緊急事態宣言】\n39県で解除\n継続：北海道・東京・埼玉・千葉・神奈川・大阪・京都・兵庫"], ["2020-05-21", "【緊急事態宣言】\n大阪・京都・兵庫を解除\n継続：北海道・東京・埼玉・千葉・神奈川"], ["2020-05-25", "【緊急事態宣言】\n全都道府県で解除"], ["2020-07-22", "【GoToトラベル キャンペーン】\n開始"], ["2020-10-01", "【GoToイート キャンペーン】\n開始"], ["2021-01-08", "【緊急事態宣言#2】\n発令。1都3県\n対象：東京・埼玉・千葉・神奈川"], ["2021-01-13", "【緊急事態宣言#2】\n対象を11都道府県に拡大\n対象：東京・埼玉・千葉・神奈川に加えて\n大阪・京都・兵庫・愛知・岐阜・栃木・福岡の7府県を追加"]];
 
 const PREF_EN = { "北海道": "hokkaido", "青森県": "aomori", "岩手県": "iwate", "宮城県": "miyagi", "秋田県": "akita", "山形県": "yamagata", "福島県": "fukushima", "茨城県": "ibaraki", "栃木県": "tochigi", "群馬県": "gunma", "埼玉県": "saitama", "千葉県": "chiba", "東京都": "tokyo", "神奈川県": "kanagawa", "新潟県": "niigata", "富山県": "toyama", "石川県": "ishikawa", "福井県": "fukui", "山梨県": "yamanashi", "長野県": "nagano", "岐阜県": "gifu", "静岡県": "shizuoka", "愛知県": "aichi", "三重県": "mie", "滋賀県": "shiga", "京都府": "kyoto", "大阪府": "osaka", "兵庫県": "hyogo", "奈良県": "nara", "和歌山県": "wakayama", "鳥取県": "tottori", "島根県": "shimane", "岡山県": "okayama", "広島県": "hiroshima", "山口県": "yamaguchi", "徳島県": "tokushima", "香川県": "kagawa", "愛媛県": "ehime", "高知県": "kochi", "福岡県": "fukuoka", "佐賀県": "saga", "長崎県": "nagasaki", "熊本県": "kumamoto", "大分県": "oita", "宮崎県": "miyazaki", "鹿児島県": "kagoshima", "沖縄県": "okinawa" };
 const PREF_HIRA = { "北海道": "ほっかいどう", "青森県": "あおもり", "岩手県": "いわて", "宮城県": "みやぎ", "秋田県": "あきた", "山形県": "やまがた", "福島県": "ふくしま", "茨城県": "いばらき", "栃木県": "とちぎ", "群馬県": "ぐんま", "埼玉県": "さいたま", "千葉県": "ちば", "東京都": "とうきょうと", "神奈川県": "かながわ", "新潟県": "にいがた", "富山県": "とやま", "石川県": "いしかわ", "福井県": "ふくい", "山梨県": "やまなし", "長野県": "ながの", "岐阜県": "ぎふ", "静岡県": "しずおか", "愛知県": "あいち", "三重県": "みえ", "滋賀県": "しが", "京都府": "きょうとふ", "大阪府": "おおさかふ", "兵庫県": "ひょうご", "奈良県": "なら", "和歌山県": "わかやま", "鳥取県": "とっとり", "島根県": "しまね", "岡山県": "おかやま", "広島県": "ひろしま", "山口県": "やまぐち", "徳島県": "とくしま", "香川県": "かがわ", "愛媛県": "えひめ", "高知県": "こうち", "福岡県": "ふくおか", "佐賀県": "さが", "長崎県": "ながさき", "熊本県": "くまもと", "大分県": "おおいた", "宮崎県": "みやざき", "鹿児島県": "かごしま", "沖縄県": "おきなわ" };
@@ -439,10 +439,10 @@ const m_ = {
                 case 2:
                     from = date_get(from_to[0]);
                     to = date_get(from_to[1]);
-                    if (isNaN(parseInt(to))) {//4-4+4-8 => 範囲日 4月4日~4月8日
+                    if (isNaN(parseInt(to)) && to !== '') {//4-4+4-8 => 範囲日 4月4日~4月8日
                         fsel = dc.filters.RangedFilter(from.toDate(), to.toDate());
-                    } else {//4-4+3 => 範囲日 4月4日 + 3day
-                        fsel = dc.filters.RangedFilter(from.toDate(), from.add(to, 'days').toDate());
+                    } else {//4-4+3 => 範囲日 4月4日 + 3day; 4-4+ => 範囲日 4月4日 + tommorow
+                        fsel = dc.filters.RangedFilter(from.toDate(), (to === '' ? moment().add(1, 'days') : from.add(to, 'days')).toDate());
                     }
                     break;
             }
@@ -566,11 +566,17 @@ const m_ = {
         if (m_.data_type) {
             //緊急事態宣言 縦ライン表示
             m_.renderVLine(chart, [
-                { cls: ['s1'], x: new Date(YMD_ED_F[0][0]) },
-                { cls: ['s2'], x: new Date(YMD_ED_F[1][0]) },
-                { cls: ['s2'], x: new Date(YMD_ED_F[2][0]) },
-                { cls: ['s2'], x: new Date(YMD_ED_F[3][0]) },
-                { cls: ['s3'], x: new Date(YMD_ED_F[4][0]) }
+                { cls: ['s1'], x: new Date(YMD_ED_F[0][0] + ' 00:00:00') },
+                { cls: ['s2'], x: new Date(YMD_ED_F[1][0] + ' 00:00:00') },
+                { cls: ['s2'], x: new Date(YMD_ED_F[2][0] + ' 00:00:00') },
+                { cls: ['s2'], x: new Date(YMD_ED_F[3][0] + ' 00:00:00') },
+                { cls: ['s3'], x: new Date(YMD_ED_F[4][0] + ' 00:00:00') },
+
+                { cls: ['campaign'], x: new Date(YMD_ED_F[5][0] + ' 00:00:00') },
+                { cls: ['campaign'], x: new Date(YMD_ED_F[6][0] + ' 00:00:00') },
+
+                { cls: ['s1'], x: new Date(YMD_ED_F[7][0] + ' 00:00:00') },
+                { cls: ['s2'], x: new Date(YMD_ED_F[8][0] + ' 00:00:00') }
             ]);
         }
 
@@ -1227,7 +1233,7 @@ const initDc = (data) => {
     // CHART 感染者数(YYYY-MM-DD) barChart chartDate_init
     //===========================================================================
     let dimDate = ndx.dimension(function(d) {
-        return d3.timeDay(new Date(d[D_YMD]));
+        return d3.timeDay(new Date(d[D_YMD] + ' 00:00:00'));
     });
     m_.gpDate = dimDate.group().reduceSum(function(d) { return d[D_CNT] || 1; });
     m_.dateCntCreate();
@@ -1264,7 +1270,7 @@ const initDc = (data) => {
         // })
         //.y(d3.scaleLinear().domain([0, 50]))
         .ordinalColors(COL_CND.concat(COL_NAME).concat(COL_AGE))
-        .gap(!IS_SP ? -5 : -3).on('filtered', function(chart, v) {
+        .gap(IS_SP ? -3 : -4).on('filtered', function(chart, v) {
             //m_.showFilterUi('#panel_date',chart,(f)=>moment(f).format('M/D(ddd)'));
             m_.on_chart_filtered(chart, v);
         })
@@ -1342,6 +1348,12 @@ const initDc = (data) => {
                 if (ymd === YMD_ED_F[2][0]) { s_suf = YMD_ED_F[2][1]; break; }
                 if (ymd === YMD_ED_F[3][0]) { s_suf = YMD_ED_F[3][1]; break; }
                 if (ymd === YMD_ED_F[4][0]) { s_suf = YMD_ED_F[4][1]; break; }
+
+                if (ymd === YMD_ED_F[5][0]) { s_suf = YMD_ED_F[5][1]; break; }
+                if (ymd === YMD_ED_F[6][0]) { s_suf = YMD_ED_F[6][1]; break; }
+
+                if (ymd === YMD_ED_F[7][0]) { s_suf = YMD_ED_F[7][1]; break; }
+                if (ymd === YMD_ED_F[8][0]) { s_suf = YMD_ED_F[8][1]; break; }
                 break;
             }
             let date_str = typeof (d.key) === "object" ? moment(d.key).format('YYYY/M/D(ddd)') : d.key;
@@ -1398,7 +1410,7 @@ const initDc = (data) => {
     // CHART 感染者数(YYYY-MM-DD) barChart chartDate2_init
     //===========================================================================
     let dimDate2 = ndx3.dimension(function(d) {
-        return d3.timeDay(new Date(d[D3_YMD]));
+        return d3.timeDay(new Date(d[D3_YMD] + ' 00:00:00'));
     });
     m_.gpDate2 = dimDate2.group().reduceSum(function(d) { return d[D3_CNT]; });
 
@@ -1454,7 +1466,7 @@ const initDc = (data) => {
 
         })
         .ordinalColors(_.concat(DT_COL, _.concat(colorbrewer.Set1[3], colorbrewer.Set1[6])))
-        .gap(!IS_SP ? -6 : -3).on('filtered', function(chart, v) {
+        .gap(IS_SP ? -3 : -5).on('filtered', function(chart, v) {
             //m_.showFilterUi('#panel_date',chart,(f)=>moment(f).format('M/D(ddd)'));
             m_.on_chart_filtered(chart, v);
         })
@@ -1562,6 +1574,12 @@ const initDc = (data) => {
                 if (ymd === YMD_ED_F[2][0]) { s_suf = YMD_ED_F[2][1]; break; }
                 if (ymd === YMD_ED_F[3][0]) { s_suf = YMD_ED_F[3][1]; break; }
                 if (ymd === YMD_ED_F[4][0]) { s_suf = YMD_ED_F[4][1]; break; }
+
+                if (ymd === YMD_ED_F[5][0]) { s_suf = YMD_ED_F[5][1]; break; }
+                if (ymd === YMD_ED_F[6][0]) { s_suf = YMD_ED_F[6][1]; break; }
+
+                if (ymd === YMD_ED_F[7][0]) { s_suf = YMD_ED_F[7][1]; break; }
+                if (ymd === YMD_ED_F[8][0]) { s_suf = YMD_ED_F[8][1]; break; }
                 break;
             }
             let date_str = typeof (d.key) === "object" ? moment(d.key).format('YYYY/M/D(ddd)') : d.key;
@@ -1660,7 +1678,7 @@ const initDc = (data) => {
     // CHART 曜日 chartWeek_init
     //===========================================================================
     let dimWeek = ndx.dimension(function(d) {
-        return new Date(d[D_YMD]).getDay(); //0~6 日~
+        return new Date(d[D_YMD] + ' 00:00:00').getDay(); //0~6 日~
     });
     let gpWeek = dimWeek.group().reduce(m_.group_reduce_light.append, m_.group_reduce_light.remove, m_.group_reduce_light.init).order(function(d) {
         return d.total;
@@ -2251,7 +2269,8 @@ const initAutoComplete = () => {
                 icon = '<img width="40" height="40" src="' + src + '" onerror="this.src=\'/' + IMG_NO + '\'" />';
                 html = icon + html;
             }
-            return $("<li class='ac_ex-item'>").append($('<div>').html(html + '(' + row[3] + ')')).appendTo(ul);
+            let is_pref = row[0] === row[1];
+            return $("<li class='ac_ex-item'>").append($('<div' + (is_pref ? ' class="ac_ex-bld"' : '') + '>').html(html + '(' + row[3] + ')')).appendTo(ul);
         }
     });
 }
@@ -2497,7 +2516,6 @@ const onDocumentReady = () => {
         let b = m_.composite.brushOn();
         if (b) {
             $('#btn_reset_date').trigger('click');
-            $('#panel_date .filter_txt_diff').text('');
         } else {
             let f = m_.composite.filters();
             if (f.length) {//選択がある場合,最初~最後+1を選択
@@ -2510,6 +2528,7 @@ const onDocumentReady = () => {
     })
         .on('my_update', function(event, is_off) {
             $(this).removeClass('btn_off btn_on').addClass(is_off ? 'btn_off' : 'btn_on');
+            if (is_off) $('#panel_date .filter_txt_diff').text('');
             m_.composite.brushOn(!is_off).render();
         });
 
@@ -2933,9 +2952,11 @@ const drawPrefSparkline = (mode, bar_stacks) => {
             , barSpacing: barWidth
             , height: barHeight
             , chartRangeMax: 1000
-            , colorMap: { 1000: 'rgba(255,0,0,0.9)', 999: 'rgba(0,0,255,0.9)' } //1000:start 999:end
+            , colorMap: { 1000: 'rgba(255,0,0,0.9)', 999: 'rgba(0,0,255,0.9)', 998: 'rgba(255,140,0,0.9)', 997: 'rgba(255,140,0,0.9)' } //1000:start 999:end
             , tooltipFormatter(sparkline, options, f) {
-                return '<br />' + (f[0].value === 1000 ? '※緊急事態宣言 発令' : (f[0].value === 999 ? '※緊急事態宣言 解除' : ''));
+                return '<br />' + (f[0].value === 1000 ? '※緊急事態宣言 発令' : (f[0].value === 999 ? '※緊急事態宣言 解除' :
+                    (f[0].value === 998 ? YMD_ED_F[5][1] : (f[0].value === 997 ? YMD_ED_F[6][1] : ''))
+                ));
             }
         });
     }

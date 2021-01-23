@@ -559,6 +559,11 @@ path.s3 {
   /*stroke-dasharray: 3,3;*/
 }
 
+path.campaign {
+  stroke: #ff8c00;
+  /*stroke-dasharray: 3,3;*/
+}
+
 path.line {
   stroke-width: 2;
   /*stroke-opacity: 0.5;*/
@@ -683,6 +688,10 @@ table.dataTable thead th div.DataTables_sort_wrapper label * {
 
 .ac_ex-item .ac_ex-kwd {
   color: #0000FF;
+  font-weight: bold;
+}
+
+.ac_ex-item .ac_ex-bld {
   font-weight: bold;
 }
 

@@ -106,9 +106,10 @@
     <div id="toolbar_togwin">
       <B>表示：</B>
       <label for="ch_pnl_map"><input id="ch_pnl_map" type="checkbox" checked>地図</label>&nbsp;&nbsp;
-      <label for="ch_pnl_cond"><input id="ch_pnl_cond" type="checkbox" checked>状態</label>&nbsp;&nbsp;
+      <label for="ch_pnl_cond"><input id="ch_pnl_cond" type="checkbox" checked>状態・半球・地域</label>&nbsp;&nbsp;
       <label for="ch_pnl_world"><input id="ch_pnl_world" type="checkbox" checked>国名</label>&nbsp;&nbsp;
       <label for="ch_pnl_date"><input id="ch_pnl_date" type="checkbox" checked><i class="fa fa-procedures"></i>感染者数</label>&nbsp;&nbsp;
+      <label for="ch_pnl_season"><input id="ch_pnl_season" type="checkbox" disabled="true">季節</label>&nbsp;&nbsp;
       <label for="ch_pnl_detail"><input id="ch_pnl_detail" type="checkbox" checked>詳細</label>
     </div>
     <div id="panels" class="row">
@@ -131,17 +132,32 @@
         <span class="hdr_flt_map"></span>
       </div>
       <div id="panel_region" class="drag dc_panel">
-        <span class="chart-title">状態</span>
         <span class="ui-icon ui-icon-circle-close sp_icon btn_close" ch_id="ch_pnl_cond" style="float:right;"></span>
-        <div id="div_condsel">
-          <div id="chart_condsel"></div>
+        <div class="sp_float">
+          <span class="chart-title">状態</span>
+          <div id="div_condsel">
+            <div id="chart_condsel"></div>
+          </div>
         </div>
-        <span class="chart-title">地域</span>
-        <a class="reset_btn" href="javascript:m_.chartRegion.filterAll();$('#panel_region .filter_txt').text('');dc.redrawAll('chartGroup2');" style="display: none;"><span class="ui-icon ui-icon-closethick"></span></a>
-        <span class="filter_txt" title="Ctrlを押しながらバーをクリックで単位単一選択になります" style="display: none;"></span>
-        <!-- <span class="ui-icon ui-icon-circle-close sp_icon btn_close" ch_id="ch_pnl_region" style="float:right;"></span> -->
-        <div id="div_region">
-          <div id="chart_region"></div>
+        <div class="sp_float">
+          <span class="chart-title">半球</span>
+          <div id="div_hemisphere">
+            <div id="chart_hemisphere">
+              <ul>
+                <li>北半球</li>
+                <li>南半球</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+        <div class="sp_float">
+          <span class="chart-title">地域</span>
+          <a class="reset_btn" href="javascript:m_.chartRegion.filterAll();$('#panel_region .filter_txt').text('');dc.redrawAll('chartGroup2');" style="display: none;"><span class="ui-icon ui-icon-closethick"></span></a>
+          <span class="filter_txt" title="Ctrlを押しながらバーをクリックで単位単一選択になります" style="display: none;"></span>
+          <!-- <span class="ui-icon ui-icon-circle-close sp_icon btn_close" ch_id="ch_pnl_region" style="float:right;"></span> -->
+          <div id="div_region">
+            <div id="chart_region"></div>
+          </div>
         </div>
       </div>
       <div id="panel_world" class="dc_panel drag">

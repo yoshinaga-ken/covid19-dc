@@ -124,13 +124,13 @@
 
   #panel_region {
     width: 100%;
-    height: 110px;
+    height: 150px;
     overflow-y: hidden;
   }
 
   #panel_region #div_region {
     width: 100%;
-    height: 100%;
+    height: 150px;
     overflow-x: hidden;
     overflow-y: auto;
   }
@@ -177,6 +177,9 @@
     overflow-y: auto;
   }
 
+  .sp_float {
+    float: left;
+  }
 }
 
 /* for_small_screen */
