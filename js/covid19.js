@@ -566,17 +566,17 @@ const m_ = {
         if (m_.data_type) {
             //緊急事態宣言 縦ライン表示
             m_.renderVLine(chart, [
-                { cls: ['s1'], x: new Date(YMD_ED_F[0][0] + ' 00:00:00') },
-                { cls: ['s2'], x: new Date(YMD_ED_F[1][0] + ' 00:00:00') },
-                { cls: ['s2'], x: new Date(YMD_ED_F[2][0] + ' 00:00:00') },
-                { cls: ['s2'], x: new Date(YMD_ED_F[3][0] + ' 00:00:00') },
-                { cls: ['s3'], x: new Date(YMD_ED_F[4][0] + ' 00:00:00') },
+                { cls: ['s1'], x: new Date(YMD_ED_F[0][0]) },
+                { cls: ['s2'], x: new Date(YMD_ED_F[1][0]) },
+                { cls: ['s2'], x: new Date(YMD_ED_F[2][0]) },
+                { cls: ['s2'], x: new Date(YMD_ED_F[3][0]) },
+                { cls: ['s3'], x: new Date(YMD_ED_F[4][0]) },
 
-                { cls: ['campaign'], x: new Date(YMD_ED_F[5][0] + ' 00:00:00') },
-                { cls: ['campaign'], x: new Date(YMD_ED_F[6][0] + ' 00:00:00') },
+                { cls: ['campaign'], x: new Date(YMD_ED_F[5][0]) },
+                { cls: ['campaign'], x: new Date(YMD_ED_F[6][0]) },
 
-                { cls: ['s1'], x: new Date(YMD_ED_F[7][0] + ' 00:00:00') },
-                { cls: ['s2'], x: new Date(YMD_ED_F[8][0] + ' 00:00:00') }
+                { cls: ['s1'], x: new Date(YMD_ED_F[7][0]) },
+                { cls: ['s2'], x: new Date(YMD_ED_F[8][0]) }
             ]);
         }
 
@@ -1233,7 +1233,7 @@ const initDc = (data) => {
     // CHART 感染者数(YYYY-MM-DD) barChart chartDate_init
     //===========================================================================
     let dimDate = ndx.dimension(function(d) {
-        return d3.timeDay(new Date(d[D_YMD] + ' 00:00:00'));
+        return d3.timeDay(new Date(d[D_YMD]));
     });
     m_.gpDate = dimDate.group().reduceSum(function(d) { return d[D_CNT] || 1; });
     m_.dateCntCreate();
@@ -1410,7 +1410,7 @@ const initDc = (data) => {
     // CHART 感染者数(YYYY-MM-DD) barChart chartDate2_init
     //===========================================================================
     let dimDate2 = ndx3.dimension(function(d) {
-        return d3.timeDay(new Date(d[D3_YMD] + ' 00:00:00'));
+        return d3.timeDay(new Date(d[D3_YMD]));
     });
     m_.gpDate2 = dimDate2.group().reduceSum(function(d) { return d[D3_CNT]; });
 
@@ -1678,7 +1678,7 @@ const initDc = (data) => {
     // CHART 曜日 chartWeek_init
     //===========================================================================
     let dimWeek = ndx.dimension(function(d) {
-        return new Date(d[D_YMD] + ' 00:00:00').getDay(); //0~6 日~
+        return new Date(d[D_YMD]).getDay(); //0~6 日~
     });
     let gpWeek = dimWeek.group().reduce(m_.group_reduce_light.append, m_.group_reduce_light.remove, m_.group_reduce_light.init).order(function(d) {
         return d.total;

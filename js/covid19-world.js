@@ -541,17 +541,17 @@ const m_ = {
     //宣言vertical line
     //
     m_.render_v_line(chart, [
-      { cls: ['s1'], x: new Date(YMD_ED_F[0][0] + ' 00:00:00') },
-      { cls: ['s2'], x: new Date(YMD_ED_F[1][0] + ' 00:00:00') },
-      { cls: ['s2'], x: new Date(YMD_ED_F[2][0] + ' 00:00:00') },
-      { cls: ['s2'], x: new Date(YMD_ED_F[3][0] + ' 00:00:00') },
-      { cls: ['s3'], x: new Date(YMD_ED_F[4][0] + ' 00:00:00') },
+      { cls: ['s1'], x: new Date(YMD_ED_F[0][0]) },
+      { cls: ['s2'], x: new Date(YMD_ED_F[1][0]) },
+      { cls: ['s2'], x: new Date(YMD_ED_F[2][0]) },
+      { cls: ['s2'], x: new Date(YMD_ED_F[3][0]) },
+      { cls: ['s3'], x: new Date(YMD_ED_F[4][0]) },
 
-      { cls: ['campaign'], x: new Date(YMD_ED_F[5][0] + ' 00:00:00') },
-      { cls: ['campaign'], x: new Date(YMD_ED_F[6][0] + ' 00:00:00') },
+      { cls: ['campaign'], x: new Date(YMD_ED_F[5][0]) },
+      { cls: ['campaign'], x: new Date(YMD_ED_F[6][0]) },
 
-      { cls: ['s1'], x: new Date(YMD_ED_F[7][0] + ' 00:00:00') },
-      { cls: ['s2'], x: new Date(YMD_ED_F[8][0] + ' 00:00:00') }
+      { cls: ['s1'], x: new Date(YMD_ED_F[7][0]) },
+      { cls: ['s2'], x: new Date(YMD_ED_F[8][0]) }
     ]);
 
     if (m_.is_drawWorldMap) drawWorldMap();
@@ -978,7 +978,7 @@ const initDc = (data) => {
   // CHART 感染者数(YYYY-MM-DD) barChart chartDate_init
   //===========================================================================
   let dimDate = ndx2.dimension(function(d) {
-    return d3.timeDay(new Date(d[D2_YMD] + ' 00:00:00'));
+    return d3.timeDay(new Date(d[D2_YMD]));
   });
   m_.gpDate = dimDate.group().reduceSum(function(d) { return d[D2_P]; });
   m_.gpDateD = dimDate.group().reduceSum(function(d) { return d[D2_D]; });
