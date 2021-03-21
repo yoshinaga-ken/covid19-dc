@@ -138,22 +138,15 @@
           <div id="div_condsel">
             <div id="chart_condsel"></div>
           </div>
-        </div>
-        <div class="sp_float">
           <span class="chart-title">半球</span>
-          <div id="div_hemisphere">
-            <div id="chart_hemisphere">
-              <ul>
-                <li>北半球</li>
-                <li>南半球</li>
-              </ul>
-            </div>
+          <div id="div_sphere">
+            <div id="chart_sphere"></div>
           </div>
         </div>
         <div class="sp_float">
           <span class="chart-title">地域</span>
           <a class="reset_btn" href="javascript:m_.chartRegion.filterAll();$('#panel_region .filter_txt').text('');dc.redrawAll('chartGroup2');" style="display: none;"><span class="ui-icon ui-icon-closethick"></span></a>
-          <span class="filter_txt" title="Ctrlを押しながらバーをクリックで単位単一選択になります" style="display: none;"></span>
+          <span class="filter_txt" title="Ctrlを押しながら選択すると単一選択ができます。" style="display: none;"></span>
           <!-- <span class="ui-icon ui-icon-circle-close sp_icon btn_close" ch_id="ch_pnl_region" style="float:right;"></span> -->
           <div id="div_region">
             <div id="chart_region"></div>
@@ -163,7 +156,7 @@
       <div id="panel_world" class="dc_panel drag">
         <span class="chart-title">国名</span>
         <a class="reset_btn" href="javascript:m_.chartWorldFilterReset();" style="display: none;"><span class="ui-icon ui-icon-closethick"></span></a>
-        <span class="filter_txt" title="Ctrlを押しながらバーをクリックで単位単一選択になります" style="display: none;"></span>
+        <span class="filter_txt" title="Ctrlを押しながら選択すると単一選択ができます。" style="display: none;"></span>
         <span class="ui-icon ui-icon-circle-close sp_icon btn_close" ch_id="ch_pnl_world" style="float:right;"></span>
         <span title="表示をフィルタします" keyboard_target="world" class="flt_open_btn sp_icon ui-icon ui-icon-search ui-button ui-corner-all ui-widget"></span>
         <span id="world_flt_div" style="display: none;">

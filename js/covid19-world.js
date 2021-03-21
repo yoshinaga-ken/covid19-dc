@@ -5,6 +5,9 @@ const D2_YMD = 1; // 2020-01-30
 const D2_P = 2;   // 感染者数
 const D2_D = 3;   // 死亡者数
 const D2_REG = 4; // 地域
+const D2_REG_BIT_SPHERE = 16;//0b10000;ビット-半球;1bit:0-1
+const D2_REG_BIT_REGION = 15;//0b01111;ビット-地域;4bit:0-15
+
 
 const WT_CD = 0;  // JP
 const WT_NM = 1;  // JAPAN
@@ -29,11 +32,13 @@ const COND_COL_E = COND_COL[4];
 const IMG_NO = 'img/noimage.png';
 
 //緊急事態宣言
-const YMD_ED_F = [["2020-04-07", "【緊急事態宣言】\n発令。７都府県\n対象：東京・埼玉・千葉・神奈川・大阪・兵庫・福岡"], ["2020-04-16", "【緊急事態宣言】\n対象を｢全国｣に拡大"], ["2020-05-14", "【緊急事態宣言】\n39県で解除\n継続：北海道・東京・埼玉・千葉・神奈川・大阪・京都・兵庫"], ["2020-05-21", "【緊急事態宣言】\n大阪・京都・兵庫を解除\n継続：北海道・東京・埼玉・千葉・神奈川"], ["2020-05-25", "【緊急事態宣言】\n全都道府県で解除"], ["2020-07-22", "【GoToトラベル キャンペーン】\n開始"], ["2020-10-01", "【GoToイート キャンペーン】\n開始"], ["2021-01-08", "【緊急事態宣言#2】\n発令。1都3県\n対象：東京・埼玉・千葉・神奈川"], ["2021-01-13", "【緊急事態宣言#2】\n対象を11都道府県に拡大\n対象：東京・埼玉・千葉・神奈川に加えて\n大阪・京都・兵庫・愛知・岐阜・栃木・福岡の7府県を追加"]];
+const YMD_ED_F = [["2020-04-07", "【緊急事態宣言】\n発令。７都府県\n対象：東京・埼玉・千葉・神奈川・大阪・兵庫・福岡"], ["2020-04-16", "【緊急事態宣言】\n対象を｢全国｣に拡大"], ["2020-05-14", "【緊急事態宣言】\n39県で解除\n継続：北海道・東京・埼玉・千葉・神奈川・大阪・京都・兵庫"], ["2020-05-21", "【緊急事態宣言】\n大阪・京都・兵庫を解除\n継続：北海道・東京・埼玉・千葉・神奈川"], ["2020-05-25", "【緊急事態宣言】\n全都道府県で解除"], ["2020-07-22", "【GoToトラベル キャンペーン】\n開始"], ["2020-10-01", "【GoToイート キャンペーン】\n開始"], ["2021-01-08", "【緊急事態宣言#2】\n発令。1都3県\n対象：東京・埼玉・千葉・神奈川"], ["2021-01-13", "【緊急事態宣言#2】\n対象を11都道府県に拡大\n対象：東京・埼玉・千葉・神奈川に加えて\n大阪・京都・兵庫・愛知・岐阜・栃木・福岡の7府県を追加"], ["2021-02-28", "【緊急事態宣言#2】\n栃木・岐阜・愛知・京都・大阪・兵庫・福岡を解除\n継続：埼玉県・千葉県・東京都・神奈川"]];
 
+const WORLD_SPHERES = [["北半球", "Northern Hemisphere"], ["南半球", "Southern Hemisphere"]];
 const WORLD_REGIONS = { "0": ["アフリカ", "Africa"], "2": ["東地中海", "Eastern Mediterranean"], "3": ["ヨーロッパ", "Europe"], "4": ["東南アジア", "South-East Asia"], "5": ["西太平洋", "Western Pacific"], "11": ["北アメリカ", "North Americas"], "12": ["中央アメリカ", "Central Americas"], "13": ["南アメリカ", "South Americas"] };
 
-const CHART_YM_STACK1_N = 2 + _.size(WORLD_REGIONS); const CHART_YM_STACK2_N = 8 + 1;
+const CHART_YM_STACK0_N = 2;
+const CHART_YM_STACK1_N = CHART_YM_STACK0_N + _.size(WORLD_REGIONS); const CHART_YM_STACK2_N = 8 + 1;
 const SPARK_SX = IS_SP ? 60 : 25;
 const MAP_COL_TBL = [["1000人以上", "#8c0a00"], ["500人以上", "#ea5432"], ["100人以上", "#ff781d"], ["50人以上", "#ff9d57"], ["10人以上", "#ffceab"], ["1人以上", "#f5deb3"], ["0人", "#dadada"], ["選択中", "#ffffff"]];
 
@@ -57,6 +62,7 @@ const m_ = {
   composite: null,
   chartDate: null,
   chartLine: null,
+  chartSphere: null,
   chartRegion: null,
   chartWorld: null,
   chartCondSel: null,
@@ -68,6 +74,7 @@ const m_ = {
   //gpRegion_all:{},
   gpWorld_all: {},
   ac_data: [],
+  chartSphereColors: ['orange', '#1e90ff'],
   chartRegionColors: colorbrewer.Paired[9],
   chartWorldColors: d3.schemeTableau10,
 
@@ -212,12 +219,12 @@ const m_ = {
         , at2: 'left bottom+20'
         , collision: 'fit fit'
       } : { //左
-          of: $(window)
-          , my: "left bottom"
-          , at: "left bottom-20"
-          , at2: 'left bottom-20'
-          , collision: 'fit fit'
-        }
+        of: $(window)
+        , my: "left bottom"
+        , at: "left bottom-20"
+        , at2: 'left bottom-20'
+        , collision: 'fit fit'
+      }
 
       , visible: function(a, b) {
         // if(IS_SP){
@@ -551,7 +558,8 @@ const m_ = {
       { cls: ['campaign'], x: new Date(YMD_ED_F[6][0]) },
 
       { cls: ['s1'], x: new Date(YMD_ED_F[7][0]) },
-      { cls: ['s2'], x: new Date(YMD_ED_F[8][0]) }
+      { cls: ['s2'], x: new Date(YMD_ED_F[8][0]) },
+      { cls: ['s2'], x: new Date(YMD_ED_F[9][0]) },
     ]);
 
     if (m_.is_drawWorldMap) drawWorldMap();
@@ -683,6 +691,7 @@ const m_ = {
     m_.composite = new dc.CompositeChart("#chart_date", "chartGroup2");
     m_.chartDate = new dc.BarChart(m_.composite);
     m_.chartLine = new dc.LineChart(m_.composite);
+    m_.chartSphere = new dc.RowChart("#chart_sphere", "chartGroup2");
     m_.chartRegion = new dc.RowChart("#chart_region", "chartGroup2");
     m_.chartWorld = new dc.RowChart("#chart_world", "chartGroup2");
     m_.chartCondSel = new dc.RowChart("#chart_condsel", "chartGroup2");
@@ -755,11 +764,59 @@ const initDc = (data) => {
 
   let ndx2 = crossfilter(m_.world);
   m_.ndx2 = ndx2;
+
+  //===========================================================================
+  // CHART 半球 rowChart chartSphere_init
+  //===========================================================================
+  let dimSphere = ndx2.dimension(function(d) {
+    return d[D2_REG] & D2_REG_BIT_SPHERE ? 1 : 0;
+  });
+  m_.gpSphere = dimSphere.group().reduceSum(function(d) {
+    return d[D2_P];
+  });
+  m_.gpSphereD = dimSphere.group().reduceSum(function(d) {
+    return d[D2_D];
+  });
+  let gpSphere = m_.lv_type ? m_.gpSphereD : m_.gpSphere;
+  //gpSphere.all().forEach( v=>m_.gpSphere_all[v.key]=v.value );
+
+  m_.chartSphere
+    .width(IS_SP ? parseInt(window.innerWidth / 2) - 10 : 200)
+    .height(20 + (Object.keys(gpSphere.all()).length * 29))
+    .fixedBarHeight(24)
+    .margins({ top: 0, left: 10, right: 10, bottom: 20 })
+    .transitionDuration(750)
+    .dimension(dimSphere)
+    .group(gpSphere)
+    .addFilterHandler(m_.addFilterHandlerSingle)
+    .ordinalColors(m_.chartSphereColors)//TODO:
+    .filterPrinter(function(filters) {
+      return filters.map(function(f) { return WORLD_SPHERES[f]; }).join(', ');
+    })
+    .renderLabel(true) //LeftLabel
+    .label(function(d) {//tooltip
+      return WORLD_SPHERES[d.key][0];
+    })
+    .renderTitleLabel(true) //RightLabel & tooltip
+    //.titleLabelOffsetX( 0 )
+    .title(function(d) {
+      return php_number_format(d.value);
+    })
+    .ordering(function(t) { return 1; }) //並び順変えない
+    .elasticX(true)
+    .on('filtered', function(chart, v) {
+      // m_.showFilterUi('#panel_sphere',chart,(f)=>WORLD_SPHERES[f][0]);//,(f)=>moment(f).format('M/D(ddd)'));
+      m_.dateCntCreate();
+      m_.on_chart_filtered(chart, v);
+    })
+    ;
+  m_.chartSphere.xAxis().ticks(0);
+
   //===========================================================================
   // CHART 市区町村 rowChart chartRegion_init
   //===========================================================================
   let dimRegion = ndx2.dimension(function(d) {
-    return d[D2_REG];
+    return d[D2_REG] & D2_REG_BIT_REGION;
   });
   m_.gpRegion = dimRegion.group().reduceSum(function(d) {
     return d[D2_P];
@@ -933,7 +990,8 @@ const initDc = (data) => {
         if (p) {
           ret +=
             '総人口　: <br />' +
-            '地域　　: ' + WORLD_REGIONS[p[WT_AC]][0] + '<br />' +
+            '半球　　: ' + WORLD_SPHERES[(p[WT_AC] & D2_REG_BIT_SPHERE) ? 1 : 0][0] + '<br />' +
+            '地域　　: ' + WORLD_REGIONS[(p[WT_AC] & D2_REG_BIT_REGION)][0] + '<br />' +
             // 'PCR検査: <br />'+
             '感染者数: ' + php_number_format(p[WT_P]) + ' ▲' + php_number_format(p[WT_PD]) + '<br />' +
             '死亡者数: ' + php_number_format(p[WT_D]) + ' ▲' + php_number_format(p[WT_DD]) + '<br />' +
@@ -989,7 +1047,7 @@ const initDc = (data) => {
       p.lv_b += v[D2_P];//感染者
       p.lv_e += v[D2_D];//死亡
       let pl1 = v[D2_PL1];
-      let reg = v[D2_REG]
+      let reg = v[D2_REG] & D2_REG_BIT_REGION;
       if (p.ncnt[pl1] === undefined) p.ncnt[pl1] = [0, 0];
       p.ncnt[pl1][0] += v[D2_P];
       p.ncnt[pl1][1] += v[D2_D];
@@ -1004,7 +1062,7 @@ const initDc = (data) => {
       p.lv_b -= v[D2_P];//感染者
       p.lv_e -= v[D2_D];//死亡
       let pl1 = v[D2_PL1];
-      let reg = v[D2_REG]
+      let reg = v[D2_REG] & D2_REG_BIT_REGION;
       if (p.ncnt[pl1] === undefined) p.ncnt[pl1] = [0, 0];
       p.ncnt[pl1][0] -= v[D2_P];
       p.ncnt[pl1][1] -= v[D2_D];
@@ -1072,7 +1130,7 @@ const initDc = (data) => {
     let regions = _.sortBy(m_.chartRegion.group().all(), d => -d.value);
     for (var i = 0; i < regions.length; i++) {
       let code = regions[i].key;
-      let name = WORLD_REGIONS[code][0];
+      let name = WORLD_REGIONS[code & D2_REG_BIT_REGION][0]; //TODO_ERR ?
       m_.chartDate.stack(gpDateStk, name, sel_stack_region(m_.chartDate, code));
     }
   }
@@ -1157,6 +1215,7 @@ const initDc = (data) => {
 
         if (ymd === YMD_ED_F[7][0]) { s_suf = YMD_ED_F[7][1]; break; }
         if (ymd === YMD_ED_F[8][0]) { s_suf = YMD_ED_F[8][1]; break; }
+        if (ymd === YMD_ED_F[9][0]) { s_suf = YMD_ED_F[9][1]; break; }
         break;
       }
       let date_str = typeof (d.key) === "object" ? moment(d.key).format('YYYY/M/D(ddd)') : d.key;
@@ -1184,7 +1243,7 @@ const initDc = (data) => {
       _.forEach(cnt, (d, f) => {
         let num = d[m_.lv_type];
         if (num === 0) return;
-        fname = is_reg_mode ? WORLD_REGIONS[f][0] : f;
+        fname = is_reg_mode ? WORLD_REGIONS[f & D2_REG_BIT_REGION][0] : f;
         s += d ? (fname + ': ' + php_number_format(num) + '名\n') : '';
         total += num;
         n++;
@@ -1227,7 +1286,7 @@ const initDc = (data) => {
   var gpCondSel = dimCondSel.group().reduceSum(function(d) { return d[1] });
   m_.chartCondSel
     .width(IS_SP ? parseInt(window.innerWidth / 2) - 30 : 200)
-    .height(24 + (Object.keys(gpCondSel.all()).length * 29))
+    .height(20 + (Object.keys(gpCondSel.all()).length * 29))
     .fixedBarHeight(24)
     .margins({ top: 0, left: 10, right: 10, bottom: 20 })
     .transitionDuration(750)
@@ -1355,9 +1414,9 @@ const initTabs = () => {
 }
 
 const initAutoComplete = () => {
-    /**
-     * class $.ui.autocomplete_ex extends $.ui.autocomplete
-     */
+  /**
+   * class $.ui.autocomplete_ex extends $.ui.autocomplete
+   */
   $.widget("ui.autocomplete_ex", $.ui.autocomplete, {
     //デフォルトオプション
     options: {
@@ -1396,7 +1455,7 @@ const initAutoComplete = () => {
 
         response(_.filter(_this.options.user_opt.data, (d) => {
           let al = kw[0].match(/[a-z]/i) ? 1 : 0;
-          return al ? d[2].toLocaleLowerCase().indexOf(kw) !== -1 : (WORLD_REGIONS[d[0]][0].indexOf(kw) !== -1 || d[1].indexOf(kw) !== -1);
+          return al ? d[2].toLocaleLowerCase().indexOf(kw) !== -1 : (WORLD_REGIONS[d[0] & D2_REG_BIT_REGION][0].indexOf(kw) !== -1 || d[1].indexOf(kw) !== -1);
         }).slice(0, itemMax));
 
       }
@@ -1607,7 +1666,7 @@ $(document).ready(function() {
     //duration: 200,
     //showOptions: {effect: "show",duration:3000,easing:'easeOutQuart'},
     showOtherMonths: true,
-    numberOfMonths: IS_SP ? [1, 3] : [2, 4],
+    numberOfMonths: IS_SP ? [6, 1] : [2, 4],
     showCurrentAtPos: IS_SP ? 2 : 4 + 3,
     stepMonths: IS_SP ? 3 : 4,
     position: { //左
