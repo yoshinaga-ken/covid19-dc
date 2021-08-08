@@ -1487,8 +1487,9 @@ const initAutoComplete = () => {
       $.each(items, function(index, item) {
         let li;
         if (item[0] != currentType) {
-          let icon = '';
-          ul.append("<li class='ac_ex-cate'>" + icon + WORLD_REGIONS[item[0]][0] + "</li>");
+          const icon = '';
+          const regIdx = item[0] & D2_REG_BIT_REGION;
+          ul.append("<li class='ac_ex-cate'>" + icon + WORLD_REGIONS[regIdx][0] + "</li>");
           currentType = item[0];
         }
         li = that._renderItemData(ul, item);
