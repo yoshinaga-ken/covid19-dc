@@ -1,6 +1,6 @@
 #===========================================================================
 # covid19 Data make Utility
-# USAGE: 
+# USAGE:
 # 	make <tareget_file>
 # EXSAMPLE:
 # 	#covid19-data.csv より covid19-data.js を作る
@@ -33,11 +33,18 @@ SRC= \
 
 usage:
 	@echo "covid19 Data make Utility"
-	@echo "USAGE: "
+	@echo "USAGE:"
 	@echo "	make <tareget_file>"
 	@echo "EXSAMPLE:"
-	@echo "	#covid19-data.csv より covid19-data.js を作る"
+	@echo "	# covid19-data.csv より covid19-data.js を作る"
 	@echo "	make covid19-data.js"
+	@echo "	# レコード数過去のデータと比較"
+	@echo "	make covid19-assets.json.obj-vimdiff PATH_DATA_OLD=2021-10-31"
+	@echo "TARGETS:"
+	@grep "^\w*:" Makefile | awk -F : '{printf("\t%-24s:%s\n",$$1,$$2)}'
+	@egrep "^%\." Makefile | awk -F : '{printf("\t%-24s:%s\n",$$1,$$2)}'
+
+# USAGE: make covid19-assets.json.obj-vimdiff PATH_DATA_OLD=
 
 #全ての自治体のよりデータをダウンロード
 dwn_all: \
@@ -291,7 +298,7 @@ dwn_aichi:
 	-mv -b  "$(DWN_PRE)aichi-愛知県-lt-2020-07.pdf" "$(DWN_PRE)aichi-愛知県-lt-2020-07.pdf-bak.pdf"
 	$(WGET) -O "$(DWN_PRE)aichi-愛知県-lt-2020-07.pdf" "https://www.pref.aichi.jp/uploaded/attachment/343361.pdf"
 	$(PYTHON) pdf2csv.py aichi "$(DWN_PRE)aichi-愛知県-lt-2020-07.pdf" "$(DWN_PRE)aichi-愛知県-lt-2020-07.csv"
-	
+
 #三重県
 #TAG:data_csv,url_change
 #https://www.pref.mie.lg.jp/YAKUMUS/HP/m0068000066_00002.htm
@@ -320,7 +327,7 @@ dwn_kyoto_pdf:
 	@echo "府内感染状況　退院等（死亡退院・転院を含む）　1例目から580例目まで（PDF：588KB）"
 	$(WGET) -O "$(DWN_DATA_DIR)/$(DWN_PRE)kyoto-京都府.pdf" "https://www.pref.kyoto.jp/kentai/corona/documents/jyoukyo001-580.pdf"
 	$(PYTHON) pdf2csv.py kyoto "$(DWN_DATA_DIR)/$(DWN_PRE)京都府.pdf" "$(DWN_DATA_DIR)/$(DWN_PRE)京都府-001-XXX.csv"
-	
+
 
 #大阪府
 #TAG:data_xls
@@ -379,7 +386,7 @@ dwn_okayama:
 	-mv "$(DWN_DATA_DIR)/$(DWN_PRE)岡山県.csv" "$(DWN_DATA_DIR)/$(DWN_PRE)岡山県-bak.csv"
 	$(WGET) -O "$(DWN_DATA_DIR)/tmp" "http://www.okayama-opendata.jp/ckan/dataset/e6b3c1d2-2f1f-4735-b36e-e45d36d94761/resource/c6503ebc-b2e9-414c-aae7-7374f4801e21/download/kansenshashousaijouhou0420.csv"
 	iconv -f SJIS -t UTF-8 $(DWN_DATA_DIR)/tmp > "$(DWN_DATA_DIR)/$(DWN_PRE)岡山県.csv"
-	
+
 
 #広島県
 #TAG:data_html
@@ -418,7 +425,7 @@ dwn_kagawa:
 dwn_ehime:
 	@echo "■ehime"
 	$(WGET) -O "$(DWN_DATA_DIR)/$(DWN_PRE)愛媛県.csv" "https://www.pref.ehime.jp/opendata-catalog/dataset/2174/resource/7057/380008_ehime_covid19_patients.csv"
-	
+
 
 #高知県
 #TAG:data_csv
@@ -519,3 +526,32 @@ data_all:covid19-assets.js covid19-data.js covid19-world.js
 start:
 	@echo "Open 'http://localhost:8080/covid19.html' in your browser."
 	php -S localhost:8080 -t ../
+
+
+
+# ===========================================================================
+# データ比較
+# ===========================================================================
+diff_old_new: \
+	covid19-data.json.vimdiff \
+	covid19-assets.json.obj-vimdiff \
+	covid19-world.json.obj-vimdiff
+
+# JAPAN 第5波 までのデータ
+PATH_DATA_OLD=2021-10-31
+
+clean_diff:
+	-rm *.length.txt
+	-rm $(PATH_DATA_OLD)/*.length.txt
+
+%.json.vimdiff: # diff JSON array data
+	@cat $(PATH_DATA_OLD)/$*.json | jq 'length' > $(PATH_DATA_OLD)/$*.json.length.txt
+	@cat $*.json | jq 'length' > $*.json.length.txt
+	-diff $(PATH_DATA_OLD)/$*.json.length.txt $*.json.length.txt
+	vimdiff $(PATH_DATA_OLD)/$*.json.length.txt $*.json.length.txt
+
+%.json.obj-vimdiff: # diff JSON object data
+	@cat $(PATH_DATA_OLD)/$*.json | jq 'map_values(length)' > $(PATH_DATA_OLD)/$*.json.length.txt
+	@cat $*.json | jq 'map_values(length)' > $*.json.length.txt
+	-diff $(PATH_DATA_OLD)/$*.json.length.txt $*.json.length.txt
+	vimdiff $(PATH_DATA_OLD)/$*.json.length.txt $*.json.length.txt
