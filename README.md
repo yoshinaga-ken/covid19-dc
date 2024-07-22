@@ -96,6 +96,8 @@ $ make clean
 ```
 
 ## 関連プロジェクトやサイト
-
-- [covid19-dc-vue-admin](https://github.com/yoshinaga-ken/covid19-dc-vue-admin)
+- [新型コロナウイルス 世界 感染状況 @2022/9/25](https://sakanaclub.xsrv.jp/dc/covid19_wld/data=default)
+- [能登半島地震安否不明者一覧 @2024/1/1](https://sakanaclub.xsrv.jp/dc/covid19/data=quake-noto-safety.csv)
+- [東京都知事選挙　候補者別得票数 @2024/7/7](https://sakanaclub.xsrv.jp/dc/covid19/data=tokyo-gubernatorial-election.csv)
 - [日本の人口構成多次元チャート (表示方式検証中)](https://sakanaclub.xsrv.jp/prefecture-population-dc/?data=population.csv)
+- [covid19-dc-vue-admin](https://github.com/yoshinaga-ken/covid19-dc-vue-admin)
