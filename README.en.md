@@ -12,8 +12,7 @@ The charts can be switched and compared with one click, making it easy to analyz
 
  
 ### Demo page
-- New coronavirus infection status
-- https://sakanaclub.xsrv.jp/dc/covid19
+- [📊Covid19 Infection Status in Japan](https://sakanaclub.xsrv.jp/dc/covid19/data=covid19-data-2021-02-28.json)
 
 ### Data source
 - Data is obtained from infection information published by each local government and materials released by the Ministry of Health, Labor and Welfare
@@ -96,6 +95,9 @@ $ make dwn_all
 $ make clean
 ```
 ## Related projects and sites
-
+- 📊Dimensional chart Demo
+  - [Covid19 Infection Status in World @2022/9/25](https://sakanaclub.xsrv.jp/dc/covid19_wld/data=default)
+  - [List of missing persons due to Noto Peninsula earthquake @2024/1/1](https://sakanaclub.xsrv.jp/dc/covid19/data=quake-noto-safety.csv)
+  - [Tokyo gubernatorial election votes by candidate @2024/7/7](https://sakanaclub.xsrv.jp/dc/covid19/data=tokyo-gubernatorial-election.csv)
+  - [Japan's population composition](https://sakanaclub.xsrv.jp/prefecture-population-dc/?data=population.csv)
 - [covid19-dc-vue-admin](https://github.com/yoshinaga-ken/covid19-dc-vue-admin)
-- [Japan's population multidimensional chart](https://sakanaclub.xsrv.jp/prefecture-population-dc/?data=population.csv)
