@@ -13,7 +13,8 @@ The charts can be switched and compared with one click, making it easy to analyz
  
 ### Demo page
 - [📊Covid19 Infection Status in Japan](https://sakanaclub.xsrv.jp/dc/covid19/data=covid19-data-2021-02-28.json)
-
+- [📊Covid19 Infection Status in 🌎World](https://sakanaclub.xsrv.jp/dc/covid19_wld/data=default)
+  
 ### Data source
 - Data is obtained from infection information published by each local government and materials released by the Ministry of Health, Labor and Welfare
 - List of source URLs [here](data/covid19_pref_url.csv)
@@ -21,7 +22,9 @@ The charts can be switched and compared with one click, making it easy to analyz
 
 ### starting method
 - Open the [covid19.html](covid19.html) file in your browser
-
+- open the following file in your browser:
+  - `📊Covid19 Infection Status in Japan` [covid19.html](covid19.html)
+  - `📊Covid19 Infection Status in 🌎World` [covid19-world.html](covid19-world.html)
 
 ### About URL parameters
 If you specify the following parameters in the URL and start up, the chart will be displayed in a filtered state.
@@ -96,8 +99,9 @@ $ make clean
 ```
 ## Related projects and sites
 - 📊Dimensional chart Demo
-  - [Covid19 Infection Status in World @2022/9/25](https://sakanaclub.xsrv.jp/dc/covid19_wld/data=default)
   - [List of missing persons due to Noto Peninsula earthquake @2024/1/1](https://sakanaclub.xsrv.jp/dc/covid19/data=quake-noto-safety.csv)
   - [Tokyo gubernatorial election votes by candidate @2024/7/7](https://sakanaclub.xsrv.jp/dc/covid19/data=tokyo-gubernatorial-election.csv)
+  - Game Soft
+	   - [4th generation](https://sakanaclub.xsrv.jp/dc/covid19/data=game-gen3.csv) : | [NES](https://sakanaclub.xsrv.jp/dc/covid19/data=game-fc.csv) | [SNES](https://sakanaclub.xsrv.jp/dc/covid19/data=game-smc.csv) | [Genesis](https://sakanaclub.xsrv.jp/dc/covid19/data=game-smd.csv) | [TurboGrafx-16](https://sakanaclub.xsrv.jp/dc/covid19/data=game-pce.csv)
   - [Japan's population composition](https://sakanaclub.xsrv.jp/prefecture-population-dc/?data=population.csv)
 - [covid19-dc-vue-admin](https://github.com/yoshinaga-ken/covid19-dc-vue-admin)
