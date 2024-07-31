@@ -13,6 +13,7 @@
  
 ### デモページ
 - [📊新型コロナウイルス 日本国内 感染状況](https://sakanaclub.xsrv.jp/dc/covid19/data=covid19-data-2021-02-28.json)
+- [📊新型コロナウイルス 🌎世界 感染状況](https://sakanaclub.xsrv.jp/dc/covid19_wld/data=default)
 
 ### データソース
 - データは各自治体が公開する感染情報や厚生労働省の発表資料より取得しています
@@ -20,8 +21,9 @@
 
 
 ### 起動方法
-- [covid19.html](covid19.html)ファイルをブラウザで開いて下さい
-
+- 以下のファイルをブラウザで開いてください
+  - `📊新型コロナウイルス 日本国内 感染状況`は[covid19.html](covid19.html)
+  - `📊新型コロナウイルス 🌎世界 感染状況`は[covid19-world.html](covid19-world.html)
 
 ### URLパラメタについて
 URLに以下のパラメタを指定して起動するとチャートがフィルタリングされた状態で表示されます。
@@ -96,8 +98,9 @@ $ make clean
 
 ## 関連プロジェクトやサイト
 - 📊DCチャートデモ
-  - [新型コロナウイルス 世界 感染状況 @2022/9/25](https://sakanaclub.xsrv.jp/dc/covid19_wld/data=default)
   - [能登半島地震安否不明者一覧 @2024/1/1](https://sakanaclub.xsrv.jp/dc/covid19/data=quake-noto-safety.csv)
   - [東京都知事選挙　候補者別得票数 @2024/7/7](https://sakanaclub.xsrv.jp/dc/covid19/data=tokyo-gubernatorial-election.csv)
+  - ゲームソフト
+	   - [第4世代](https://sakanaclub.xsrv.jp/dc/covid19/data=game-gen3.csv) : | [ファミコン](https://sakanaclub.xsrv.jp/dc/covid19/data=game-fc.csv) | [スーパーファミコン](https://sakanaclub.xsrv.jp/dc/covid19/data=game-smc.csv) | [メガドライブ](https://sakanaclub.xsrv.jp/dc/covid19/data=game-smd.csv) | [PCエンジン](https://sakanaclub.xsrv.jp/dc/covid19/data=game-pce.csv)
   - [日本の人口構成 (表示方式検証中)](https://sakanaclub.xsrv.jp/prefecture-population-dc/?data=population.csv)
 - [covid19-dc-vue-admin](https://github.com/yoshinaga-ken/covid19-dc-vue-admin)
