@@ -102,6 +102,9 @@ $ make clean
   - [List of missing persons due to Noto Peninsula earthquake @2024/1/1](https://sakanaclub.xsrv.jp/dc/covid19/data=quake-noto-safety.csv)
   - [Tokyo gubernatorial election votes by candidate @2024/7/7](https://sakanaclub.xsrv.jp/dc/covid19/data=tokyo-gubernatorial-election.csv)
   - Game Soft
-	   - [4th generation](https://sakanaclub.xsrv.jp/dc/covid19/data=game-gen3.csv) : | [NES](https://sakanaclub.xsrv.jp/dc/covid19/data=game-fc.csv) | [SNES](https://sakanaclub.xsrv.jp/dc/covid19/data=game-smc.csv) | [Genesis](https://sakanaclub.xsrv.jp/dc/covid19/data=game-smd.csv) | [TurboGrafx-16](https://sakanaclub.xsrv.jp/dc/covid19/data=game-pce.csv)
-  - [Japan's population composition](https://sakanaclub.xsrv.jp/prefecture-population-dc/?data=population.csv)
+     - [4th generation](https://sakanaclub.xsrv.jp/dc/covid19/data=game-gen3.csv) :  [NES](https://sakanaclub.xsrv.jp/dc/covid19/data=game-fc.csv) | [SNES](https://sakanaclub.xsrv.jp/dc/covid19/data=game-smc.csv) | [Genesis](https://sakanaclub.xsrv.jp/dc/covid19/data=game-smd.csv) | [TurboGrafx-16](https://sakanaclub.xsrv.jp/dc/covid19/data=game-pce.csv)
+     - [Game Boy](https://sakanaclub.xsrv.jp/dc/covid19/data=game-gb.csv) | [Game Boy Advance](https://sakanaclub.xsrv.jp/dc/covid19/data=game-gba.csv)
+     - [NINTENDO64](https://sakanaclub.xsrv.jp/dc/covid19/data=game-n64.csv) 
+  - [「Agricultural output by product」2016～2021 @japan](https://sakanaclub.xsrv.jp/dc/covid19/data=resas-agriculture.csv)
+  - [population composition @japan](https://sakanaclub.xsrv.jp/prefecture-population-dc/?data=population.csv)
 - [covid19-dc-vue-admin](https://github.com/yoshinaga-ken/covid19-dc-vue-admin)
