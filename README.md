@@ -95,15 +95,20 @@ $ make dwn_all
 # ダウンロードデータをクリーン
 $ make clean
 ```
+## 📊その他の分野 多次元チャートデモ
+- [能登半島地震安否不明者一覧 @2024/1/1](https://sakanaclub.xsrv.jp/dc/covid19/data=quake-noto-safety.csv)
+- [東京都知事選挙　候補者別得票数 @2024/7/7](https://sakanaclub.xsrv.jp/dc/covid19/data=tokyo-gubernatorial-election.csv)
+- ゲームソフト
+  - [第4世代](https://sakanaclub.xsrv.jp/dc/covid19/data=game-gen3.csv) :  [ファミコン](https://sakanaclub.xsrv.jp/dc/covid19/data=game-fc.csv) | [スーパーファミコン](https://sakanaclub.xsrv.jp/dc/covid19/data=game-smc.csv) | [メガドライブ](https://sakanaclub.xsrv.jp/dc/covid19/data=game-smd.csv) | [PCエンジン](https://sakanaclub.xsrv.jp/dc/covid19/data=game-pce.csv)
+  - [ゲームボーイ](https://sakanaclub.xsrv.jp/dc/covid19/data=game-gb.csv) | [ゲームボーイアドバンス](https://sakanaclub.xsrv.jp/dc/covid19/data=game-gba.csv)
+  - [NINTENDO64](https://sakanaclub.xsrv.jp/dc/covid19/data=game-n64.csv) 
+  - [MSX](https://sakanaclub.xsrv.jp/dc/covid19/data=game-msx.csv)
+- 地域経済分析
+  - [「品目別農業産出額」期間：2016年～2021年](https://sakanaclub.xsrv.jp/dc/covid19/data=resas-agriculture.csv)
+  - [「指定地域への国籍別訪問者数」期間：1994年～2021年](https://sakanaclub.xsrv.jp/dc/covid19/data=resas-tourism-foreigners.csv)
+  - [「年間商品販売額」期間：1994年～2021年](https://sakanaclub.xsrv.jp/dc/covid19/data=resas-product-sales.csv)
+  - [「企業数(市区町村・産業分類・業種別)」期間：2009年～2016年](https://sakanaclub.xsrv.jp/dc/covid19/data=resas-municipality-company.csv)
+  - [日本の人口推移](https://sakanaclub.xsrv.jp/prefecture-population-dc/?data=population.csv)
 
 ## 関連プロジェクトやサイト
-- 📊DCチャートデモ
-  - [能登半島地震安否不明者一覧 @2024/1/1](https://sakanaclub.xsrv.jp/dc/covid19/data=quake-noto-safety.csv)
-  - [東京都知事選挙　候補者別得票数 @2024/7/7](https://sakanaclub.xsrv.jp/dc/covid19/data=tokyo-gubernatorial-election.csv)
-  - ゲームソフト
-     - [第4世代](https://sakanaclub.xsrv.jp/dc/covid19/data=game-gen3.csv) :  [ファミコン](https://sakanaclub.xsrv.jp/dc/covid19/data=game-fc.csv) | [スーパーファミコン](https://sakanaclub.xsrv.jp/dc/covid19/data=game-smc.csv) | [メガドライブ](https://sakanaclub.xsrv.jp/dc/covid19/data=game-smd.csv) | [PCエンジン](https://sakanaclub.xsrv.jp/dc/covid19/data=game-pce.csv)
-     - [ゲームボーイ](https://sakanaclub.xsrv.jp/dc/covid19/data=game-gb.csv) | [ゲームボーイアドバンス](https://sakanaclub.xsrv.jp/dc/covid19/data=game-gba.csv)
-     - [NINTENDO64](https://sakanaclub.xsrv.jp/dc/covid19/data=game-n64.csv) 
-  - [「品目別農業産出額」期間：2016年～2021年](https://sakanaclub.xsrv.jp/dc/covid19/data=resas-agriculture.csv)
-  - [日本の人口構成 (表示方式検証中)](https://sakanaclub.xsrv.jp/prefecture-population-dc/?data=population.csv)
 - [covid19-dc-vue-admin](https://github.com/yoshinaga-ken/covid19-dc-vue-admin)
