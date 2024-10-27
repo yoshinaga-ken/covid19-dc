@@ -110,7 +110,7 @@ $ make clean
 - スポーツ
   - [⚾全国高等学校野球選手権大会　歴代優勝・準優勝校一覧](https://sakanaclub.xsrv.jp/dc/covid19/data=sports-hsb.csv)
 - フード
-  - [🍜全国有名ラーメン店一覧](https://sakanaclub.xsrv.jp/prefecture-population-dc/?data=food-ramen.csv)
+  - [🍜全国有名ラーメン店一覧](https://sakanaclub.xsrv.jp/dc/covid19/data=food-ramen.csv)
 - 地域経済分析
   - [「品目別農業産出額」期間：2016年～2021年](https://sakanaclub.xsrv.jp/dc/covid19/data=resas-agriculture.csv)
   - [「指定地域への国籍別訪問者数」期間：1994年～2021年](https://sakanaclub.xsrv.jp/dc/covid19/data=resas-tourism-foreigners.csv)
