@@ -103,7 +103,7 @@ $ make clean
     - [ファミコン](https://sakanaclub.xsrv.jp/dc/covid19/data=game-fc.csv) | [スーパーファミコン](https://sakanaclub.xsrv.jp/dc/covid19/data=game-smc.csv) | [メガドライブ](https://sakanaclub.xsrv.jp/dc/covid19/data=game-smd.csv) | [PCエンジン](https://sakanaclub.xsrv.jp/dc/covid19/data=game-pce.csv)
   - 携帯型ゲーム機: [ゲームボーイ](https://sakanaclub.xsrv.jp/dc/covid19/data=game-gb.csv) | [ゲームボーイアドバンス](https://sakanaclub.xsrv.jp/dc/covid19/data=game-gba.csv) | Nintendo DS | PSP | Nintendo Switch
   - 家庭用ゲーム機 - 第5世代
-    - [NINTENDO64](https://sakanaclub.xsrv.jp/dc/covid19/data=game-n64.csv) | [Playstation1](https://sakanaclub.xsrv.jp/dc/covid19/data=game-ps1.csv) | セガサターン | [NEOGEO](https://sakanaclub.xsrv.jp/dc/covid19/data=game-gen3.csv&name=SNK&date=1990-01-01+2005-01-01)
+    - [NINTENDO64](https://sakanaclub.xsrv.jp/dc/covid19/data=game-n64.csv) | [Playstation1](https://sakanaclub.xsrv.jp/dc/covid19/data=game-ps1.csv) | セガサターン | [NEOGEO](https://sakanaclub.xsrv.jp/dc/covid19/data=game-ac.csv&name=SNK&date=1990-01-01+2005-01-01)
   - [家庭用ゲーム機 - 第3~5世代一覧](https://sakanaclub.xsrv.jp/dc/covid19/data=game-gen3.csv)
   - [アーケードゲーム 1974年～2024年](https://sakanaclub.xsrv.jp/dc/covid19/data=game-ac.csv)
   - [MSX](https://sakanaclub.xsrv.jp/dc/covid19/data=game-msx.csv)
