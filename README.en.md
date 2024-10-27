@@ -100,11 +100,19 @@ $ make clean
 ## 📊Multidimensional chart demo for other fields
 - [List of missing persons due to Noto Peninsula earthquake @2024/1/1](https://sakanaclub.xsrv.jp/dc/covid19/data=quake-noto-safety.csv)
 - [Tokyo gubernatorial election votes by candidate @2024/7/7](https://sakanaclub.xsrv.jp/dc/covid19/data=tokyo-gubernatorial-election.csv)
-- Game Soft
-  - [4th generation](https://sakanaclub.xsrv.jp/dc/covid19/data=game-gen3.csv) :  [NES](https://sakanaclub.xsrv.jp/dc/covid19/data=game-fc.csv) | [SNES](https://sakanaclub.xsrv.jp/dc/covid19/data=game-smc.csv) | [Genesis](https://sakanaclub.xsrv.jp/dc/covid19/data=game-smd.csv) | [TurboGrafx-16](https://sakanaclub.xsrv.jp/dc/covid19/data=game-pce.csv)
-  - [Game Boy](https://sakanaclub.xsrv.jp/dc/covid19/data=game-gb.csv) | [Game Boy Advance](https://sakanaclub.xsrv.jp/dc/covid19/data=game-gba.csv)
-  - [NINTENDO64](https://sakanaclub.xsrv.jp/dc/covid19/data=game-n64.csv) 
+- 📺🎮Tv Game
+  - [home video game consoles - 4th generation](https://sakanaclub.xsrv.jp/dc/covid19/data=game-gen4.csv)
+    - [NES](https://sakanaclub.xsrv.jp/dc/covid19/data=game-fc.csv) | [SNES](https://sakanaclub.xsrv.jp/dc/covid19/data=game-smc.csv) | [Genesis](https://sakanaclub.xsrv.jp/dc/covid19/data=game-smd.csv) | [TurboGrafx-16](https://sakanaclub.xsrv.jp/dc/covid19/data=game-pce.csv)
+  - Handheld game consoles: [Game Boy](https://sakanaclub.xsrv.jp/dc/covid19/data=game-gb.csv) | [Game Boy Advance](https://sakanaclub.xsrv.jp/dc/covid19/data=game-gba.csv) | Nintendo DS | PSP | Nintendo Switch
+  - home video game consoles - 5th generation
+    - [NINTENDO64](https://sakanaclub.xsrv.jp/dc/covid19/data=game-n64.csv) | [Playstation1](https://sakanaclub.xsrv.jp/dc/covid19/data=game-ps1.csv) | SEGA SATURN | [NEOGEO](https://sakanaclub.xsrv.jp/dc/covid19/data=game-gen3.csv&name=SNK&date=1990-01-01+2005-01-01)
+  - [home video game consoles - 4~5th generatio](https://sakanaclub.xsrv.jp/dc/covid19/data=game-gen3.csv)
+  - [Arcade Video games 1974～2024](https://sakanaclub.xsrv.jp/dc/covid19/data=game-ac.csv)
   - [MSX](https://sakanaclub.xsrv.jp/dc/covid19/data=game-msx.csv)
+- Sports
+  - [⚾List of High School Baseball Championship in Japan](https://sakanaclub.xsrv.jp/dc/covid19/data=sports-hsb.csv)
+- Food
+  - [🍜List of Ramen in Japanes](https://sakanaclub.xsrv.jp/prefecture-population-dc/?data=food-ramen.csv)
 - Regional Economic Analysis
   - [「Agricultural output by product」2016～2021 @japan](https://sakanaclub.xsrv.jp/dc/covid19/data=resas-agriculture.csv)
   - [「Number of visitors by nationality to designated regions」1994～2021](https://sakanaclub.xsrv.jp/dc/covid19/data=resas-tourism-foreigners.csv)
