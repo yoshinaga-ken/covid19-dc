@@ -105,7 +105,7 @@ $ make clean
     - [NES](https://sakanaclub.xsrv.jp/dc/covid19/data=game-fc.csv) | [SNES](https://sakanaclub.xsrv.jp/dc/covid19/data=game-smc.csv) | [Genesis](https://sakanaclub.xsrv.jp/dc/covid19/data=game-smd.csv) | [TurboGrafx-16](https://sakanaclub.xsrv.jp/dc/covid19/data=game-pce.csv)
   - Handheld game consoles: [Game Boy](https://sakanaclub.xsrv.jp/dc/covid19/data=game-gb.csv) | [Game Boy Advance](https://sakanaclub.xsrv.jp/dc/covid19/data=game-gba.csv) | Nintendo DS | PSP | Nintendo Switch
   - home video game consoles - 5th generation
-    - [NINTENDO64](https://sakanaclub.xsrv.jp/dc/covid19/data=game-n64.csv) | [Playstation1](https://sakanaclub.xsrv.jp/dc/covid19/data=game-ps1.csv) | SEGA SATURN | [NEOGEO](https://sakanaclub.xsrv.jp/dc/covid19/data=game-gen3.csv&name=SNK&date=1990-01-01+2005-01-01)
+    - [NINTENDO64](https://sakanaclub.xsrv.jp/dc/covid19/data=game-n64.csv) | [Playstation1](https://sakanaclub.xsrv.jp/dc/covid19/data=game-ps1.csv) | SEGA SATURN | [NEOGEO](https://sakanaclub.xsrv.jp/dc/covid19/data=game-ac.csv&name=SNK&date=1990-01-01+2005-01-01)
   - [home video game consoles - 3~5th generatio](https://sakanaclub.xsrv.jp/dc/covid19/data=game-gen3.csv)
   - [Arcade Video games 1974～2024](https://sakanaclub.xsrv.jp/dc/covid19/data=game-ac.csv)
   - [MSX](https://sakanaclub.xsrv.jp/dc/covid19/data=game-msx.csv)
