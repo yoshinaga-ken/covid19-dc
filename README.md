@@ -118,4 +118,6 @@ $ make clean
   - [「企業数(市区町村・産業分類・業種別)」期間：2009年～2016年](https://sakanaclub.xsrv.jp/dc/covid19/data=resas-municipality-company.csv)
   - [日本の人口推移](https://sakanaclub.xsrv.jp/prefecture-population-dc/?data=population.csv)
 ## 関連プロジェクトやサイト
-- [covid19-dc-vue-admin](https://github.com/yoshinaga-ken/covid19-dc-vue-admin)
+- [laravel-vue-dashboard-dc](https://github.com/yoshinaga-ken/laravel-vue-dashboard-dc)
+- [nuxt-ui-pro-dashboard-dc](https://github.com/yoshinaga-ken/nuxt-ui-pro-dashboard-dc) 
+
